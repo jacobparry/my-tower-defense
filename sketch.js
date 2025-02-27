@@ -1173,7 +1173,7 @@ class TowerOption {
                 text = "Cannon Tower\nCost: " + this.cost + " gold\nSlow firing, area damage.\nGreat against groups.";
                 break;
             case "barracks":
-                text = "Barracks Tower\nCost: " + this.cost + " gold\nDeploys soldiers that:\n- Attack enemies\n- Slow nearby enemies\n- Can temporarily block enemies\nEffective for controlling enemy movement.";
+                text = "Barracks Tower\nCost: " + this.cost + " gold\nDeploys soldiers that:\n- Attack enemies\n- Slow nearby enemies by 30%\n- Has a 10% chance to block enemies\nEffective for controlling enemy movement.\nLevel 1: 1 soldier\nLevel 2: 2 soldiers\nLevel 3: 3 soldiers";
                 break;
         }
         return text;
@@ -1430,7 +1430,7 @@ class WaveDisplay {
         fill(255);
         textAlign(RIGHT, CENTER);
         textSize(12);
-        text("Speed:", speedX - 5, speedY + buttonHeight / 2);
+        text("Speed:", speedX + buttonWidth / 2, speedY + buttonHeight / 2);
 
         // 1x speed button
         fill(gameSpeed === 1 ? 100 : 50, gameSpeed === 1 ? 255 : 100, gameSpeed === 1 ? 100 : 50);
@@ -2029,17 +2029,17 @@ class Soldier {
         this.x = x;
         this.y = y;
         this.targetEnemy = targetEnemy;
-        this.speed = 2.5; // Increased from 1.0 to 2.5
-        this.damage = 25; // Increased from 10 to 25
-        this.lifespan = 600; // 10 seconds at 60fps
+        this.speed = 2.0; // Reduced from 2.5 to 2.0
+        this.damage = 15; // Reduced from 25 to 15
+        this.lifespan = 450; // Reduced from 600 to 450 (7.5 seconds at 60fps)
         this.finished = false;
-        this.attackRange = 30; // Increased from 20 to 30
+        this.attackRange = 25; // Reduced from 30 to 25
         this.attackCooldown = 0;
-        this.attackRate = 45; // Attack faster (was 60)
-        this.slowEffect = 0.5; // Enemies move at 50% speed when engaged
-        this.slowRadius = 50; // Radius where enemies are slowed
-        this.blockChance = 0.2; // 20% chance to completely block enemy movement for a short time
-        this.blockDuration = 30; // Block duration in frames (0.5 seconds)
+        this.attackRate = 55; // Slower attack rate (was 45)
+        this.slowEffect = 0.3; // Reduced slow effect from 0.5 to 0.3 (enemies move at 70% speed)
+        this.slowRadius = 40; // Reduced from 50 to 40
+        this.blockChance = 0.1; // Reduced from 0.2 to 0.1 (10% chance)
+        this.blockDuration = 20; // Reduced from 30 to 20 (0.33 seconds)
         this.engagedEnemies = new Set(); // Track which enemies this soldier is affecting
     }
 
@@ -2267,9 +2267,9 @@ class Tower {
                 break;
             case "barracks":
                 this.damage = 0; // Barracks don't deal direct damage
-                this.range = 120 + (this.level - 1) * 15; // Increased range to match mage tower
-                this.fireRate = 150 - (this.level - 1) * 15; // Slightly faster deployment
-                this.soldierCount = 1 + Math.floor((this.level - 1) / 2); // Extra soldier every 2 levels
+                this.range = 90 + (this.level - 1) * 10; // Reduced from 120 to 90
+                this.fireRate = 180 - (this.level - 1) * 10; // Slower deployment (was 150)
+                this.soldierCount = this.level; // 1 soldier at level 1, 2 at level 2, 3 at level 3
                 this.color = [150, 150, 150]; // Light gray
                 break;
         }
