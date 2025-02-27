@@ -73,7 +73,7 @@ let tooltip = {
 
 // --- Grid System Variables ---
 let gridCellSize = 40; // Size of each grid cell
-let pathWidth = gridCellSize * 1.2; // Path is 1.2x the width of a tower (smaller than before)
+let pathWidth = gridCellSize; // Path is exactly 1x the size of grid cells
 let showGrid = true; // Toggle grid visibility
 
 // --- Theme and Visual Settings ---
@@ -95,11 +95,11 @@ function setup() {
     // Define fixed path using waypoints aligned to grid
     // Each point is at the center of a grid cell
     path = [
-        createVector(gridCellSize * 1.5, height - gridCellSize * 1.5),  // Start at bottom left
-        createVector(gridCellSize * 1.5, gridCellSize * 8),             // Go up
-        createVector(gridCellSize * 10, gridCellSize * 8),              // Go right
-        createVector(gridCellSize * 10, gridCellSize * 2.5),            // Go up
-        createVector(width - gridCellSize * 1.5, gridCellSize * 2.5)    // Go right to exit
+        createVector(gridCellSize * 1 + gridCellSize / 2, height - gridCellSize / 2),  // Start at bottom left
+        createVector(gridCellSize * 1 + gridCellSize / 2, gridCellSize * 8 + gridCellSize / 2),  // Go up
+        createVector(gridCellSize * 10 + gridCellSize / 2, gridCellSize * 8 + gridCellSize / 2),  // Go right
+        createVector(gridCellSize * 10 + gridCellSize / 2, gridCellSize * 2 + gridCellSize / 2),  // Go up
+        createVector(width - gridCellSize / 2, gridCellSize * 2 + gridCellSize / 2)  // Go right to exit
     ];
 
     // Initialize wave manager (10 waves total)
@@ -158,7 +158,7 @@ function draw() {
     for (let i = projectiles.length - 1; i >= 0; i--) {
         projectiles[i].update();
         projectiles[i].draw();
-        if (projectiles[i].toRemove) {
+        if (projectiles[i].finished) {
             projectiles.splice(i, 1);
         }
     }
@@ -235,9 +235,9 @@ function drawPath() {
             let y = start.y;
 
             // Calculate grid-aligned start and end points
-            let startGridX = Math.floor((minX - gridCellSize / 2) / gridCellSize) * gridCellSize;
-            let endGridX = Math.ceil((maxX + gridCellSize / 2) / gridCellSize) * gridCellSize;
-            let gridY = Math.round(y / gridCellSize) * gridCellSize - gridCellSize / 2;
+            let startGridX = Math.floor(minX / gridCellSize) * gridCellSize;
+            let endGridX = Math.ceil(maxX / gridCellSize) * gridCellSize;
+            let gridY = Math.floor(y / gridCellSize) * gridCellSize;
 
             // Draw grid cells along the path
             for (let x = startGridX; x < endGridX; x += gridCellSize) {
@@ -250,9 +250,9 @@ function drawPath() {
             let x = start.x;
 
             // Calculate grid-aligned start and end points
-            let startGridY = Math.floor((minY - gridCellSize / 2) / gridCellSize) * gridCellSize;
-            let endGridY = Math.ceil((maxY + gridCellSize / 2) / gridCellSize) * gridCellSize;
-            let gridX = Math.round(x / gridCellSize) * gridCellSize - gridCellSize / 2;
+            let startGridY = Math.floor(minY / gridCellSize) * gridCellSize;
+            let endGridY = Math.ceil(maxY / gridCellSize) * gridCellSize;
+            let gridX = Math.floor(x / gridCellSize) * gridCellSize;
 
             // Draw grid cells along the path
             for (let y = startGridY; y < endGridY; y += gridCellSize) {
@@ -302,8 +302,7 @@ function mousePressed() {
 
     // Check if clicking on game speed buttons
     if (mouseY > 10 && mouseY < 30) {
-        let waveDisplay = new WaveDisplay();
-        let speedX = waveDisplay.x + waveDisplay.width + 20;
+        let speedX = width / 2 - 50; // Center position
         let buttonWidth = 30;
         let buttonSpacing = 5;
 
@@ -391,10 +390,13 @@ function mousePressed() {
 
         if (mouseX > buttonX && mouseX < buttonX + buttonWidth &&
             mouseY > buttonY && mouseY < buttonY + buttonHeight) {
-            let upgradeCost = selectedTower.getUpgradeCost();
-            if (gold >= upgradeCost) {
-                gold -= upgradeCost;
-                selectedTower.upgrade();
+            // Only allow upgrade if tower is not at max level
+            if (selectedTower.level < 3) {
+                let upgradeCost = selectedTower.getUpgradeCost();
+                if (gold >= upgradeCost) {
+                    gold -= upgradeCost;
+                    selectedTower.upgrade();
+                }
             }
             clickedOnUI = true;
             return;
@@ -429,12 +431,12 @@ function isOnPath(x, y) {
             let pathY = start.y;
 
             // Calculate grid-aligned y position
-            let gridPathY = Math.round(pathY / gridCellSize) * gridCellSize;
+            let gridPathY = Math.floor(pathY / gridCellSize) * gridCellSize;
 
             // Check if point's grid cell is on this segment
-            if (gridY === gridPathY - gridCellSize / 2 &&
-                gridX >= Math.floor((minX - gridCellSize / 2) / gridCellSize) * gridCellSize &&
-                gridX < Math.ceil((maxX + gridCellSize / 2) / gridCellSize) * gridCellSize) {
+            if (gridY === gridPathY &&
+                gridX >= Math.floor(minX / gridCellSize) * gridCellSize &&
+                gridX < Math.ceil(maxX / gridCellSize) * gridCellSize) {
                 return true;
             }
         } else {
@@ -444,12 +446,12 @@ function isOnPath(x, y) {
             let pathX = start.x;
 
             // Calculate grid-aligned x position
-            let gridPathX = Math.round(pathX / gridCellSize) * gridCellSize;
+            let gridPathX = Math.floor(pathX / gridCellSize) * gridCellSize;
 
             // Check if point's grid cell is on this segment
-            if (gridX === gridPathX - gridCellSize / 2 &&
-                gridY >= Math.floor((minY - gridCellSize / 2) / gridCellSize) * gridCellSize &&
-                gridY < Math.ceil((maxY + gridCellSize / 2) / gridCellSize) * gridCellSize) {
+            if (gridX === gridPathX &&
+                gridY >= Math.floor(minY / gridCellSize) * gridCellSize &&
+                gridY < Math.ceil(maxY / gridCellSize) * gridCellSize) {
                 return true;
             }
         }
@@ -655,23 +657,38 @@ function drawUI() {
         let buttonWidth = 40;
         let buttonHeight = 20;
 
-        // Button background
-        if (gold >= upgradeCost) {
-            fill(50, 150, 50);
-            stroke(100, 255, 100);
-        } else {
-            fill(150, 50, 50);
-            stroke(255, 100, 100);
-        }
-        strokeWeight(1);
-        rect(buttonX, buttonY, buttonWidth, buttonHeight, 3);
+        // Only show upgrade button if tower is not at max level
+        if (selectedTower.level < 3) {
+            // Button background
+            if (gold >= upgradeCost) {
+                fill(50, 150, 50);
+                stroke(100, 255, 100);
+            } else {
+                fill(150, 50, 50);
+                stroke(255, 100, 100);
+            }
+            strokeWeight(1);
+            rect(buttonX, buttonY, buttonWidth, buttonHeight, 3);
 
-        // Button text
-        fill(255);
-        noStroke();
-        textAlign(CENTER, CENTER);
-        textSize(10);
-        text("+" + upgradeCost, buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+            // Button text
+            fill(255);
+            noStroke();
+            textAlign(CENTER, CENTER);
+            textSize(10);
+            text("+" + upgradeCost, buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+        } else {
+            // Show "MAX" text for max level towers
+            fill(100, 100, 150);
+            stroke(150, 150, 200);
+            strokeWeight(1);
+            rect(buttonX, buttonY, buttonWidth, buttonHeight, 3);
+
+            fill(255);
+            noStroke();
+            textAlign(CENTER, CENTER);
+            textSize(10);
+            text("MAX", buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+        }
     }
 
     // Draw tower placement preview if a tower type is selected
@@ -1156,8 +1173,8 @@ class WaveDisplay {
         let progressWidth = this.width * waveManager.waveProgress;
         rect(this.x, this.y, progressWidth, this.height, 5, 0, 0, 5);
 
-        // Draw game speed controls with better spacing and labels
-        let speedX = this.x + this.width + 20; // Increased spacing
+        // Draw game speed controls in the middle of the top bar
+        let speedX = width / 2 - 50; // Center position
         let speedY = this.y;
         let buttonWidth = 30;
         let buttonHeight = this.height;
@@ -1297,33 +1314,36 @@ class Enemy {
         this.type = type || "normal";
         this.wave = wave || 1;
 
+        // Calculate difficulty multiplier that increases by 10% each wave
+        const difficultyMultiplier = Math.pow(1.1, wave - 1);
+
         // Set properties based on enemy type
         switch (this.type) {
             case "fast":
-                this.maxHealth = 30 + wave * 5;
-                this.speed = 2 + wave * 0.1;
-                this.reward = 15 + wave * 2;
+                this.maxHealth = (30 + wave * 5) * difficultyMultiplier;
+                this.speed = (2 + wave * 0.1) * difficultyMultiplier;
+                this.goldReward = 15 + wave * 2;
                 this.size = 15;
                 this.color = [0, 200, 255]; // Cyan
                 break;
             case "tank":
-                this.maxHealth = 150 + wave * 20;
-                this.speed = 0.5 + wave * 0.05;
-                this.reward = 30 + wave * 3;
+                this.maxHealth = (150 + wave * 20) * difficultyMultiplier;
+                this.speed = (0.5 + wave * 0.05) * difficultyMultiplier;
+                this.goldReward = 30 + wave * 3;
                 this.size = 25;
                 this.color = [100, 100, 100]; // Gray
                 break;
             case "boss":
-                this.maxHealth = 500 + wave * 50;
-                this.speed = 0.7 + wave * 0.03;
-                this.reward = 100 + wave * 10;
+                this.maxHealth = (500 + wave * 50) * difficultyMultiplier;
+                this.speed = (0.7 + wave * 0.03) * difficultyMultiplier;
+                this.goldReward = 100 + wave * 10;
                 this.size = 35;
                 this.color = [200, 0, 200]; // Purple
                 break;
             default: // normal
-                this.maxHealth = 50 + wave * 10;
-                this.speed = 1 + wave * 0.05;
-                this.reward = 10 + wave * 1;
+                this.maxHealth = (50 + wave * 10) * difficultyMultiplier;
+                this.speed = (1 + wave * 0.05) * difficultyMultiplier;
+                this.goldReward = 10 + wave * 1;
                 this.size = 20;
                 this.color = [255, 0, 0]; // Red
         }
@@ -2309,7 +2329,7 @@ function checkUIHover() {
     }
 
     // Check speed buttons
-    let speedX = waveDisplay.x + waveDisplay.width + 20;
+    let speedX = width / 2 - 50; // Center position
     let speedY = waveDisplay.y;
     let buttonWidth = 30;
     let buttonHeight = waveDisplay.height;
