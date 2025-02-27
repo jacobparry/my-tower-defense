@@ -278,6 +278,29 @@ function mousePressed() {
     // Check if clicking on any tower option UI box
     let clickedOnUI = false;
 
+    // First check if clicking on an upgrade button for the selected tower
+    if (selectedTower) {
+        // Upgrade button drawn above the tower
+        let buttonX = selectedTower.x - 20; // Center the button above the tower
+        let buttonY = selectedTower.y - gridCellSize - 5; // Move it further up
+        let buttonWidth = 40;
+        let buttonHeight = 20;
+
+        if (mouseX > buttonX && mouseX < buttonX + buttonWidth &&
+            mouseY > buttonY && mouseY < buttonY + buttonHeight) {
+            // Only allow upgrade if tower is not at max level
+            if (selectedTower.level < 3) {
+                let upgradeCost = selectedTower.getUpgradeCost();
+                if (gold >= upgradeCost) {
+                    gold -= upgradeCost;
+                    selectedTower.upgrade();
+                }
+            }
+            clickedOnUI = true;
+            return;
+        }
+    }
+
     // Check tower options
     for (let opt of towerOptions) {
         if (opt.contains(mouseX, mouseY)) {
@@ -386,29 +409,6 @@ function mousePressed() {
             gold -= cost;
             towers.push(new Tower(gridX, gridY, selectedTowerType));
             clickedOnUI = true;
-        }
-    }
-
-    // If a tower is already selected for upgrade, check if click is on its upgrade button.
-    if (selectedTower) {
-        // Upgrade button drawn at the top-right corner of the grid cell
-        let buttonX = selectedTower.x + gridCellSize / 2;
-        let buttonY = selectedTower.y - gridCellSize / 2;
-        let buttonWidth = 40;
-        let buttonHeight = 20;
-
-        if (mouseX > buttonX && mouseX < buttonX + buttonWidth &&
-            mouseY > buttonY && mouseY < buttonY + buttonHeight) {
-            // Only allow upgrade if tower is not at max level
-            if (selectedTower.level < 3) {
-                let upgradeCost = selectedTower.getUpgradeCost();
-                if (gold >= upgradeCost) {
-                    gold -= upgradeCost;
-                    selectedTower.upgrade();
-                }
-            }
-            clickedOnUI = true;
-            return;
         }
     }
 
@@ -666,8 +666,9 @@ function drawUI() {
 
         // Upgrade button
         let upgradeCost = selectedTower.getUpgradeCost();
-        let buttonX = selectedTower.x + gridCellSize / 2;
-        let buttonY = selectedTower.y - gridCellSize / 2;
+        // Position the upgrade button above the tower with more space
+        let buttonX = selectedTower.x - 20; // Center the button above the tower
+        let buttonY = selectedTower.y - gridCellSize - 5; // Move it further up
         let buttonWidth = 40;
         let buttonHeight = 20;
 
@@ -1094,8 +1095,8 @@ class WaveManager {
         this.waveProgress = 0;
         this.waveCompleted = false;
 
-        // Calculate number of enemies for this wave - increased from 1.5 to 2.5 multiplier
-        this.enemiesPerWave = 5 + Math.floor(this.currentWave * 2.5);
+        // Calculate number of enemies for this wave - increased from 1.5 to 2.0 multiplier
+        this.enemiesPerWave = 5 + Math.floor(this.currentWave * 2.0);
         this.enemiesSpawned = 0;
 
         // Unlock new enemy types based on wave number
