@@ -11,6 +11,7 @@ let selectedTower = null; // For upgrading an existing tower
 
 let gold = 500;
 let lives = 10;
+let points = 0; // Track player's score throughout the game
 
 // Add difficulty selection variables
 let gameDifficulty = null; // "easy", "medium", or "hard"
@@ -206,6 +207,10 @@ function draw() {
             enemies[i].draw();
             // If enemy reaches the end, remove it and subtract a life
             if (enemies[i].reachedEnd) {
+                // Increment the leaked enemies counter in the wave manager
+                if (waveManager) {
+                    waveManager.enemiesLeaked++;
+                }
                 enemies.splice(i, 1);
                 lives--;
                 if (lives <= 0) {
@@ -215,6 +220,7 @@ function draw() {
             // Remove dead enemies and reward gold
             else if (enemies[i].health <= 0) {
                 gold += enemies[i].goldReward;
+                points += enemies[i].pointValue; // Award points for killing enemies
                 enemies.splice(i, 1);
             }
         }
@@ -266,9 +272,13 @@ function draw() {
         textSize(24);
         text("Difficulty: " + gameDifficulty.charAt(0).toUpperCase() + gameDifficulty.slice(1), width / 2, height / 2 + 50);
 
+        // Show final points
+        textSize(20);
+        text("Final Score: " + points, width / 2, height / 2 + 80);
+
         // Show restart instructions
         textSize(18);
-        text("Press 'R' to restart", width / 2, height / 2 + 100);
+        text("Press 'R' to restart", width / 2, height / 2 + 120);
     }
 
     // Check for victory
@@ -287,10 +297,11 @@ function draw() {
         // Display final stats
         textSize(18);
         text("Final Gold: " + gold, width / 2, height / 2 + 120);
-        text("Towers Built: " + towers.length, width / 2, height / 2 + 150);
+        text("Final Score: " + points, width / 2, height / 2 + 150);
+        text("Towers Built: " + towers.length, width / 2, height / 2 + 180);
 
         // Show restart instructions
-        text("Press 'R' to restart", width / 2, height / 2 + 190);
+        text("Press 'R' to restart", width / 2, height / 2 + 220);
     }
 }
 
@@ -588,8 +599,10 @@ function keyPressed() {
         particles = [];
         gold = 500;
         lives = 10;
+        points = 0; // Reset points when restarting
         selectedTowerType = null;
         selectedTower = null;
+        waveManager = null; // Reset wave manager
 
         // Create a new difficulty selector
         difficultySelector = new DifficultySelector();
@@ -649,6 +662,16 @@ function drawUI() {
     fill(255);
     textAlign(LEFT, CENTER);
     text(lives, 120, 20);
+
+    // Points display
+    fill(50, 200, 255);
+    ellipse(170, 20, 20, 20);
+    fill(20, 100, 200);
+    ellipse(170, 20, 14, 14);
+
+    fill(255);
+    textAlign(LEFT, CENTER);
+    text(points, 185, 20);
 
     // Draw wave display and game speed controls if waveManager exists
     if (waveManager) {
@@ -1219,6 +1242,7 @@ class WaveManager {
         this.waveCompleted = true; // Set to true initially so player can start first wave
         this.waveProgress = 0; // 0 to 1 for UI display
         this.gameWon = false;
+        this.enemiesLeaked = 0; // Track enemies that reached the end
 
         // Available enemy types (unlocked progressively)
         this.enemyTypes = ["normal"];
@@ -1259,6 +1283,7 @@ class WaveManager {
         this.currentWave++;
         this.waveProgress = 0;
         this.waveCompleted = false;
+        this.enemiesLeaked = 0; // Reset leaked enemies counter for the new wave
 
         // Calculate number of enemies for this wave based on difficulty
         let enemyMultiplier;
@@ -1327,6 +1352,39 @@ class WaveManager {
             if (!this.waveCompleted) {
                 // Award bonus gold for completing a wave
                 gold += 50 + this.currentWave * 10;
+
+                // Only award bonus points if no enemies leaked through
+                if (this.enemiesLeaked === 0) {
+                    let waveBonus = 100 + this.currentWave * 25;
+                    points += waveBonus;
+
+                    // Create floating text to show bonus points
+                    let p = new Particle(
+                        width / 2,
+                        height / 2,
+                        0,
+                        -1,
+                        [50, 200, 255],
+                        20,
+                        60
+                    );
+                    p.text = "+" + waveBonus + " Perfect Wave Bonus!";
+                    particles.push(p);
+                } else {
+                    // Create floating text to show that no bonus was awarded
+                    let p = new Particle(
+                        width / 2,
+                        height / 2,
+                        0,
+                        -1,
+                        [200, 50, 50],
+                        20,
+                        60
+                    );
+                    p.text = "No bonus - " + this.enemiesLeaked + " enemies leaked!";
+                    particles.push(p);
+                }
+
                 this.waveCompleted = true;
 
                 // Check if this was the final wave
@@ -1581,6 +1639,7 @@ class Enemy {
         this.baseSpeed = 1.0;
         this.baseSize = 20;
         this.baseGoldReward = 10;
+        this.basePointValue = 10; // Base points for killing an enemy
 
         // Apply difficulty modifiers
         this.applyDifficultyModifiers();
@@ -1599,11 +1658,13 @@ class Enemy {
             this.baseSpeed *= 0.8;
             this.baseHealth *= 0.9;
             this.baseGoldReward *= 1.2; // More gold reward
+            this.basePointValue *= 0.8; // Fewer points on easy difficulty
         } else if (gameDifficulty === "hard") {
             // Hard: Faster enemies with more health
             this.baseSpeed *= 1.2;
             this.baseHealth *= 1.2;
             this.baseGoldReward *= 0.8; // Less gold reward
+            this.basePointValue *= 1.5; // More points on hard difficulty
         }
         // Medium difficulty uses base values
     }
@@ -1615,6 +1676,7 @@ class Enemy {
                 this.health = this.baseHealth * 0.7;
                 this.size = this.baseSize * 0.8;
                 this.goldReward = this.baseGoldReward * 1.2;
+                this.pointValue = this.basePointValue * 1.5; // Fast enemies worth more points
                 this.color = [0, 200, 200]; // Cyan
                 break;
             case "tank":
@@ -1622,6 +1684,7 @@ class Enemy {
                 this.health = this.baseHealth * 2.5;
                 this.size = this.baseSize * 1.3;
                 this.goldReward = this.baseGoldReward * 1.5;
+                this.pointValue = this.basePointValue * 2.0; // Tank enemies worth more points
                 this.color = [100, 100, 100]; // Gray
                 break;
             case "boss":
@@ -1629,6 +1692,7 @@ class Enemy {
                 this.health = this.baseHealth * 5.0;
                 this.size = this.baseSize * 1.8;
                 this.goldReward = this.baseGoldReward * 3.0;
+                this.pointValue = this.basePointValue * 5.0; // Boss enemies worth many points
                 this.color = [150, 0, 150]; // Purple
                 break;
             default: // normal
@@ -1636,6 +1700,7 @@ class Enemy {
                 this.health = this.baseHealth;
                 this.size = this.baseSize;
                 this.goldReward = this.baseGoldReward;
+                this.pointValue = this.basePointValue; // Normal enemies worth base points
                 this.color = [200, 0, 0]; // Red
         }
     }
@@ -1956,6 +2021,23 @@ class Enemy {
         if (this.health <= 0) {
             this.dead = true;
 
+            // Award gold and points when enemy is killed
+            gold += this.goldReward;
+            points += this.pointValue;
+
+            // Create floating text to show points earned
+            let pointsParticle = new Particle(
+                this.x,
+                this.y - this.size / 2,
+                0,
+                -1,
+                [50, 200, 255],
+                16,
+                40
+            );
+            pointsParticle.text = "+" + this.pointValue;
+            particles.push(pointsParticle);
+
             // Create death explosion particles
             for (let i = 0; i < 20; i++) {
                 let angle = random(TWO_PI);
@@ -1987,6 +2069,7 @@ class Particle {
         this.initialSize = size;
         this.lifespan = lifespan || 30;
         this.initialLifespan = this.lifespan;
+        this.text = null; // Optional text to display
     }
 
     update() {
@@ -1998,23 +2081,36 @@ class Particle {
         this.vy += 0.05 * gameSpeed;
 
         // Air resistance
-        this.vx *= 0.95;
-        this.vy *= 0.95;
+        this.vx *= 0.98;
+        this.vy *= 0.98;
 
-        // Fade out
+        // Decrease lifespan
         this.lifespan -= gameSpeed;
-        this.size = this.initialSize * (this.lifespan / this.initialLifespan);
     }
 
     draw() {
+        // Calculate alpha based on remaining lifespan
+        let alpha = map(this.lifespan, 0, this.initialLifespan, 0, 255);
+
+        // Calculate size based on remaining lifespan
+        this.size = map(this.lifespan, 0, this.initialLifespan, 0, this.initialSize);
+
+        // Draw particle
         push();
         noStroke();
 
-        // Set color with alpha based on remaining lifespan
-        let alpha = map(this.lifespan, 0, this.initialLifespan, 0, 255);
-        fill(this.color[0], this.color[1], this.color[2], alpha);
+        if (this.text) {
+            // Draw text particle
+            textAlign(CENTER, CENTER);
+            textSize(this.size);
+            fill(this.color[0], this.color[1], this.color[2], alpha);
+            text(this.text, this.x, this.y);
+        } else {
+            // Draw regular particle
+            fill(this.color[0], this.color[1], this.color[2], alpha);
+            ellipse(this.x, this.y, this.size, this.size);
+        }
 
-        ellipse(this.x, this.y, this.size, this.size);
         pop();
     }
 
@@ -2763,6 +2859,12 @@ function checkUIHover() {
         hovering = true;
     }
 
+    // Check points icon
+    if (dist(mouseX, mouseY, 170, 20) < 15) {
+        tooltip.show("Points: Earned by defeating enemies", mouseX, mouseY);
+        hovering = true;
+    }
+
     // Check wave display
     let waveDisplay = new WaveDisplay();
     if (mouseX > waveDisplay.x && mouseX < waveDisplay.x + waveDisplay.width &&
@@ -3041,3 +3143,4 @@ class DifficultySelector {
         return null;
     }
 }
+
