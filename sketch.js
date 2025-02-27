@@ -24,6 +24,10 @@ let hardPath = [];
 let gameState = "difficulty_select"; // New initial state: "difficulty_select", "build", "wave", "victory", "gameover"
 let towerOptions = []; // UI tower choices
 
+// Debug mode (toggle with 'D' key)
+let debugMode = false;
+let gameSpeed = 3; // Game speed multiplier (default 3x for faster gameplay)
+
 // --- Tooltip System ---
 let tooltip = {
     text: "",
@@ -55,14 +59,23 @@ let tooltip = {
             strokeWeight(1);
             rectMode(CORNER);
 
-            // Calculate text width for proper sizing
+            // Calculate text dimensions for proper sizing
             textSize(12);
-            let textW = textWidth(this.text) + 20;
-            let textH = 20;
+            let lines = this.text.split('\n');
+            let maxWidth = 0;
+            for (let line of lines) {
+                let lineWidth = textWidth(line);
+                if (lineWidth > maxWidth) {
+                    maxWidth = lineWidth;
+                }
+            }
+
+            let textW = maxWidth + 20;
+            let textH = lines.length * 16 + 10; // 16 pixels per line plus padding
 
             // Position tooltip near the mouse but ensure it stays on screen
             let tooltipX = this.x;
-            let tooltipY = this.y + 20;
+            let tooltipY = this.y;
 
             // Keep tooltip on screen
             if (tooltipX + textW > width) tooltipX = width - textW;
@@ -73,8 +86,13 @@ let tooltip = {
             // Draw tooltip text
             fill(255);
             noStroke();
-            textAlign(CENTER, CENTER);
-            text(this.text, tooltipX + textW / 2, tooltipY + textH / 2);
+            textAlign(LEFT, TOP);
+
+            // Draw each line of text
+            for (let i = 0; i < lines.length; i++) {
+                text(lines[i], tooltipX + 10, tooltipY + 8 + i * 16);
+            }
+
             pop();
         }
     }
@@ -87,7 +105,6 @@ let showGrid = true; // Toggle grid visibility
 
 // --- Theme and Visual Settings ---
 let gameTheme = "fantasy"; // Options: "fantasy", "cyber", "zombie", "alien"
-let gameSpeed = 1; // Game speed multiplier (1x, 3x, 5x)
 let particleColors = {
     fantasy: [
         [255, 215, 0],    // Gold
@@ -147,7 +164,7 @@ function setup() {
     towerOptions.push(new TowerOption("Mage", 150, "mage"));
     // Cannon Tower: slow firing, high damage with splash effect.
     towerOptions.push(new TowerOption("Cannon", 200, "cannon"));
-    // Barracks: deploys soldiers that attack and block enemies.
+    // Barracks: deploys soldiers that attack, slow, and can block enemies.
     towerOptions.push(new TowerOption("Barracks", 175, "barracks"));
 }
 
@@ -582,6 +599,24 @@ function keyPressed() {
             loop();
         }
     }
+
+    // Toggle debug mode with 'D' key
+    if (key === 'd' || key === 'D') {
+        debugMode = !debugMode;
+        console.log("Debug mode:", debugMode);
+    }
+
+    // Speed controls
+    if (key === '1') {
+        gameSpeed = 1;
+        console.log("Game speed: 1x");
+    } else if (key === '2') {
+        gameSpeed = 2;
+        console.log("Game speed: 2x");
+    } else if (key === '3') {
+        gameSpeed = 3;
+        console.log("Game speed: 3x");
+    }
 }
 
 // --- Draw UI Elements ---
@@ -949,6 +984,11 @@ class TowerOption {
         // Check if mouse is hovering
         let hovering = this.contains(mouseX, mouseY);
 
+        // Show tooltip when hovering
+        if (hovering) {
+            tooltip.show(this.getTooltip(), mouseX + 20, mouseY);
+        }
+
         // Smooth hover transition
         if (hovering && this.hoverAmount < 1) {
             this.hoverAmount += 0.1;
@@ -1119,6 +1159,25 @@ class TowerOption {
 
         pop();
     }
+
+    getTooltip() {
+        let text = "";
+        switch (this.type) {
+            case "archer":
+                text = "Archer Tower\nCost: " + this.cost + " gold\nFast firing, moderate damage.\nGood all-around tower.";
+                break;
+            case "mage":
+                text = "Mage Tower\nCost: " + this.cost + " gold\nSlower firing, high damage.\nEffective against tough enemies.";
+                break;
+            case "cannon":
+                text = "Cannon Tower\nCost: " + this.cost + " gold\nSlow firing, area damage.\nGreat against groups.";
+                break;
+            case "barracks":
+                text = "Barracks Tower\nCost: " + this.cost + " gold\nDeploys soldiers that:\n- Attack enemies\n- Slow nearby enemies\n- Can temporarily block enemies\nEffective for controlling enemy movement.";
+                break;
+        }
+        return text;
+    }
 }
 
 // --- Helper: Check if a Tower Exists at a Grid Position ---
@@ -1204,11 +1263,11 @@ class WaveManager {
         // Calculate number of enemies for this wave based on difficulty
         let enemyMultiplier;
         if (gameDifficulty === "easy") {
-            enemyMultiplier = 1.5; // Fewer enemies
+            enemyMultiplier = 2.0; // Base difficulty multiplier
         } else if (gameDifficulty === "medium") {
-            enemyMultiplier = 2.0; // Default
+            enemyMultiplier = 2.5; // Medium difficulty multiplier
         } else if (gameDifficulty === "hard") {
-            enemyMultiplier = 2.5; // More enemies
+            enemyMultiplier = 3.0; // Hard difficulty multiplier
         }
 
         this.enemiesPerWave = 5 + Math.floor(this.currentWave * enemyMultiplier);
@@ -1217,28 +1276,17 @@ class WaveManager {
         // Unlock new enemy types based on wave number and difficulty
         if (gameDifficulty === "easy") {
             // Easy mode: Unlock enemy types more slowly
-            if (this.currentWave >= 4 && !this.enemyTypes.includes("fast")) {
-                this.enemyTypes.push("fast");
-            }
-            if (this.currentWave >= 7 && !this.enemyTypes.includes("tank")) {
-                this.enemyTypes.push("tank");
-            }
-            if (this.currentWave >= 10 && !this.enemyTypes.includes("boss")) {
-                this.enemyTypes.push("boss");
-            }
-        } else if (gameDifficulty === "medium") {
-            // Medium mode: Default unlock schedule
             if (this.currentWave >= 3 && !this.enemyTypes.includes("fast")) {
                 this.enemyTypes.push("fast");
             }
             if (this.currentWave >= 5 && !this.enemyTypes.includes("tank")) {
                 this.enemyTypes.push("tank");
             }
-            if (this.currentWave >= 8 && !this.enemyTypes.includes("boss")) {
+            if (this.currentWave >= 7 && !this.enemyTypes.includes("boss")) {
                 this.enemyTypes.push("boss");
             }
-        } else if (gameDifficulty === "hard") {
-            // Hard mode: Unlock enemy types more quickly
+        } else if (gameDifficulty === "medium") {
+            // Medium mode: Default unlock schedule
             if (this.currentWave >= 2 && !this.enemyTypes.includes("fast")) {
                 this.enemyTypes.push("fast");
             }
@@ -1248,11 +1296,29 @@ class WaveManager {
             if (this.currentWave >= 6 && !this.enemyTypes.includes("boss")) {
                 this.enemyTypes.push("boss");
             }
+        } else if (gameDifficulty === "hard") {
+            // Hard mode: Unlock enemy types more quickly
+            if (this.currentWave >= 1 && !this.enemyTypes.includes("fast")) {
+                this.enemyTypes.push("fast");
+            }
+            if (this.currentWave >= 2 && !this.enemyTypes.includes("tank")) {
+                this.enemyTypes.push("tank");
+            }
+            if (this.currentWave >= 3 && !this.enemyTypes.includes("boss")) {
+                this.enemyTypes.push("boss");
+            }
         }
 
         // Adjust spawn rate for later waves (faster spawning)
-        let spawnRateReduction = gameDifficulty === "hard" ? 7 : (gameDifficulty === "medium" ? 5 : 3);
-        this.enemySpawnRate = Math.max(30, this.enemySpawnRate - spawnRateReduction);
+        let spawnRateReduction;
+        if (gameDifficulty === "easy") {
+            spawnRateReduction = 4 * 2.0; // Base difficulty
+        } else if (gameDifficulty === "medium") {
+            spawnRateReduction = 4 * 2.5; // Medium difficulty
+        } else if (gameDifficulty === "hard") {
+            spawnRateReduction = 4 * 3.0; // Hard difficulty
+        }
+        this.enemySpawnRate = Math.max(20, this.enemySpawnRate - spawnRateReduction);
     }
 
     update() {
@@ -1288,11 +1354,11 @@ class WaveManager {
                     // Random selection weighted by wave number
                     let rand = random();
 
-                    if (this.enemyTypes.includes("boss") && rand < 0.1) {
+                    if (this.enemyTypes.includes("boss") && rand < 0.15) {
                         enemyType = "boss";
-                    } else if (this.enemyTypes.includes("tank") && rand < 0.3) {
+                    } else if (this.enemyTypes.includes("tank") && rand < 0.4) {
                         enemyType = "tank";
-                    } else if (this.enemyTypes.includes("fast") && rand < 0.5) {
+                    } else if (this.enemyTypes.includes("fast") && rand < 0.6) {
                         enemyType = "fast";
                     }
                 }
@@ -1503,6 +1569,12 @@ class Enemy {
         this.reachedEnd = false;
         this.dead = false;
         this.hitEffectTimer = 0;
+        this.id = Date.now() + Math.random(); // Unique ID for tracking
+
+        // Slow and block effect properties
+        this.slowEffects = []; // Array of slow effect multipliers
+        this.blocked = false; // Whether movement is completely blocked
+        this.blockTimer = 0; // Timer for block duration
 
         // Base stats that will be modified by type and wave number
         this.baseHealth = 100;
@@ -1569,9 +1641,24 @@ class Enemy {
     }
 
     applyWaveScaling() {
-        // Scale health and gold reward based on wave number
-        this.health *= 1 + (this.wave - 1) * 0.2;
+        // Get the appropriate difficulty multiplier based on game difficulty
+        let difficultyMultiplier;
+        if (gameDifficulty === "easy") {
+            difficultyMultiplier = 2.0;
+        } else if (gameDifficulty === "medium") {
+            difficultyMultiplier = 2.5;
+        } else if (gameDifficulty === "hard") {
+            difficultyMultiplier = 3.0;
+        }
+
+        // Scale health based on wave number and difficulty
+        this.health *= 1 + (this.wave - 1) * (0.1 * difficultyMultiplier);
         this.maxHealth = this.health; // Set maxHealth equal to health
+
+        // Scale speed based on wave number and difficulty
+        this.speed *= 1 + (this.wave - 1) * (0.05 * difficultyMultiplier);
+
+        // Scale gold reward based on wave number
         this.goldReward = Math.floor(this.goldReward * (1 + (this.wave - 1) * 0.1));
 
         // Cap gold reward to prevent excessive gold in later waves
@@ -1584,6 +1671,16 @@ class Enemy {
     update() {
         // Skip update if dead
         if (this.dead) return;
+
+        // Update block timer
+        if (this.blocked) {
+            this.blockTimer -= gameSpeed;
+            if (this.blockTimer <= 0) {
+                this.blocked = false;
+            }
+            // If blocked, don't move
+            return;
+        }
 
         // Move toward current waypoint
         let target = path[this.currentWaypoint];
@@ -1603,9 +1700,21 @@ class Enemy {
                 return;
             }
         } else {
-            // Move toward waypoint
-            this.x += (dx / distance) * this.speed * gameSpeed;
-            this.y += (dy / distance) * this.speed * gameSpeed;
+            // Calculate effective speed (apply slow effects)
+            let effectiveSpeed = this.speed;
+
+            // Apply all slow effects (multiplicative)
+            if (this.slowEffects && this.slowEffects.length > 0) {
+                for (let slowEffect of this.slowEffects) {
+                    effectiveSpeed *= (1 - slowEffect);
+                }
+                // Ensure minimum speed
+                effectiveSpeed = Math.max(effectiveSpeed, this.speed * 0.2);
+            }
+
+            // Move toward waypoint with effective speed
+            this.x += (dx / distance) * effectiveSpeed * gameSpeed;
+            this.y += (dy / distance) * effectiveSpeed * gameSpeed;
         }
 
         // Update hit effect timer
@@ -1660,6 +1769,26 @@ class Enemy {
         else fill(255, 0, 0);
 
         rect(-barWidth / 2, -this.size - 10, barWidth * healthPercent, barHeight, 2);
+
+        // Draw block/slow indicators
+        if (this.blocked) {
+            // Draw block indicator (red X)
+            stroke(255, 0, 0);
+            strokeWeight(2);
+            let size = this.size * 0.8;
+            line(-size / 2, -size / 2, size / 2, size / 2);
+            line(size / 2, -size / 2, -size / 2, size / 2);
+        } else if (this.slowEffects && this.slowEffects.length > 0) {
+            // Draw slow indicator (blue waves)
+            stroke(0, 100, 255, 150);
+            strokeWeight(1);
+            noFill();
+            let waveSize = this.size * 1.2;
+            for (let i = 0; i < 3; i++) {
+                let offset = (frameCount * 2 + i * 10) % 30;
+                arc(0, 0, waveSize + offset, waveSize + offset, PI * 0.8, PI * 2.2);
+            }
+        }
 
         pop();
     }
@@ -1900,13 +2029,18 @@ class Soldier {
         this.x = x;
         this.y = y;
         this.targetEnemy = targetEnemy;
-        this.speed = 1;
-        this.damage = 10;
+        this.speed = 2.5; // Increased from 1.0 to 2.5
+        this.damage = 25; // Increased from 10 to 25
         this.lifespan = 600; // 10 seconds at 60fps
         this.finished = false;
-        this.attackRange = 20;
+        this.attackRange = 30; // Increased from 20 to 30
         this.attackCooldown = 0;
-        this.attackRate = 60; // Attack once per second
+        this.attackRate = 45; // Attack faster (was 60)
+        this.slowEffect = 0.5; // Enemies move at 50% speed when engaged
+        this.slowRadius = 50; // Radius where enemies are slowed
+        this.blockChance = 0.2; // 20% chance to completely block enemy movement for a short time
+        this.blockDuration = 30; // Block duration in frames (0.5 seconds)
+        this.engagedEnemies = new Set(); // Track which enemies this soldier is affecting
     }
 
     update() {
@@ -1914,6 +2048,8 @@ class Soldier {
         this.lifespan -= gameSpeed;
         if (this.lifespan <= 0) {
             this.finished = true;
+            // Remove slow effect from all engaged enemies when soldier disappears
+            this.removeEffectsFromEngagedEnemies();
             return;
         }
 
@@ -1941,6 +2077,9 @@ class Soldier {
             this.targetEnemy = closestEnemy;
         }
 
+        // Apply slow effect to nearby enemies
+        this.applyEffectsToNearbyEnemies();
+
         // If we have a target, move toward it
         if (this.targetEnemy) {
             let dx = this.targetEnemy.x - this.x;
@@ -1953,6 +2092,12 @@ class Soldier {
                 if (this.attackCooldown <= 0) {
                     this.targetEnemy.takeDamage(this.damage);
                     this.attackCooldown = this.attackRate;
+
+                    // Chance to block enemy movement
+                    if (random() < this.blockChance && !this.targetEnemy.blocked) {
+                        this.targetEnemy.blocked = true;
+                        this.targetEnemy.blockTimer = this.blockDuration;
+                    }
                 }
             } else {
                 // Move toward target
@@ -1964,6 +2109,68 @@ class Soldier {
             this.x += random(-1, 1) * this.speed * 0.2 * gameSpeed;
             this.y += random(-1, 1) * this.speed * 0.2 * gameSpeed;
         }
+    }
+
+    // Apply slow and block effects to nearby enemies
+    applyEffectsToNearbyEnemies() {
+        // Clear the set of engaged enemies
+        let stillEngaged = new Set();
+
+        for (let enemy of enemies) {
+            if (!enemy.dead && !enemy.reachedEnd) {
+                let distance = dist(this.x, this.y, enemy.x, enemy.y);
+
+                if (distance <= this.slowRadius) {
+                    // Apply slow effect
+                    if (!enemy.slowEffects) {
+                        enemy.slowEffects = [];
+                    }
+
+                    // Add this soldier's slow effect if not already applied
+                    if (!this.engagedEnemies.has(enemy.id)) {
+                        enemy.slowEffects.push(this.slowEffect);
+                        this.engagedEnemies.add(enemy.id);
+                    }
+
+                    // Keep track that this enemy is still engaged
+                    stillEngaged.add(enemy.id);
+                }
+            }
+        }
+
+        // Remove effects from enemies that are no longer engaged
+        for (let enemyId of this.engagedEnemies) {
+            if (!stillEngaged.has(enemyId)) {
+                // Find the enemy and remove our slow effect
+                for (let enemy of enemies) {
+                    if (enemy.id === enemyId && enemy.slowEffects) {
+                        // Remove one instance of our slow effect
+                        let index = enemy.slowEffects.indexOf(this.slowEffect);
+                        if (index !== -1) {
+                            enemy.slowEffects.splice(index, 1);
+                        }
+                    }
+                }
+                // Remove from our tracking set
+                this.engagedEnemies.delete(enemyId);
+            }
+        }
+    }
+
+    // Remove effects from all engaged enemies (when soldier dies)
+    removeEffectsFromEngagedEnemies() {
+        for (let enemyId of this.engagedEnemies) {
+            for (let enemy of enemies) {
+                if (enemy.id === enemyId && enemy.slowEffects) {
+                    // Remove one instance of our slow effect
+                    let index = enemy.slowEffects.indexOf(this.slowEffect);
+                    if (index !== -1) {
+                        enemy.slowEffects.splice(index, 1);
+                    }
+                }
+            }
+        }
+        this.engagedEnemies.clear();
     }
 
     draw() {
@@ -2001,6 +2208,14 @@ class Soldier {
             stroke(255, 255, 255, map(this.attackCooldown, this.attackRate, this.attackRate - 10, 255, 0));
             strokeWeight(2);
             arc(6, 0, 20, 20, -PI / 4, PI / 4);
+        }
+
+        // Draw slow effect radius (only when debugging)
+        if (debugMode) {
+            noFill();
+            stroke(0, 0, 255, 50);
+            strokeWeight(1);
+            ellipse(0, 0, this.slowRadius * 2, this.slowRadius * 2);
         }
 
         pop();
@@ -2052,8 +2267,8 @@ class Tower {
                 break;
             case "barracks":
                 this.damage = 0; // Barracks don't deal direct damage
-                this.range = 60 + (this.level - 1) * 10;
-                this.fireRate = 180 - (this.level - 1) * 15;
+                this.range = 120 + (this.level - 1) * 15; // Increased range to match mage tower
+                this.fireRate = 150 - (this.level - 1) * 15; // Slightly faster deployment
                 this.soldierCount = 1 + Math.floor((this.level - 1) / 2); // Extra soldier every 2 levels
                 this.color = [150, 150, 150]; // Light gray
                 break;
