@@ -198,14 +198,23 @@ function draw() {
         noLoop();
     }
 
-    // If all waves are completed, show victory screen
-    if (waveManager.currentWave > waveManager.totalWaves && enemies.length === 0) {
+    // Check for victory
+    if (gameState === "victory") {
         fill(0, 0, 0, 150);
         rect(0, 0, width, height);
-        fill(255, 215, 0);
+        fill(255, 215, 0); // Gold color
         textAlign(CENTER, CENTER);
         textSize(40);
         text("VICTORY!", width / 2, height / 2);
+
+        textSize(24);
+        text("You completed all " + waveManager.totalWaves + " waves!", width / 2, height / 2 + 50);
+
+        // Display final stats
+        textSize(18);
+        text("Final Gold: " + gold, width / 2, height / 2 + 90);
+        text("Towers Built: " + towers.length, width / 2, height / 2 + 120);
+
         noLoop();
     }
 }
@@ -471,6 +480,11 @@ function distToSegment(p, a, b) {
 
 // --- Start the Next Wave ---
 function startWave() {
+    // Don't start a new wave if the game is over or won
+    if (gameState === "gameover" || gameState === "victory") {
+        return;
+    }
+
     gameState = "wave";
     waveManager.startNextWave();
 }
@@ -1053,6 +1067,7 @@ class WaveManager {
         this.currentWave = 0;
         this.waveProgress = 0;
         this.waveCompleted = true; // Start with wave completed so player can start first wave
+        this.gameWon = false; // New flag to track if the game has been won
 
         // Enemy spawning properties
         this.enemySpawnTimer = 0;
@@ -1065,12 +1080,22 @@ class WaveManager {
     }
 
     startNextWave() {
+        // Check if all waves are completed
+        if (this.currentWave >= this.totalWaves) {
+            // If the final wave is completed and no enemies remain, set gameWon flag
+            if (enemies.length === 0) {
+                this.gameWon = true;
+                gameState = "victory";
+            }
+            return; // Don't start a new wave
+        }
+
         this.currentWave++;
         this.waveProgress = 0;
         this.waveCompleted = false;
 
-        // Calculate number of enemies for this wave
-        this.enemiesPerWave = 5 + Math.floor(this.currentWave * 1.5);
+        // Calculate number of enemies for this wave - increased from 1.5 to 2.5 multiplier
+        this.enemiesPerWave = 5 + Math.floor(this.currentWave * 2.5);
         this.enemiesSpawned = 0;
 
         // Unlock new enemy types based on wave number
@@ -1095,6 +1120,12 @@ class WaveManager {
                 // Award bonus gold for completing a wave
                 gold += 50 + this.currentWave * 10;
                 this.waveCompleted = true;
+
+                // Check if this was the final wave
+                if (this.currentWave >= this.totalWaves) {
+                    this.gameWon = true;
+                    gameState = "victory";
+                }
             }
         }
 
@@ -1314,8 +1345,8 @@ class Enemy {
         this.type = type || "normal";
         this.wave = wave || 1;
 
-        // Calculate difficulty multiplier that increases by 10% each wave
-        const difficultyMultiplier = Math.pow(1.1, wave - 1);
+        // Calculate difficulty multiplier that increases by 5% each wave
+        const difficultyMultiplier = Math.pow(1.05, wave - 1);
 
         // Set properties based on enemy type
         switch (this.type) {
