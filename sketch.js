@@ -12,7 +12,16 @@ let selectedTower = null; // For upgrading an existing tower
 let gold = 500;
 let lives = 10;
 
-let gameState = "build"; // "build" (player placing towers) or "wave" (enemies spawning)
+// Add difficulty selection variables
+let gameDifficulty = null; // "easy", "medium", or "hard"
+let difficultySelector;
+
+// Define paths for different difficulty levels
+let easyPath = [];
+let mediumPath = [];
+let hardPath = [];
+
+let gameState = "difficulty_select"; // New initial state: "difficulty_select", "build", "wave", "victory", "gameover"
 let towerOptions = []; // UI tower choices
 
 // --- Tooltip System ---
@@ -78,7 +87,7 @@ let showGrid = true; // Toggle grid visibility
 
 // --- Theme and Visual Settings ---
 let gameTheme = "fantasy"; // Options: "fantasy", "cyber", "zombie", "alien"
-let gameSpeed = 1; // Game speed multiplier (1x, 2x, 3x)
+let gameSpeed = 1; // Game speed multiplier (1x, 3x, 5x)
 let particleColors = {
     fantasy: [
         [255, 215, 0],    // Gold
@@ -90,11 +99,29 @@ let particleColors = {
 
 // --- p5.js Setup ---
 function setup() {
-    createCanvas(800, 600);
+    // Create canvas and ensure it's properly positioned
+    let canvas = createCanvas(800, 600);
+    canvas.parent('sketch-holder'); // If there's a div with this ID, the canvas will be placed inside it
 
-    // Define fixed path using waypoints aligned to grid
-    // Each point is at the center of a grid cell
-    path = [
+    console.log("Game initialized. Canvas size:", width, "x", height);
+    console.log("Initial game state:", gameState);
+
+    // Define paths for different difficulty levels
+
+    // Easy path - longer with more turns (easier to defend)
+    easyPath = [
+        createVector(gridCellSize * 1 + gridCellSize / 2, height - gridCellSize / 2),  // Start at bottom left
+        createVector(gridCellSize * 1 + gridCellSize / 2, gridCellSize * 10 + gridCellSize / 2),  // Go up
+        createVector(gridCellSize * 5 + gridCellSize / 2, gridCellSize * 10 + gridCellSize / 2),  // Go right
+        createVector(gridCellSize * 5 + gridCellSize / 2, gridCellSize * 6 + gridCellSize / 2),   // Go up
+        createVector(gridCellSize * 10 + gridCellSize / 2, gridCellSize * 6 + gridCellSize / 2),  // Go right
+        createVector(gridCellSize * 10 + gridCellSize / 2, gridCellSize * 2 + gridCellSize / 2),  // Go up
+        createVector(gridCellSize * 15 + gridCellSize / 2, gridCellSize * 2 + gridCellSize / 2),  // Go right
+        createVector(width - gridCellSize / 2, gridCellSize * 2 + gridCellSize / 2)  // Go right to exit
+    ];
+
+    // Medium path - moderate length (default path)
+    mediumPath = [
         createVector(gridCellSize * 1 + gridCellSize / 2, height - gridCellSize / 2),  // Start at bottom left
         createVector(gridCellSize * 1 + gridCellSize / 2, gridCellSize * 8 + gridCellSize / 2),  // Go up
         createVector(gridCellSize * 10 + gridCellSize / 2, gridCellSize * 8 + gridCellSize / 2),  // Go right
@@ -102,8 +129,16 @@ function setup() {
         createVector(width - gridCellSize / 2, gridCellSize * 2 + gridCellSize / 2)  // Go right to exit
     ];
 
-    // Initialize wave manager (10 waves total)
-    waveManager = new WaveManager();
+    // Hard path - shorter with fewer turns (harder to defend)
+    hardPath = [
+        createVector(gridCellSize * 1 + gridCellSize / 2, height - gridCellSize / 2),  // Start at bottom left
+        createVector(gridCellSize * 1 + gridCellSize / 2, gridCellSize * 5 + gridCellSize / 2),  // Go up
+        createVector(gridCellSize * 15 + gridCellSize / 2, gridCellSize * 5 + gridCellSize / 2),  // Go right
+        createVector(width - gridCellSize / 2, gridCellSize * 5 + gridCellSize / 2)  // Go right to exit
+    ];
+
+    // Initialize difficulty selector
+    difficultySelector = new DifficultySelector();
 
     // Create UI tower options (all assets drawn in code)
     // Archer Tower: fast firing, moderate damage.
@@ -121,71 +156,85 @@ function draw() {
     // Draw background
     background(40, 100, 40); // Darker green for better contrast with path
 
-    // Draw the grid if enabled
-    if (showGrid) {
-        drawGrid();
+    // Log current game state for debugging
+    if (frameCount % 60 === 0) { // Log once per second
+        console.log("Current game state:", gameState);
     }
 
-    // Draw the fixed enemy path
-    drawPath();
+    if (gameState === "difficulty_select") {
+        // Draw difficulty selection screen
+        difficultySelector.draw();
 
-    // Update and draw towers
-    for (let t of towers) {
-        t.update();
-        t.draw();
-    }
+        // Update and draw tooltip
+        tooltip.update();
+        tooltip.draw();
+    } else {
+        // Draw the grid if enabled
+        if (showGrid) {
+            drawGrid();
+        }
 
-    // Update and draw enemies (iterate backwards for safe removal)
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        enemies[i].update();
-        enemies[i].draw();
-        // If enemy reaches the end, remove it and subtract a life
-        if (enemies[i].reachedEnd) {
-            enemies.splice(i, 1);
-            lives--;
-            if (lives <= 0) {
-                gameState = "gameover";
+        // Draw the fixed enemy path
+        drawPath();
+
+        // Update and draw towers
+        for (let t of towers) {
+            t.update();
+            t.draw();
+        }
+
+        // Update and draw enemies (iterate backwards for safe removal)
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            enemies[i].update();
+            enemies[i].draw();
+            // If enemy reaches the end, remove it and subtract a life
+            if (enemies[i].reachedEnd) {
+                enemies.splice(i, 1);
+                lives--;
+                if (lives <= 0) {
+                    gameState = "gameover";
+                }
+            }
+            // Remove dead enemies and reward gold
+            else if (enemies[i].health <= 0) {
+                gold += enemies[i].goldReward;
+                enemies.splice(i, 1);
             }
         }
-        // Remove dead enemies and reward gold
-        else if (enemies[i].health <= 0) {
-            gold += enemies[i].goldReward;
-            enemies.splice(i, 1);
+
+        // Update and draw projectiles (iterate backwards for safe removal)
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+            projectiles[i].update();
+            projectiles[i].draw();
+            if (projectiles[i].finished) {
+                projectiles.splice(i, 1);
+            }
         }
-    }
 
-    // Update and draw projectiles (iterate backwards for safe removal)
-    for (let i = projectiles.length - 1; i >= 0; i--) {
-        projectiles[i].update();
-        projectiles[i].draw();
-        if (projectiles[i].finished) {
-            projectiles.splice(i, 1);
+        // Update and draw particles (iterate backwards for safe removal)
+        for (let i = particles.length - 1; i >= 0; i--) {
+            particles[i].update();
+            particles[i].draw();
+            if (particles[i].finished()) {
+                particles.splice(i, 1);
+            }
         }
-    }
 
-    // Update and draw particles (iterate backwards for safe removal)
-    for (let i = particles.length - 1; i >= 0; i--) {
-        particles[i].update();
-        particles[i].draw();
-        if (particles[i].finished()) {
-            particles.splice(i, 1);
+        // If in wave mode and waveManager exists, update it to spawn enemies
+        if (gameState === "wave" && waveManager) {
+            waveManager.update();
         }
+
+        // Draw UI elements
+        drawUI();
+
+        // Update and draw tooltip
+        tooltip.update();
+        tooltip.draw();
+
+        // Check for UI hover events
+        checkUIHover();
     }
-
-    // If in wave mode, update the wave manager to spawn enemies
-    if (gameState === "wave") {
-        waveManager.update();
-    }
-
-    // Draw UI elements
-    drawUI();
-
-    // Update and draw tooltip
-    tooltip.update();
-    tooltip.draw();
-
-    // Check for UI hover events
-    checkUIHover();
 
     // Check for game over
     if (gameState === "gameover") {
@@ -195,11 +244,18 @@ function draw() {
         textAlign(CENTER, CENTER);
         textSize(40);
         text("GAME OVER", width / 2, height / 2);
-        noLoop();
+
+        // Show difficulty level
+        textSize(24);
+        text("Difficulty: " + gameDifficulty.charAt(0).toUpperCase() + gameDifficulty.slice(1), width / 2, height / 2 + 50);
+
+        // Show restart instructions
+        textSize(18);
+        text("Press 'R' to restart", width / 2, height / 2 + 100);
     }
 
     // Check for victory
-    if (gameState === "victory") {
+    if (gameState === "victory" && waveManager) {
         fill(0, 0, 0, 150);
         rect(0, 0, width, height);
         fill(255, 215, 0); // Gold color
@@ -209,72 +265,69 @@ function draw() {
 
         textSize(24);
         text("You completed all " + waveManager.totalWaves + " waves!", width / 2, height / 2 + 50);
+        text("Difficulty: " + gameDifficulty.charAt(0).toUpperCase() + gameDifficulty.slice(1), width / 2, height / 2 + 80);
 
         // Display final stats
         textSize(18);
-        text("Final Gold: " + gold, width / 2, height / 2 + 90);
-        text("Towers Built: " + towers.length, width / 2, height / 2 + 120);
+        text("Final Gold: " + gold, width / 2, height / 2 + 120);
+        text("Towers Built: " + towers.length, width / 2, height / 2 + 150);
 
-        noLoop();
+        // Show restart instructions
+        text("Press 'R' to restart", width / 2, height / 2 + 190);
     }
-}
-
-// --- Draw the Enemy Path ---
-function drawPath() {
-    push();
-
-    // Use a grid-based path approach
-    fill(180, 170, 150); // Light stone color
-    stroke(100, 90, 70);
-    strokeWeight(1);
-    rectMode(CORNER); // Ensure we're using CORNER mode for grid alignment
-
-    // For each segment of the path, draw grid cells
-    for (let i = 0; i < path.length - 1; i++) {
-        let start = path[i];
-        let end = path[i + 1];
-
-        // Determine if this is a horizontal or vertical segment
-        let isHorizontal = abs(end.y - start.y) < abs(end.x - start.x);
-
-        if (isHorizontal) {
-            // Horizontal segment
-            let minX = min(start.x, end.x);
-            let maxX = max(start.x, end.x);
-            let y = start.y;
-
-            // Calculate grid-aligned start and end points
-            let startGridX = Math.floor(minX / gridCellSize) * gridCellSize;
-            let endGridX = Math.ceil(maxX / gridCellSize) * gridCellSize;
-            let gridY = Math.floor(y / gridCellSize) * gridCellSize;
-
-            // Draw grid cells along the path
-            for (let x = startGridX; x < endGridX; x += gridCellSize) {
-                rect(x, gridY, gridCellSize, gridCellSize);
-            }
-        } else {
-            // Vertical segment
-            let minY = min(start.y, end.y);
-            let maxY = max(start.y, end.y);
-            let x = start.x;
-
-            // Calculate grid-aligned start and end points
-            let startGridY = Math.floor(minY / gridCellSize) * gridCellSize;
-            let endGridY = Math.ceil(maxY / gridCellSize) * gridCellSize;
-            let gridX = Math.floor(x / gridCellSize) * gridCellSize;
-
-            // Draw grid cells along the path
-            for (let y = startGridY; y < endGridY; y += gridCellSize) {
-                rect(gridX, y, gridCellSize, gridCellSize);
-            }
-        }
-    }
-
-    pop();
 }
 
 // --- Mouse Interaction ---
 function mousePressed() {
+    console.log("Mouse pressed at:", mouseX, mouseY);
+
+    // Handle difficulty selection
+    if (gameState === "difficulty_select") {
+        console.log("In difficulty selection state");
+        let selectedDifficulty = difficultySelector.handleClick(mouseX, mouseY);
+        console.log("Selected difficulty:", selectedDifficulty);
+
+        if (selectedDifficulty) {
+            console.log("Setting game difficulty to:", selectedDifficulty);
+            gameDifficulty = selectedDifficulty;
+
+            // Set the path based on difficulty
+            if (gameDifficulty === "easy") {
+                path = easyPath;
+                console.log("Easy path selected with", easyPath.length, "waypoints");
+            } else if (gameDifficulty === "medium") {
+                path = mediumPath;
+                console.log("Medium path selected with", mediumPath.length, "waypoints");
+            } else if (gameDifficulty === "hard") {
+                path = hardPath;
+                console.log("Hard path selected with", hardPath.length, "waypoints");
+            }
+
+            // Initialize wave manager (10 waves total)
+            waveManager = new WaveManager();
+            console.log("Game state changing to build mode");
+
+            // Change game state to build mode
+            gameState = "build";
+            console.log("GAME STATE CHANGED TO BUILD MODE");
+
+            // Add a visual transition effect
+            particles = [];
+            for (let i = 0; i < 50; i++) {
+                let x = random(width);
+                let y = random(height);
+                let vx = random(-2, 2);
+                let vy = random(-2, 2);
+                let color = [random(100, 255), random(100, 255), random(100, 255)];
+                let size = random(5, 15);
+                let lifespan = random(30, 60);
+                particles.push(new Particle(x, y, vx, vy, color, size, lifespan));
+            }
+
+            return;
+        }
+    }
+
     // Check if clicking on any tower option UI box
     let clickedOnUI = false;
 
@@ -326,7 +379,9 @@ function mousePressed() {
     }
 
     // Check if clicking on the "Next Wave" button (now on the right side)
-    if (mouseX > width - 120 && mouseX < width - 20 && mouseY > height - 50 && mouseY < height - 10 && waveManager.waveCompleted) {
+    if (waveManager && waveManager.waveCompleted &&
+        mouseX > width - 120 && mouseX < width - 20 &&
+        mouseY > height - 50 && mouseY < height - 10) {
         startWave();
         clickedOnUI = true;
         return;
@@ -345,18 +400,18 @@ function mousePressed() {
             return;
         }
 
-        // 2x speed button
-        speedX += buttonWidth + buttonSpacing;
-        if (mouseX > speedX && mouseX < speedX + buttonWidth) {
-            gameSpeed = 2;
-            clickedOnUI = true;
-            return;
-        }
-
         // 3x speed button
         speedX += buttonWidth + buttonSpacing;
         if (mouseX > speedX && mouseX < speedX + buttonWidth) {
             gameSpeed = 3;
+            clickedOnUI = true;
+            return;
+        }
+
+        // 5x speed button
+        speedX += buttonWidth + buttonSpacing;
+        if (mouseX > speedX && mouseX < speedX + buttonWidth) {
+            gameSpeed = 5;
             clickedOnUI = true;
             return;
         }
@@ -485,6 +540,12 @@ function startWave() {
         return;
     }
 
+    // Make sure waveManager exists
+    if (!waveManager) {
+        console.error("Cannot start wave: waveManager is not initialized");
+        return;
+    }
+
     gameState = "wave";
     waveManager.startNextWave();
 }
@@ -496,6 +557,30 @@ function keyPressed() {
     // Toggle grid visibility with 'G' key
     if (key === 'g' || key === 'G') {
         showGrid = !showGrid;
+    }
+
+    // Restart game with 'R' key
+    if (key === 'r' || key === 'R') {
+        // Reset game state to difficulty selection
+        gameState = "difficulty_select";
+
+        // Reset game variables
+        towers = [];
+        enemies = [];
+        projectiles = [];
+        particles = [];
+        gold = 500;
+        lives = 10;
+        selectedTowerType = null;
+        selectedTower = null;
+
+        // Create a new difficulty selector
+        difficultySelector = new DifficultySelector();
+
+        // If the game was stopped (noLoop was called), restart it
+        if (!isLooping()) {
+            loop();
+        }
     }
 }
 
@@ -530,9 +615,11 @@ function drawUI() {
     textAlign(LEFT, CENTER);
     text(lives, 120, 20);
 
-    // Draw wave display and game speed controls
-    let waveDisplay = new WaveDisplay();
-    waveDisplay.draw();
+    // Draw wave display and game speed controls if waveManager exists
+    if (waveManager) {
+        let waveDisplay = new WaveDisplay();
+        waveDisplay.draw();
+    }
 
     // Draw tower options at the bottom
     let startX = 150; // Move tower menu to the right to avoid covering the path
@@ -609,8 +696,8 @@ function drawUI() {
         }
     }
 
-    // Draw "Next Wave" button when wave is completed
-    if (waveManager.waveCompleted) {
+    // Draw "Next Wave" button when wave is completed and waveManager exists
+    if (waveManager && waveManager.waveCompleted) {
         // Move the Next Wave button to the right side of the screen to avoid overlap with tower menu
         let buttonX = width - 120;
         let buttonY = height - 50;
@@ -1064,20 +1151,39 @@ function drawGrid() {
 // --- WaveManager Class ---
 class WaveManager {
     constructor() {
-        this.totalWaves = 10;
         this.currentWave = 0;
-        this.waveProgress = 0;
-        this.waveCompleted = true; // Start with wave completed so player can start first wave
-        this.gameWon = false; // New flag to track if the game has been won
-
-        // Enemy spawning properties
-        this.enemySpawnTimer = 0;
-        this.enemySpawnRate = 90; // Frames between enemy spawns
+        this.totalWaves = 10;
         this.enemiesPerWave = 0;
         this.enemiesSpawned = 0;
+        this.enemySpawnTimer = 0;
+        this.enemySpawnRate = 60; // Frames between enemy spawns
+        this.waveCompleted = true; // Set to true initially so player can start first wave
+        this.waveProgress = 0; // 0 to 1 for UI display
+        this.gameWon = false;
 
-        // Enemy types available based on wave number
+        // Available enemy types (unlocked progressively)
         this.enemyTypes = ["normal"];
+
+        // Adjust difficulty based on selected level
+        this.adjustForDifficulty();
+    }
+
+    adjustForDifficulty() {
+        if (gameDifficulty === "easy") {
+            // Easy mode: More starting gold, slower enemies, fewer enemies per wave
+            gold = 600; // More starting gold
+            this.enemySpawnRate = 80; // Slower enemy spawning
+            // Enemy count multiplier will be lower in startNextWave
+        } else if (gameDifficulty === "medium") {
+            // Medium mode: Default settings
+            gold = 500;
+            this.enemySpawnRate = 60;
+        } else if (gameDifficulty === "hard") {
+            // Hard mode: Less starting gold, faster enemies, more enemies per wave
+            gold = 400; // Less starting gold
+            this.enemySpawnRate = 40; // Faster enemy spawning
+            // Enemy count multiplier will be higher in startNextWave
+        }
     }
 
     startNextWave() {
@@ -1095,23 +1201,58 @@ class WaveManager {
         this.waveProgress = 0;
         this.waveCompleted = false;
 
-        // Calculate number of enemies for this wave - increased from 1.5 to 2.0 multiplier
-        this.enemiesPerWave = 5 + Math.floor(this.currentWave * 2.0);
+        // Calculate number of enemies for this wave based on difficulty
+        let enemyMultiplier;
+        if (gameDifficulty === "easy") {
+            enemyMultiplier = 1.5; // Fewer enemies
+        } else if (gameDifficulty === "medium") {
+            enemyMultiplier = 2.0; // Default
+        } else if (gameDifficulty === "hard") {
+            enemyMultiplier = 2.5; // More enemies
+        }
+
+        this.enemiesPerWave = 5 + Math.floor(this.currentWave * enemyMultiplier);
         this.enemiesSpawned = 0;
 
-        // Unlock new enemy types based on wave number
-        if (this.currentWave >= 3 && !this.enemyTypes.includes("fast")) {
-            this.enemyTypes.push("fast");
-        }
-        if (this.currentWave >= 5 && !this.enemyTypes.includes("tank")) {
-            this.enemyTypes.push("tank");
-        }
-        if (this.currentWave >= 8 && !this.enemyTypes.includes("boss")) {
-            this.enemyTypes.push("boss");
+        // Unlock new enemy types based on wave number and difficulty
+        if (gameDifficulty === "easy") {
+            // Easy mode: Unlock enemy types more slowly
+            if (this.currentWave >= 4 && !this.enemyTypes.includes("fast")) {
+                this.enemyTypes.push("fast");
+            }
+            if (this.currentWave >= 7 && !this.enemyTypes.includes("tank")) {
+                this.enemyTypes.push("tank");
+            }
+            if (this.currentWave >= 10 && !this.enemyTypes.includes("boss")) {
+                this.enemyTypes.push("boss");
+            }
+        } else if (gameDifficulty === "medium") {
+            // Medium mode: Default unlock schedule
+            if (this.currentWave >= 3 && !this.enemyTypes.includes("fast")) {
+                this.enemyTypes.push("fast");
+            }
+            if (this.currentWave >= 5 && !this.enemyTypes.includes("tank")) {
+                this.enemyTypes.push("tank");
+            }
+            if (this.currentWave >= 8 && !this.enemyTypes.includes("boss")) {
+                this.enemyTypes.push("boss");
+            }
+        } else if (gameDifficulty === "hard") {
+            // Hard mode: Unlock enemy types more quickly
+            if (this.currentWave >= 2 && !this.enemyTypes.includes("fast")) {
+                this.enemyTypes.push("fast");
+            }
+            if (this.currentWave >= 4 && !this.enemyTypes.includes("tank")) {
+                this.enemyTypes.push("tank");
+            }
+            if (this.currentWave >= 6 && !this.enemyTypes.includes("boss")) {
+                this.enemyTypes.push("boss");
+            }
         }
 
         // Adjust spawn rate for later waves (faster spawning)
-        this.enemySpawnRate = Math.max(30, 90 - this.currentWave * 5);
+        let spawnRateReduction = gameDifficulty === "hard" ? 7 : (gameDifficulty === "medium" ? 5 : 3);
+        this.enemySpawnRate = Math.max(30, this.enemySpawnRate - spawnRateReduction);
     }
 
     update() {
@@ -1183,6 +1324,13 @@ class WaveDisplay {
     draw() {
         push();
 
+        // Make sure waveManager exists
+        if (!waveManager) {
+            console.error("Cannot draw wave display: waveManager is not initialized");
+            pop();
+            return;
+        }
+
         // Draw wave text
         fill(255);
         textAlign(RIGHT, CENTER);
@@ -1229,18 +1377,6 @@ class WaveDisplay {
         textSize(12);
         text("1x", speedX + buttonWidth / 2, speedY + buttonHeight / 2);
 
-        // 2x speed button
-        speedX += buttonWidth + buttonSpacing;
-        fill(gameSpeed === 2 ? 100 : 50, gameSpeed === 2 ? 255 : 100, gameSpeed === 2 ? 100 : 50);
-        stroke(100, 100, 100);
-        strokeWeight(1);
-        rect(speedX, speedY, buttonWidth, buttonHeight, 5);
-
-        fill(255);
-        textAlign(CENTER, CENTER);
-        textSize(12);
-        text("2x", speedX + buttonWidth / 2, speedY + buttonHeight / 2);
-
         // 3x speed button
         speedX += buttonWidth + buttonSpacing;
         fill(gameSpeed === 3 ? 100 : 50, gameSpeed === 3 ? 255 : 100, gameSpeed === 3 ? 100 : 50);
@@ -1253,6 +1389,18 @@ class WaveDisplay {
         textSize(12);
         text("3x", speedX + buttonWidth / 2, speedY + buttonHeight / 2);
 
+        // 5x speed button
+        speedX += buttonWidth + buttonSpacing;
+        fill(gameSpeed === 5 ? 100 : 50, gameSpeed === 5 ? 255 : 100, gameSpeed === 5 ? 100 : 50);
+        stroke(100, 100, 100);
+        strokeWeight(1);
+        rect(speedX, speedY, buttonWidth, buttonHeight, 5);
+
+        fill(255);
+        textAlign(CENTER, CENTER);
+        textSize(12);
+        text("5x", speedX + buttonWidth / 2, speedY + buttonHeight / 2);
+
         pop();
     }
 }
@@ -1262,6 +1410,12 @@ function shareToSocial() {
     // Create a share confirmation animation
     let shareConfirmation = new ShareConfirmation();
     particles.push(shareConfirmation);
+
+    // Make sure waveManager exists
+    if (!waveManager) {
+        console.log("Shared game progress: Game just started!");
+        return;
+    }
 
     console.log("Shared game progress: Wave " + waveManager.currentWave +
         " with " + towers.length + " towers and " + gold + " gold!");
@@ -1343,51 +1497,88 @@ class Enemy {
     constructor(x, y, type, wave) {
         this.x = x;
         this.y = y;
-        this.type = type || "normal";
-        this.wave = wave || 1;
+        this.type = type;
+        this.wave = wave;
+        this.currentWaypoint = 1; // Start moving to the second waypoint
+        this.reachedEnd = false;
+        this.dead = false;
+        this.hitEffectTimer = 0;
 
-        // Calculate difficulty multiplier that increases by 5% each wave
-        const difficultyMultiplier = Math.pow(1.05, wave - 1);
+        // Base stats that will be modified by type and wave number
+        this.baseHealth = 100;
+        this.baseSpeed = 1.0;
+        this.baseSize = 20;
+        this.baseGoldReward = 10;
 
-        // Set properties based on enemy type
+        // Apply difficulty modifiers
+        this.applyDifficultyModifiers();
+
+        // Apply type-specific modifiers
+        this.applyTypeModifiers();
+
+        // Scale stats based on wave number
+        this.applyWaveScaling();
+    }
+
+    applyDifficultyModifiers() {
+        // Adjust enemy stats based on difficulty
+        if (gameDifficulty === "easy") {
+            // Easy: Slower enemies with less health
+            this.baseSpeed *= 0.8;
+            this.baseHealth *= 0.9;
+            this.baseGoldReward *= 1.2; // More gold reward
+        } else if (gameDifficulty === "hard") {
+            // Hard: Faster enemies with more health
+            this.baseSpeed *= 1.2;
+            this.baseHealth *= 1.2;
+            this.baseGoldReward *= 0.8; // Less gold reward
+        }
+        // Medium difficulty uses base values
+    }
+
+    applyTypeModifiers() {
         switch (this.type) {
             case "fast":
-                this.maxHealth = (30 + wave * 5) * difficultyMultiplier;
-                this.speed = (2 + wave * 0.1) * difficultyMultiplier;
-                this.goldReward = 15 + wave * 2;
-                this.size = 15;
-                this.color = [0, 200, 255]; // Cyan
+                this.speed = this.baseSpeed * 1.5;
+                this.health = this.baseHealth * 0.7;
+                this.size = this.baseSize * 0.8;
+                this.goldReward = this.baseGoldReward * 1.2;
+                this.color = [0, 200, 200]; // Cyan
                 break;
             case "tank":
-                this.maxHealth = (150 + wave * 20) * difficultyMultiplier;
-                this.speed = (0.5 + wave * 0.05) * difficultyMultiplier;
-                this.goldReward = 30 + wave * 3;
-                this.size = 25;
+                this.speed = this.baseSpeed * 0.7;
+                this.health = this.baseHealth * 2.5;
+                this.size = this.baseSize * 1.3;
+                this.goldReward = this.baseGoldReward * 1.5;
                 this.color = [100, 100, 100]; // Gray
                 break;
             case "boss":
-                this.maxHealth = (500 + wave * 50) * difficultyMultiplier;
-                this.speed = (0.7 + wave * 0.03) * difficultyMultiplier;
-                this.goldReward = 100 + wave * 10;
-                this.size = 35;
-                this.color = [200, 0, 200]; // Purple
+                this.speed = this.baseSpeed * 0.5;
+                this.health = this.baseHealth * 5.0;
+                this.size = this.baseSize * 1.8;
+                this.goldReward = this.baseGoldReward * 3.0;
+                this.color = [150, 0, 150]; // Purple
                 break;
             default: // normal
-                this.maxHealth = (50 + wave * 10) * difficultyMultiplier;
-                this.speed = (1 + wave * 0.05) * difficultyMultiplier;
-                this.goldReward = 10 + wave * 1;
-                this.size = 20;
-                this.color = [255, 0, 0]; // Red
+                this.speed = this.baseSpeed;
+                this.health = this.baseHealth;
+                this.size = this.baseSize;
+                this.goldReward = this.baseGoldReward;
+                this.color = [200, 0, 0]; // Red
         }
+    }
 
-        this.health = this.maxHealth;
-        this.currentWaypoint = 1; // Start moving toward the second waypoint
-        this.reachedEnd = false;
-        this.dead = false;
+    applyWaveScaling() {
+        // Scale health and gold reward based on wave number
+        this.health *= 1 + (this.wave - 1) * 0.2;
+        this.maxHealth = this.health; // Set maxHealth equal to health
+        this.goldReward = Math.floor(this.goldReward * (1 + (this.wave - 1) * 0.1));
+
+        // Cap gold reward to prevent excessive gold in later waves
+        this.goldReward = Math.min(this.goldReward, this.baseGoldReward * 5);
 
         // Animation properties
         this.animationOffset = random(TWO_PI); // For bobbing/floating effect
-        this.hitEffectTimer = 0;
     }
 
     update() {
@@ -2337,6 +2528,11 @@ class Projectile {
 
 // --- Check UI Hover for Tooltips ---
 function checkUIHover() {
+    // Only run this function if we're not in difficulty selection mode
+    if (gameState === "difficulty_select") {
+        return;
+    }
+
     // Reset tooltip visibility if not hovering over any UI element
     let hovering = false;
 
@@ -2381,19 +2577,19 @@ function checkUIHover() {
         hovering = true;
     }
 
-    // 2x speed button
-    speedX += buttonWidth + buttonSpacing;
-    if (mouseX > speedX && mouseX < speedX + buttonWidth &&
-        mouseY > speedY && mouseY < speedY + buttonHeight) {
-        tooltip.show("Double Speed (2x)", mouseX, mouseY);
-        hovering = true;
-    }
-
     // 3x speed button
     speedX += buttonWidth + buttonSpacing;
     if (mouseX > speedX && mouseX < speedX + buttonWidth &&
         mouseY > speedY && mouseY < speedY + buttonHeight) {
-        tooltip.show("Triple Speed (3x)", mouseX, mouseY);
+        tooltip.show("Fast Speed (3x)", mouseX, mouseY);
+        hovering = true;
+    }
+
+    // 5x speed button
+    speedX += buttonWidth + buttonSpacing;
+    if (mouseX > speedX && mouseX < speedX + buttonWidth &&
+        mouseY > speedY && mouseY < speedY + buttonHeight) {
+        tooltip.show("Very Fast Speed (5x)", mouseX, mouseY);
         hovering = true;
     }
 
@@ -2449,5 +2645,184 @@ function checkUIHover() {
     // If not hovering over any UI element, hide the tooltip
     if (!hovering && tooltip.visible) {
         tooltip.visible = false;
+    }
+}
+
+// --- Draw the Enemy Path ---
+function drawPath() {
+    push();
+
+    // Use a grid-based path approach
+    fill(180, 170, 150); // Light stone color
+    stroke(100, 90, 70);
+    strokeWeight(1);
+    rectMode(CORNER); // Ensure we're using CORNER mode for grid alignment
+
+    // For each segment of the path, draw grid cells
+    for (let i = 0; i < path.length - 1; i++) {
+        let start = path[i];
+        let end = path[i + 1];
+
+        // Determine if this is a horizontal or vertical segment
+        let isHorizontal = abs(end.y - start.y) < abs(end.x - start.x);
+
+        if (isHorizontal) {
+            // Horizontal segment
+            let minX = min(start.x, end.x);
+            let maxX = max(start.x, end.x);
+            let y = start.y;
+
+            // Calculate grid-aligned start and end points
+            let startGridX = Math.floor(minX / gridCellSize) * gridCellSize;
+            let endGridX = Math.ceil(maxX / gridCellSize) * gridCellSize;
+            let gridY = Math.floor(y / gridCellSize) * gridCellSize;
+
+            // Draw grid cells along the path
+            for (let x = startGridX; x < endGridX; x += gridCellSize) {
+                rect(x, gridY, gridCellSize, gridCellSize);
+            }
+        } else {
+            // Vertical segment
+            let minY = min(start.y, end.y);
+            let maxY = max(start.y, end.y);
+            let x = start.x;
+
+            // Calculate grid-aligned start and end points
+            let startGridY = Math.floor(minY / gridCellSize) * gridCellSize;
+            let endGridY = Math.ceil(maxY / gridCellSize) * gridCellSize;
+            let gridX = Math.floor(x / gridCellSize) * gridCellSize;
+
+            // Draw grid cells along the path
+            for (let y = startGridY; y < endGridY; y += gridCellSize) {
+                rect(gridX, y, gridCellSize, gridCellSize);
+            }
+        }
+    }
+
+    pop();
+}
+
+// --- Difficulty Selector Class ---
+class DifficultySelector {
+    constructor() {
+        this.buttonWidth = 200;
+        this.buttonHeight = 80;
+        this.spacing = 30;
+        this.hoverIndex = -1; // Track which button is being hovered
+    }
+
+    draw() {
+        // Clear background for difficulty selection screen
+        background(40, 80, 40); // Darker green background
+
+        // Draw title
+        fill(255);
+        textAlign(CENTER, CENTER);
+        textSize(36);
+        text("Select Difficulty", width / 2, 100);
+
+        // Update hover state
+        this.updateHover(mouseX, mouseY);
+
+        // Draw difficulty buttons - make sure all three are visible
+        let easyY = 200;
+        let mediumY = easyY + this.buttonHeight + this.spacing;
+        let hardY = mediumY + this.buttonHeight + this.spacing;
+
+        // Draw each button with clear visual distinction
+        this.drawButton("Easy", width / 2, easyY, "Longer path with more turns", this.hoverIndex === 0);
+        this.drawButton("Medium", width / 2, mediumY, "Standard path length", this.hoverIndex === 1);
+        this.drawButton("Hard", width / 2, hardY, "Shorter path with fewer turns", this.hoverIndex === 2);
+
+        // Draw difficulty descriptions
+        textSize(16);
+        fill(220);
+        text("Easy: Longer path with more turns - enemies take longer to reach the end", width / 2, hardY + this.buttonHeight + 20);
+        text("Medium: Standard path length and complexity", width / 2, hardY + this.buttonHeight + 50);
+        text("Hard: Shorter path with fewer turns - enemies reach the end faster", width / 2, hardY + this.buttonHeight + 80);
+
+        // Draw debug info
+        fill(255);
+        textSize(14);
+        text("Mouse position: " + mouseX + ", " + mouseY, width / 2, height - 20);
+        text("Click to select a difficulty", width / 2, height - 40);
+    }
+
+    drawButton(buttonText, x, y, description, isHovered) {
+        push();
+        rectMode(CENTER);
+
+        // Draw button background with hover effect
+        if (isHovered) {
+            fill(120, 120, 180); // Brighter color when hovered
+            stroke(220, 220, 255);
+            strokeWeight(4);
+        } else {
+            fill(80, 80, 120);
+            stroke(150, 150, 200);
+            strokeWeight(2);
+        }
+
+        // Draw the button with rounded corners
+        rect(x, y, this.buttonWidth, this.buttonHeight, 10);
+
+        // Draw button text
+        fill(255);
+        noStroke();
+        textAlign(CENTER, CENTER);
+        textSize(28);
+        text(buttonText, x, y - 10);
+
+        // Draw description
+        textSize(16);
+        fill(220);
+        text(description, x, y + 20);
+
+        pop();
+    }
+
+    updateHover(mx, my) {
+        let x = width / 2;
+        let buttonY = [200, 200 + this.buttonHeight + this.spacing, 200 + (this.buttonHeight + this.spacing) * 2];
+
+        this.hoverIndex = -1;
+        for (let i = 0; i < 3; i++) {
+            let y = buttonY[i];
+            if (mx > x - this.buttonWidth / 2 && mx < x + this.buttonWidth / 2 &&
+                my > y - this.buttonHeight / 2 && my < y + this.buttonHeight / 2) {
+                this.hoverIndex = i;
+                break;
+            }
+        }
+    }
+
+    handleClick(mx, my) {
+        console.log("DifficultySelector.handleClick called with:", mx, my);
+        let x = width / 2;
+        let buttonY = [200, 200 + this.buttonHeight + this.spacing, 200 + (this.buttonHeight + this.spacing) * 2];
+
+        for (let i = 0; i < 3; i++) {
+            let y = buttonY[i];
+            let buttonLeft = x - this.buttonWidth / 2;
+            let buttonRight = x + this.buttonWidth / 2;
+            let buttonTop = y - this.buttonHeight / 2;
+            let buttonBottom = y + this.buttonHeight / 2;
+
+            console.log(`Button ${i} bounds: x(${buttonLeft}-${buttonRight}), y(${buttonTop}-${buttonBottom})`);
+
+            if (mx > buttonLeft && mx < buttonRight &&
+                my > buttonTop && my < buttonBottom) {
+
+                console.log(`Button ${i} clicked!`);
+
+                // Return the selected difficulty
+                if (i === 0) return "easy";
+                if (i === 1) return "medium";
+                if (i === 2) return "hard";
+            }
+        }
+
+        console.log("No button clicked");
+        return null;
     }
 }
