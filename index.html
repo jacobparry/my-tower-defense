@@ -1,35 +1,156 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8">
-    <title>Medieval Tower Defense</title>
-    <!-- Include p5.js from a CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <title>Tower Defense Games Collection</title>
     <style>
         body {
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            font-family: 'Arial', sans-serif;
+            color: white;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            background-color: #333;
+            justify-content: center;
         }
 
-        #sketch-holder {
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        h1 {
+            font-size: 3em;
+            margin-bottom: 0.5em;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(45deg, #00f5ff, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 3em;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        .games-container {
+            display: flex;
+            gap: 2em;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2em;
+            width: 300px;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 245, 255, 0.6);
+            box-shadow: 0 15px 30px rgba(0, 245, 255, 0.2);
+        }
+
+        .game-title {
+            font-size: 1.8em;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+        }
+
+        .game-theme {
+            font-size: 1em;
+            opacity: 0.8;
+            margin-bottom: 1em;
+        }
+
+        .game-description {
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 1.5em;
+        }
+
+        .game-features {
+            font-size: 0.8em;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 1em;
+        }
+
+        .medieval-card {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.3), rgba(160, 82, 45, 0.3));
+        }
+
+        .space-card {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.3), rgba(255, 0, 110, 0.3));
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.3em 0.8em;
+            border-radius: 20px;
+            font-size: 0.7em;
+            margin-top: 1em;
+        }
+
+        .status.complete {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid rgba(76, 175, 80, 0.6);
+        }
+
+        .status.new {
+            background: rgba(255, 193, 7, 0.3);
+            border: 1px solid rgba(255, 193, 7, 0.6);
         }
     </style>
 </head>
-
 <body>
-    <!-- Container for the canvas -->
-    <div id="sketch-holder"></div>
+    <h1>Tower Defense Collection</h1>
+    <p class="subtitle">Choose your battlefield</p>
 
-    <!-- Your sketch code -->
-    <script src="sketch.js"></script>
+    <div class="games-container">
+        <a href="games/medieval/medieval.html" class="game-card medieval-card">
+            <div class="game-title">🏰 Medieval Defense</div>
+            <div class="game-theme">Fantasy Kingdom</div>
+            <div class="game-description">
+                Defend your medieval realm from waves of enemies along fixed paths.
+                Build archer towers, mage towers, cannons, and barracks to stop the invasion.
+            </div>
+            <div class="game-features">
+                ✦ 3 Difficulty levels<br>
+                ✦ 4 Tower types with upgrades<br>
+                ✦ 10 Progressive waves<br>
+                ✦ Strategic path-based defense
+            </div>
+            <div class="status complete">Complete ✓</div>
+        </a>
+
+        <a href="games/space/space.html" class="game-card space-card">
+            <div class="game-title">🚀 Galactic Outpost</div>
+            <div class="game-theme">Space Station Defense</div>
+            <div class="game-description">
+                Command an orbital defense network! Build satellites that orbit your space station.
+                Manage power grids and manually control orbital rotations for tactical advantage.
+            </div>
+            <div class="game-features">
+                ✦ 360° Radial defense<br>
+                ✦ Orbital mechanics system<br>
+                ✦ Power grid management<br>
+                ✦ Manual orbit control
+            </div>
+            <div class="status new">New! 🌟</div>
+        </a>
+    </div>
 </body>
-
 </html>
