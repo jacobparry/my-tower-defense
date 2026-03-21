@@ -1,198 +1,177 @@
-# Tower Defense Collection
+# Game Collection
 
-A collection of tower defense games built with p5.js, featuring unique mechanics, progressive difficulty, and engaging gameplay across different themes and settings.
+A collection of browser-based games built with p5.js. Each game explores a different theme and unique mechanics.
 
-## 🎮 Play the Games
+**Play now:** [jparry.github.io/my-tower-defense](https://jparry.github.io/my-tower-defense/)
 
-The collection is deployed on GitHub Pages: [Play Tower Defense Collection](https://jparry.github.io/my-tower-defense/)
-
-Choose your battlefield:
-- **🏰 Medieval Defense**: Classic path-based tower defense
-- **🚀 Galactic Outpost**: Revolutionary orbital mechanics system
-
-## 🏰 Medieval Tower Defense
-
-### Game Features
-- **3 Difficulty Levels**: Easy, Medium, and Hard with different paths and resources
-- **4 Tower Types**: Archer, Mage, Cannon, and Barracks with unique abilities
-- **10 Progressive Waves**: Increasing difficulty with multiple enemy types
-- **Strategic Gameplay**: Path-based defense with upgrade system
-
-### Tower Types
-- **Archer Tower**: Fast firing rate, great for swarms
-- **Mage Tower**: Magical attacks with special effects
-- **Cannon Tower**: High damage explosive projectiles
-- **Barracks**: Defensive structures that block enemy movement
-
-## 🚀 Galactic Outpost (Space Tower Defense)
-
-### Revolutionary Orbital System
-- **360° Radial Defense**: Enemies attack from all directions
-- **Orbital Mechanics**: All towers rotate around your space station
-- **3 Orbital Rings**: Expandable slots for satellite deployment
-- **Power Grid Management**: Energy-based resource system
-
-### Satellite Types
-- **⚡ Power Pylon**: Generates energy for other towers (upgrades: 75→100→125 energy)
-- **🔴 Laser Satellite**: Fast, precise targeting for swarms
-- **🚀 Missile Platform**: High damage explosive projectiles
-- **⚡ Tesla Coil**: Chain lightning attacks multiple enemies
-- **🛡️ Shield Generator**: Creates physical barriers that block enemies
-
-### Advanced Features
-- **1000 Progressive Waves**: Epic campaign with scaling difficulty
-- **Boss Waves**: Every 10th wave features powerful crowned bosses
-- **Speed Controls**: 0x (Pause), 1x, 5x, 10x with full system integration
-- **Mid-Wave Building**: Strategic satellite deployment during combat
-- **Auto-Start Waves**: Optional automatic wave progression
-- **Comprehensive Tooltips**: Detailed information for all towers and upgrades
-
-### Enemy Types
-- **🟠 Scout**: Fast, weak enemies (orange)
-- **🔴 Fighter**: Balanced enemies (red)
-- **🟣 Heavy**: Slow, tough enemies (purple)
-- **⚫ Stealth**: Very fast, weak enemies (gray)
-- **👑 Boss**: Massive enemies with crowns (bright red) - every 10th wave
-
-### Unique Mechanics
-- **Shield System**: Barriers physically block enemies and absorb damage
-- **Wave Scaling**: +15% health, +5% speed per wave for all enemies
-- **Perfect Wave Bonuses**: Extra points for no enemy leaks
-- **Satellite Efficiency**: Fewer satellites = higher scores
-- **Energy Management**: Balance power generation and consumption
-
-## 🎯 How to Play
+## Games
 
 ### Medieval Defense
-1. Choose difficulty level
-2. Place towers along enemy paths
-3. Start waves and defend your realm
-4. Upgrade towers between waves
-5. Survive all 10 waves
+Classic path-based tower defense with a fantasy theme. Place towers along enemy paths to stop waves of invaders.
+
+- 3 difficulty levels with different maps
+- 4 tower types: Archer, Mage, Cannon, Barracks
+- 10 progressive waves
+- Gold-based economy with tower upgrades
 
 ### Galactic Outpost
-1. Select orbital slots by clicking them
-2. Choose satellite type to place
-3. Manage energy with power pylons
-4. Use speed controls and pause for strategy
-5. Deploy shields to block enemy advances
-6. Survive 1000 progressively harder waves
+Orbital space station defense with 360-degree combat. Satellites orbit your station and engage enemies from all directions.
 
-### Universal Controls
-- **Mouse**: Select, build, upgrade, navigate
-- **Speed Controls**: Adjust game tempo
-- **Pause**: Strategic planning during waves
-- **Tooltips**: Hover/select for detailed information
+- Orbital mechanics — towers rotate around your station
+- 5 satellite types including Shield Generators and Tesla Coils
+- Dual economy: credits for building, energy for operation
+- 1000 waves with boss encounters every 10th wave
+- Speed controls: pause, 1x, 5x, 10x
 
-## 🛠️ Technical Details
+### The Million Dollar Mansion
+Idle/clicker emerald mining adventure. Help a poor villager find emeralds, buy upgrades, and build the Million Dollar Emerald Mansion together.
 
-### Built With
-- **p5.js** - Creative coding library for graphics and interaction
-- **Vanilla JavaScript** - Core game logic and mechanics
-- **HTML5 Canvas** - Rendering and animation
+- Click-to-mine with combo multiplier system
+- 6 shop items: Detector, Planter, Sucker, Miner, Portal, Mansion
+- Villager companion with happiness mechanic (share emeralds to keep them happy)
+- Visual world that evolves as you progress
+- Milestone celebrations and epic victory sequence
 
-### Architecture
-- **Object-Oriented Design**: Separate classes for game systems
-- **Modular Structure**: Independent game implementations
-- **Shared UI Systems**: Common interface patterns
-- **Performance Optimized**: Efficient collision detection and rendering
+## Tech Stack
 
-### Game Systems
+- **p5.js** — rendering, animation, and input handling
+- **Vanilla JavaScript** — game logic (one JS file per game)
+- **HTML5 Canvas** — all rendering via p5.js
+- No build step, no dependencies beyond p5.js (loaded via CDN)
 
-#### Medieval Defense
-- Grid-based tower placement
-- Pathfinding with waypoint navigation
-- Wave-based enemy spawning
-- Gold economy system
+## Project Structure
 
-#### Galactic Outpost
-- Orbital mechanics with trigonometric positioning
-- Dual-resource economy (credits + energy)
-- Real-time collision detection for shields
-- Multi-speed game state management
-- Progressive difficulty scaling over 1000 waves
-
-## 🏗️ Development
-
-### Local Setup
-1. Clone the repository
-2. Open `index.html` in a web browser
-3. No build process required - runs directly in browser
-
-### File Structure
 ```
 my-tower-defense/
-├── index.html                 # Game selection hub
+├── index.html                    # Game selection hub
 ├── games/
 │   ├── medieval/
-│   │   ├── medieval.html      # Medieval game entry
-│   │   └── medieval.js        # Medieval game logic
-│   └── space/
-│       ├── space.html         # Space game entry
-│       └── space.js           # Space game logic (~2000+ lines)
-└── README.md                  # This file
+│   │   ├── medieval.html         # Game page (loads p5.js + game script)
+│   │   └── medieval.js           # All game logic
+│   ├── space/
+│   │   ├── space.html            # Game page
+│   │   └── space.js              # All game logic
+│   └── mansion/
+│       ├── mansion.html          # Game page
+│       └── mansion.js            # All game logic
+└── README.md
 ```
 
-### Key Technical Features
-- **Particle Systems**: Visual effects and feedback
-- **Collision Detection**: Precise hit detection for all projectiles
-- **State Management**: Complex game state transitions
-- **Performance Optimization**: Efficient rendering and updates
-- **Responsive Design**: Adaptive UI layouts
+## Local Development
 
-## 🎨 Game Design Philosophy
+1. Clone the repo
+2. Serve the directory with any static file server:
+   ```bash
+   # Python
+   python3 -m http.server 8000
 
-### Medieval Defense
-- Classic tower defense mechanics
-- Strategic path-based gameplay
-- Medieval aesthetic with fantasy elements
-- Balanced progression system
+   # Node
+   npx serve .
+   ```
+3. Open `http://localhost:8000` in your browser
 
-### Galactic Outpost
-- Innovative orbital mechanics
-- 360-degree strategic thinking
-- Sci-fi aesthetic with particle effects
-- Deep progression over 1000 waves
-- Multi-layered resource management
+> Opening `index.html` directly (via `file://`) works for most browsers but may hit CORS issues with some setups. A local server avoids this.
 
-## 📈 Scoring Systems
+## Adding a New Game
 
-### Medieval Defense
-- Enemy elimination points
-- Wave completion bonuses
-- Perfect wave multipliers
-- Difficulty-based scoring
+### 1. Create the game directory
 
-### Galactic Outpost
-- Base points: 100 per wave
-- Perfect wave bonus: +wave×20 (only if no enemies reach center)
-- Satellite efficiency penalty: -5 points per satellite built
-- Progressive scaling: Higher waves = higher potential scores
+```
+games/your-game-name/
+├── your-game-name.html
+└── your-game-name.js
+```
 
-## 🎮 Game Balance
+### 2. Set up the HTML page
 
-### Progressive Difficulty
-- **Medieval**: 10 waves with increasing enemy variety
-- **Space**: 1000 waves with exponential scaling
+Use an existing game's HTML as a template. The key pieces:
 
-### Resource Management
-- **Medieval**: Gold-based economy
-- **Space**: Dual economy (credits for building, energy for operation)
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Your Game Name</title>
+    <!-- Load p5.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        /* Full-viewport canvas, no scrollbars */
+        html, body { margin: 0; padding: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="your-game-name.js"></script>
+</body>
+</html>
+```
 
-### Strategic Depth
-- **Medieval**: Path control and chokepoints
-- **Space**: Energy management and orbital positioning
+### 3. Write the game script
 
----
+p5.js expects these global functions in your JS file:
 
-## 🌟 Future Enhancements
+```javascript
+function setup() {
+    createCanvas(windowWidth, windowHeight);
+    // Initialize game state
+}
 
-- Additional tower types and abilities
-- More enemy varieties and behaviors
-- Achievement systems
-- Leaderboards and score tracking
-- Additional game modes
+function draw() {
+    // Main game loop — called every frame
+    // Handle update logic and rendering here
+}
 
----
+function mousePressed() {
+    // Handle click events
+}
 
-Defend your realms across time and space! 🏰🚀✨
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}
+```
+
+All game logic lives in a single JS file. Use classes to organize entities (towers, enemies, projectiles, etc.).
+
+### 4. Add a card to the hub
+
+Add a new `<a>` element inside the `.games-container` div in `index.html`:
+
+```html
+<a href="games/your-game-name/your-game-name.html" class="game-card your-card-class">
+    <div class="game-title">Your Game Name</div>
+    <div class="game-theme">Theme Description</div>
+    <div class="game-description">
+        Short description of the game's unique hook.
+    </div>
+    <div class="game-features">
+        ✦ Feature 1<br>
+        ✦ Feature 2<br>
+        ✦ Feature 3
+    </div>
+    <div class="status new">New!</div>
+</a>
+```
+
+Add a matching CSS class for the card's gradient background:
+
+```css
+.your-card-class {
+    background: linear-gradient(135deg, rgba(R, G, B, 0.3), rgba(R, G, B, 0.3));
+}
+```
+
+### 5. Update this README
+
+Add a section for your game under [Games](#games) with a brief description and feature list.
+
+## Game Architecture Patterns
+
+Each game follows these conventions:
+
+- **Single-file game logic** — all classes and functions in one `.js` file
+- **p5.js global mode** — `setup()`, `draw()`, `mousePressed()`, etc. as top-level functions
+- **Class-based entities** — `Tower`, `Enemy`, `Projectile`, `Particle`, etc.
+- **Game state machine** — use a `gameState` variable (e.g., `"menu"`, `"playing"`, `"gameover"`) to control flow
+- **Wave system** — enemies spawn in waves with configurable timing and composition
+- **In-canvas UI** — all menus, buttons, and HUD elements are drawn on the p5.js canvas (no DOM elements)
+- **Self-contained** — each game is fully independent with no shared code between games
