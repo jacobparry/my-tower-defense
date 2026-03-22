@@ -1,16 +1,16 @@
 // ================================================================
-// THE MILLION DOLLAR MANSION
+// THE BILLION DOLLAR MANSION
 // An Emerald Mining Adventure
 //
 // Help a poor villager find emeralds, buy upgrades, and together
-// build the Million Dollar Emerald Mansion!
+// build the Billion Dollar Emerald Mansion!
 // ================================================================
 
 // ==================== CONFIGURATION ====================
 
-const MANSION_COST = 1000000;
+const MANSION_COST = 1000000000;
 const COMBO_WINDOW = 25; // frames before combo resets
-const HAPPINESS_DRAIN = 0.15; // per second
+const HAPPINESS_DRAIN = 1.5; // per second
 const SHARE_HAPPINESS_RESTORE = 30;
 const COST_MULTIPLIER = 1.4;
 
@@ -20,6 +20,10 @@ const MILESTONES = [
   { amount: 10000, bonus: 500, label: '10,000' },
   { amount: 100000, bonus: 5000, label: '100,000' },
   { amount: 500000, bonus: 25000, label: '500,000' },
+  { amount: 1000000, bonus: 50000, label: '1 MILLION' },
+  { amount: 10000000, bonus: 500000, label: '10 MILLION' },
+  { amount: 100000000, bonus: 5000000, label: '100 MILLION' },
+  { amount: 500000000, bonus: 25000000, label: '500 MILLION' },
 ];
 
 // ==================== GAME STATE ====================
@@ -54,6 +58,8 @@ let worldEntities = {
   suckers: [],
   miners: [],
   portals: [],
+  factories: [],
+  volcanos: [],
 };
 let particles = [];
 let floatingTexts = [];
@@ -129,6 +135,28 @@ function initShopItems() {
       col: [231, 76, 60],
     },
     {
+      id: 'factory',
+      name: 'Emerald Factory',
+      emoji: '\uD83C\uDFED',
+      baseCost: 200000,
+      count: 0,
+      desc: '+5,000 emeralds/sec',
+      passivePerUnit: 5000,
+      clickPowerPerUnit: 0,
+      col: [230, 126, 34],
+    },
+    {
+      id: 'volcano',
+      name: 'Emerald Volcano',
+      emoji: '\uD83C\uDF0B',
+      baseCost: 5000000,
+      count: 0,
+      desc: '+50,000 emeralds/sec',
+      passivePerUnit: 50000,
+      clickPowerPerUnit: 0,
+      col: [231, 60, 60],
+    },
+    {
       id: 'mansion',
       name: 'Emerald Mansion',
       emoji: '\uD83C\uDFF0',
@@ -151,6 +179,7 @@ function getItemCost(item) {
 // ==================== UTILITY FUNCTIONS ====================
 
 function formatNumber(n) {
+  if (n >= 1000000000) return (n / 1000000000).toFixed(1) + 'B';
   if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
   if (n >= 10000) return (n / 1000).toFixed(1) + 'K';
   if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
@@ -902,6 +931,196 @@ class EmeraldPortal {
   }
 }
 
+// ==================== EMERALD FACTORY ====================
+
+class EmeraldFactory {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.smokeTimer = 0;
+    this.gearAngle = 0;
+  }
+
+  update() {
+    this.smokeTimer++;
+    this.gearAngle += 0.04;
+    // Smoke particles
+    if (this.smokeTimer % 15 === 0) {
+      particles.push(new Particle(
+        this.x + random(-5, 15), this.y - 55,
+        random(-0.3, 0.3), random(-1.5, -0.5),
+        [160, 160, 160], 40, random(5, 10)
+      ));
+    }
+    // Emerald output
+    if (this.smokeTimer % 40 === 0) {
+      emeraldDrops.push(new EmeraldDrop(
+        this.x + 15, this.y - 10,
+        random(1, 3), random(-3, -1), 5
+      ));
+    }
+  }
+
+  draw() {
+    push();
+    translate(this.x, this.y);
+
+    // Building base
+    fill(120, 80, 50);
+    rect(-25, -40, 50, 40, 3);
+    // Emerald-tinted walls
+    fill(40, 130, 70, 120);
+    rect(-25, -40, 50, 40, 3);
+
+    // Chimney
+    fill(100, 70, 45);
+    rect(5, -55, 14, 20);
+
+    // Door
+    fill(80, 55, 35);
+    rect(-8, -18, 16, 18, 3, 3, 0, 0);
+
+    // Gear on side
+    push();
+    translate(-18, -25);
+    rotate(this.gearAngle);
+    stroke(180, 150, 50);
+    strokeWeight(2);
+    noFill();
+    ellipse(0, 0, 14, 14);
+    line(-5, 0, 5, 0);
+    line(0, -5, 0, 5);
+    pop();
+
+    // Conveyor belt output
+    fill(80, 80, 90);
+    rect(20, -12, 15, 6, 2);
+    // Moving dots on belt
+    let beltOffset = (frameCount * 2) % 8;
+    fill(46, 204, 113);
+    for (let i = 0; i < 2; i++) {
+      ellipse(22 + beltOffset + i * 8, -9, 4, 4);
+    }
+
+    // Sign
+    fill(230, 126, 34);
+    noStroke();
+    rect(-12, -52, 24, 10, 2);
+    fill(255);
+    textSize(6);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    text('FACTORY', 0, -47);
+    textStyle(NORMAL);
+
+    noStroke();
+    pop();
+  }
+}
+
+// ==================== EMERALD VOLCANO ====================
+
+class EmeraldVolcano {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.eruptTimer = 0;
+    this.isErupting = false;
+    this.eruptCooldown = 0;
+    this.lavaGlow = 0;
+  }
+
+  update() {
+    this.eruptTimer++;
+    this.lavaGlow = sin(frameCount * 0.1) * 0.3 + 0.7;
+
+    // Eruption cycle: erupt every ~90 frames
+    this.eruptCooldown--;
+    if (this.eruptCooldown <= 0) {
+      this.isErupting = true;
+      this.eruptCooldown = 90;
+
+      // Burst of emeralds!
+      for (let i = 0; i < 5; i++) {
+        emeraldDrops.push(new EmeraldDrop(
+          this.x + random(-10, 10), this.y - 45,
+          random(-4, 4), random(-8, -4), 5
+        ));
+      }
+      // Lava particles
+      for (let i = 0; i < 8; i++) {
+        particles.push(new Particle(
+          this.x + random(-8, 8), this.y - 45,
+          random(-2, 2), random(-5, -2),
+          [255, random(80, 160), 0], random(25, 45), random(3, 6)
+        ));
+      }
+      screenShakeAmount = max(screenShakeAmount, 2);
+    }
+
+    if (this.eruptCooldown < 80) this.isErupting = false;
+
+    // Ambient smoke
+    if (this.eruptTimer % 20 === 0) {
+      particles.push(new Particle(
+        this.x + random(-5, 5), this.y - 48,
+        random(-0.2, 0.2), random(-1, -0.3),
+        [100, 100, 100], 30, random(4, 8)
+      ));
+    }
+  }
+
+  draw() {
+    push();
+    translate(this.x, this.y);
+
+    // Volcano base (wide triangle mountain)
+    fill(90, 70, 60);
+    noStroke();
+    beginShape();
+    vertex(-40, 0);
+    vertex(-15, -40);
+    vertex(15, -40);
+    vertex(40, 0);
+    endShape(CLOSE);
+
+    // Darker rock streaks
+    fill(70, 55, 45);
+    beginShape();
+    vertex(-25, 0);
+    vertex(-10, -35);
+    vertex(0, -35);
+    vertex(15, 0);
+    endShape(CLOSE);
+
+    // Crater rim
+    fill(60, 45, 35);
+    ellipse(0, -40, 34, 12);
+
+    // Lava glow in crater
+    fill(255, 100, 20, 180 * this.lavaGlow);
+    ellipse(0, -40, 24, 8);
+    fill(255, 180, 50, 120 * this.lavaGlow);
+    ellipse(0, -40, 16, 5);
+
+    // Green emerald veins on mountain
+    stroke(46, 204, 113, 120);
+    strokeWeight(2);
+    line(-20, -10, -12, -25);
+    line(10, -5, 8, -20);
+    line(22, -8, 15, -18);
+    noStroke();
+
+    // Eruption glow
+    if (this.isErupting) {
+      fill(255, 150, 0, 60);
+      ellipse(0, -45, 50, 50);
+    }
+
+    pop();
+  }
+}
+
 // ==================== P5.JS LIFECYCLE ====================
 
 function setup() {
@@ -971,10 +1190,10 @@ function drawIntro() {
   // Title glow
   textSize(42);
   fill(46, 204, 113, titleAlpha * 0.3);
-  text('THE MILLION DOLLAR MANSION', width / 2, height * 0.18 + 2);
+  text('THE BILLION DOLLAR MANSION', width / 2, height * 0.18 + 2);
   // Title text
   fill(241, 196, 15, titleAlpha);
-  text('THE MILLION DOLLAR MANSION', width / 2, height * 0.18);
+  text('THE BILLION DOLLAR MANSION', width / 2, height * 0.18);
 
   // Subtitle
   if (introTimer > 20) {
@@ -1044,7 +1263,7 @@ function drawIntro() {
     text('Mine emeralds, buy upgrades, and build the', width / 2, height * 0.74);
     fill(241, 196, 15, txtAlpha);
     textStyle(BOLD);
-    text('Million Dollar Emerald Mansion!', width / 2, height * 0.79);
+    text('Billion Dollar Emerald Mansion!', width / 2, height * 0.79);
   }
 
   // Click to start (pulsing)
@@ -1097,6 +1316,8 @@ function updatePlaying() {
   for (let e of worldEntities.suckers) e.update();
   for (let e of worldEntities.miners) e.update();
   for (let e of worldEntities.portals) e.update();
+  for (let e of worldEntities.factories) e.update();
+  for (let e of worldEntities.volcanos) e.update();
 
   // Update particles (backward iteration for safe removal)
   for (let i = particles.length - 1; i >= 0; i--) {
@@ -1334,6 +1555,8 @@ function drawPlaying() {
   // Draw world entities (ordered back to front)
   for (let e of worldEntities.detectors) e.draw();
   for (let e of worldEntities.planters) e.draw();
+  for (let e of worldEntities.factories) e.draw();
+  for (let e of worldEntities.volcanos) e.draw();
   for (let e of worldEntities.portals) e.draw();
   for (let d of emeraldDrops) d.draw();
   for (let e of worldEntities.miners) e.draw();
@@ -1367,31 +1590,42 @@ function drawHUD() {
   fill(46, 204, 113, 80);
   rect(0, hudH - 2, width, 2);
 
-  // Emerald count
-  drawEmeraldGem(25, hudH / 2, 10);
+  // Emerald count (offset right to avoid back button)
+  let emeraldX = 180;
+  drawEmeraldGem(emeraldX, hudH / 2, 12);
   textAlign(LEFT, CENTER);
   textStyle(BOLD);
-  textSize(20);
+  textSize(22);
   fill(46, 204, 113);
   let displayStr = formatNumberFull(displayEmeralds);
-  text(displayStr, 42, hudH / 2 - 5);
+  text(displayStr, emeraldX + 19, hudH / 2);
+
+  // Stats section - to the right of the emerald count
+  let statsX = emeraldX + 19 + textWidth(displayStr) + 30;
+
+  // Divider line
+  stroke(255, 255, 255, 40);
+  strokeWeight(1);
+  line(statsX - 15, hudH * 0.2, statsX - 15, hudH * 0.8);
+  noStroke();
 
   // Per second display
+  textAlign(LEFT, CENTER);
   if (totalPassiveIncome > 0) {
-    textSize(11);
+    textSize(15);
     fill(150, 220, 170);
-    textStyle(NORMAL);
-    text('+' + formatNumber(totalPassiveIncome) + '/sec', 42, hudH / 2 + 12);
+    textStyle(BOLD);
+    text('+' + formatNumber(totalPassiveIncome) + '/sec', statsX, hudH / 2 - 10);
   }
 
   // Click power display
-  textSize(10);
+  textSize(14);
   fill(200, 200, 80);
-  textStyle(NORMAL);
+  textStyle(BOLD);
   let cpText = 'Click: ' + clickPower;
   let comboMult = getComboMultiplier();
   if (comboMult > 1) cpText += ' x' + comboMult;
-  text(cpText, 42, hudH / 2 + 24);
+  text(cpText, statsX, hudH / 2 + 12);
 
   // Share button (right side of HUD)
   let shareBtnW = 100;
@@ -1467,7 +1701,7 @@ function drawHUD() {
   textSize(9);
   fill(180, 180, 180);
   let mansionProg = min(1, emeralds / MANSION_COST);
-  text(formatNumber(emeralds) + ' / 1M', progBarX, hudH / 2 + 4);
+  text(formatNumber(emeralds) + ' / 1B', progBarX, hudH / 2 + 4);
   // Mini progress bar
   fill(40, 40, 50);
   rect(progBarX, hudH / 2 + 14, progBarW, 6, 3);
@@ -1783,7 +2017,7 @@ function drawVictoryScreen() {
       ellipse(0, -190 + gemPulse, 60, 60);
     }
 
-    // "$1,000,000" sign
+    // "$1,000,000,000" sign
     if (buildProgress > 0.9) {
       fill(0, 0, 0, 120);
       rect(-55, 30, 110, 25, 5);
@@ -1791,7 +2025,7 @@ function drawVictoryScreen() {
       textStyle(BOLD);
       textSize(14);
       fill(241, 196, 15);
-      text('$1,000,000', 0, 42);
+      text('$1,000,000,000', 0, 42);
     }
 
     pop();
@@ -1825,7 +2059,7 @@ function drawVictoryScreen() {
     text('You and the Villager built the', width / 2, height * 0.18);
     fill(46, 204, 113, alpha);
     textSize(22);
-    text('Million Dollar Emerald Mansion!', width / 2, height * 0.23);
+    text('Billion Dollar Emerald Mansion!', width / 2, height * 0.23);
   }
 
   // Stats
@@ -2137,6 +2371,8 @@ function buyItem(item) {
   // Villager reactions
   if (totalItemsBought === 1) villager.say('Ooh, what\'s that?');
   else if (item.id === 'portal') villager.say('AMAZING!');
+  else if (item.id === 'factory') villager.say('A whole factory!');
+  else if (item.id === 'volcano') villager.say('A VOLCANO?!');
   else if (item.id === 'miner') villager.say('A robot helper!');
   else if (item.count === 1 && item.id === 'planter') villager.say('We\'re farming!');
 
@@ -2177,6 +2413,16 @@ function spawnEntity(itemId) {
       y = hudH + worldH * random(0.25, 0.45);
       worldEntities.portals.push(new EmeraldPortal(x, y));
       break;
+    case 'factory':
+      x = random(worldW * 0.3, worldW * 0.75);
+      y = groundLevel + random(5, 30);
+      worldEntities.factories.push(new EmeraldFactory(x, y));
+      break;
+    case 'volcano':
+      x = random(worldW * 0.15, worldW * 0.7);
+      y = groundLevel + random(-5, 15);
+      worldEntities.volcanos.push(new EmeraldVolcano(x, y));
+      break;
   }
 }
 
@@ -2202,7 +2448,7 @@ function resetGame() {
   villager = new Villager();
   villager.init();
 
-  worldEntities = { detectors: [], planters: [], suckers: [], miners: [], portals: [] };
+  worldEntities = { detectors: [], planters: [], suckers: [], miners: [], portals: [], factories: [], volcanos: [] };
   particles = [];
   floatingTexts = [];
   confettis = [];

@@ -40,8 +40,8 @@ const MAX_UPGRADE_LEVEL = 5;
 const WIN_DAY = 100;
 const BASE_STOCK = 5;
 const STOCK_PER_PANTRY_LEVEL = 3;
-const BASE_BLOOK_PATIENCE = 12; // seconds
-const PATIENCE_PER_BLOOK_LEVEL = 3;
+const BASE_BLOOK_PATIENCE = 8; // seconds
+const PATIENCE_PER_BLOOK_LEVEL = 2;
 const BASE_TIP = 0;
 const TIP_PER_BLOOK_LEVEL = 1;
 
@@ -63,9 +63,10 @@ let gameSpeed = 1;
 let foodUnlocked = [true, false, false, false];
 let foodLevel = [0, 0, 0, 0];
 let cafeLevel = 0;
-let pantryLevel = 0;
+let pantryLevel = [0, 0, 0, 0]; // per food item
 let blookLevel = 0;
 let employeeCount = 0;
+let employeeAssignments = [-1, -1, -1]; // -1 = not hired, 0-3 = assigned food station
 
 // Food stock
 let foodStock = [5, 0, 0, 0];
@@ -142,6 +143,12 @@ let vipChance = 0.05;
 // Button hover tracking
 let hoveredButton = "";
 
+// Spill system
+let spills = []; // { stationIndex, timer, maxTimer, x, y }
+let spillSpawnTimer = 0;
+let spillSpawnInterval = 12; // seconds between spills
+const SPILL_DURATION = 8; // seconds before spill clears itself (but blocks station)
+
 // --- UTILITY FUNCTIONS ---
 function sz(pct) {
   return min(width, height) * pct;
@@ -181,8 +188,9 @@ function shuffleArray(arr) {
   return a;
 }
 
-function getMaxStock() {
-  return BASE_STOCK + pantryLevel * STOCK_PER_PANTRY_LEVEL;
+function getMaxStock(foodIndex) {
+  let level = (foodIndex !== undefined) ? pantryLevel[foodIndex] : 0;
+  return BASE_STOCK + level * STOCK_PER_PANTRY_LEVEL;
 }
 
 function getFoodPrice(index) {
@@ -205,25 +213,41 @@ function getDayDuration() {
 }
 
 function getBlookSpawnInterval() {
-  let base = 7;
-  base -= day * 0.05;
-  base -= cafeLevel * 0.3;
-  return max(1.8, base);
+  let base = 4;
+  base -= day * 0.03;
+  base -= cafeLevel * 0.25;
+  return max(1.2, base);
 }
 
 function getMaxBlooksAtOnce() {
-  return 3 + cafeLevel + floor(day / 15);
+  return 4 + cafeLevel + floor(day / 10);
 }
 
 function checkAllMaxed() {
   for (let i = 0; i < 4; i++) {
     if (!foodUnlocked[i]) return false;
     if (foodLevel[i] < MAX_UPGRADE_LEVEL) return false;
+    if (pantryLevel[i] < MAX_UPGRADE_LEVEL) return false;
   }
   if (cafeLevel < MAX_UPGRADE_LEVEL) return false;
-  if (pantryLevel < MAX_UPGRADE_LEVEL) return false;
   if (blookLevel < MAX_UPGRADE_LEVEL) return false;
   return true;
+}
+
+function getStationPosition(foodIndex) {
+  let unlockedCount = 0;
+  for (let i = 0; i < 4; i++) if (foodUnlocked[i]) unlockedCount++;
+  let spacing = width * 0.7 / max(unlockedCount, 1);
+  let startX = width * 0.15 + spacing * 0.5;
+  let pos = 0;
+  for (let i = 0; i < foodIndex; i++) {
+    if (foodUnlocked[i]) pos++;
+  }
+  return { x: startX + pos * spacing, y: height * 0.42 };
+}
+
+function isStationSpilled(foodIndex) {
+  return spills.some(s => s.stationIndex === foodIndex);
 }
 
 // --- BLOOK CLASS ---
@@ -332,6 +356,7 @@ class Blook {
   serve() {
     if (this.state !== "waiting") return false;
     if (foodStock[this.wantedFood] <= 0) return false;
+    if (isStationSpilled(this.wantedFood)) return false;
 
     foodStock[this.wantedFood]--;
     this.state = "served";
@@ -1433,7 +1458,7 @@ function drawFoodStations() {
     let barW = sw * 0.6;
     let barH = sz(0.012);
     let barY = stationY + sh * 0.45;
-    let maxStock = getMaxStock();
+    let maxStock = getMaxStock(i);
     let stockPct = foodStock[i] / maxStock;
 
     fill(0, 0, 0, 30);
@@ -1461,10 +1486,10 @@ function drawFoodStations() {
     fill(80, 140, 60);
     text("$" + getFoodPrice(i), sx, stationY - foodIconSize * 0.7 - sz(0.02));
 
-    // Restock button
+    // Restock button (pushed down so it doesn't cover stock number)
     let btnW = sw * 0.55;
     let btnH = sz(0.035);
-    let btnY = barY + sz(0.035);
+    let btnY = barY + sz(0.055);
 
     let isLow = foodStock[i] < maxStock * 0.5;
     let isEmpty = foodStock[i] <= 0;
@@ -1494,6 +1519,69 @@ function drawFoodStations() {
   }
 }
 
+function drawSpills() {
+  for (let spill of spills) {
+    push();
+    translate(spill.x, spill.y);
+
+    let pulse = sin(spill.wobble) * 0.05 + 1;
+    let urgency = spill.timer / spill.maxTimer;
+
+    // Puddle
+    noStroke();
+    fill(180, 130, 80, 180);
+    ellipse(0, 0, sz(0.07) * pulse, sz(0.03) * pulse);
+    // Puddle highlight
+    fill(200, 160, 100, 100);
+    ellipse(-sz(0.01), -sz(0.005), sz(0.03), sz(0.012));
+
+    // Splatter drops
+    fill(180, 130, 80, 150);
+    ellipse(sz(0.035), -sz(0.008), sz(0.015), sz(0.01));
+    ellipse(-sz(0.03), sz(0.01), sz(0.012), sz(0.008));
+
+    // "CLEAN UP!" text (pulses red as time runs out)
+    let textCol = urgency > 0.4 ? [255, 180, 50] : [255, 80, 60];
+    let textPulse = urgency <= 0.4 ? sin(spill.wobble * 2) * 0.1 + 1 : 1;
+
+    fill(textCol[0], textCol[1], textCol[2]);
+    textFont("Fredoka");
+    textSize(sz(0.016) * textPulse);
+    textAlign(CENTER, CENTER);
+    text("CLEAN UP!", 0, -sz(0.025));
+
+    // Timer bar
+    let barW = sz(0.05);
+    let barH = sz(0.006);
+    fill(0, 0, 0, 40);
+    rectMode(CENTER);
+    rect(0, sz(0.02), barW, barH, barH);
+    let barCol = urgency > 0.4 ? [255, 200, 80] : [255, 80, 60];
+    fill(barCol[0], barCol[1], barCol[2]);
+    rect(-barW * (1 - urgency) * 0.5, sz(0.02), barW * urgency, barH, barH);
+    rectMode(CORNER);
+
+    pop();
+  }
+}
+
+function handleSpillClick(mx, my) {
+  for (let i = spills.length - 1; i >= 0; i--) {
+    let s = spills[i];
+    if (dist(mx, my, s.x, s.y) < sz(0.05)) {
+      // Cleaned up!
+      floatingTexts.push(new FloatingText(s.x, s.y - sz(0.03), "Cleaned!", [100, 200, 100]));
+      // Sparkle effect
+      for (let j = 0; j < 8; j++) {
+        particles.push(new SparkleParticle(s.x + random(-20, 20), s.y + random(-15, 15)));
+      }
+      spills.splice(i, 1);
+      return true;
+    }
+  }
+  return false;
+}
+
 function drawHUD() {
   // Top bar background
   fill(0, 0, 0, 40);
@@ -1504,15 +1592,15 @@ function drawHUD() {
   let hudY = sz(0.035);
   let margin = sz(0.02);
 
-  // Day
+  // Day (pushed right to avoid back button)
   fill(255);
   textSize(sz(0.022));
-  text("Day " + day + (day >= 100 ? " (FINAL)" : ""), margin, hudY);
+  text("Day " + day + (day >= 100 ? " (FINAL)" : ""), width * 0.15, hudY);
 
   // Money
   fill(255, 215, 0);
   textSize(sz(0.025));
-  let moneyX = width * 0.25;
+  let moneyX = width * 0.35;
   text("$" + money, moneyX, hudY);
 
   // Strikes
@@ -1805,10 +1893,11 @@ function startNewGame() {
   foodUnlocked = [true, false, false, false];
   foodLevel = [0, 0, 0, 0];
   cafeLevel = 0;
-  pantryLevel = 0;
+  pantryLevel = [0, 0, 0, 0];
   blookLevel = 0;
   employeeCount = 0;
-  foodStock = [getMaxStock(), 0, 0, 0];
+  employeeAssignments = [-1, -1, -1];
+  foodStock = [getMaxStock(0), 0, 0, 0];
   blooks = [];
   particles = [];
   floatingTexts = [];
@@ -1839,11 +1928,13 @@ function startDay() {
   comboTimer = 0;
   comboMultiplier = 1;
   employeeServeTimer = 0;
+  spills = [];
+  spillSpawnTimer = 0;
 
   // Ensure stock is initialized for unlocked foods
   for (let i = 0; i < 4; i++) {
     if (foodUnlocked[i] && foodStock[i] <= 0) {
-      foodStock[i] = getMaxStock();
+      foodStock[i] = getMaxStock(i);
     }
   }
 }
@@ -1921,14 +2012,19 @@ function updateDay(dt) {
     }
   }
 
-  // Employee auto-serve
+  // Employee auto-serve (only at assigned stations)
   if (employeeCount > 0) {
     employeeServeTimer += dt;
     if (employeeServeTimer >= EMPLOYEE_SERVE_INTERVAL / employeeCount) {
       employeeServeTimer = 0;
-      // Find a waiting blook to auto-serve
+      // Build set of stations that have employees
+      let staffedStations = new Set();
+      for (let a of employeeAssignments) {
+        if (a >= 0) staffedStations.add(a);
+      }
+      // Find a waiting blook at a staffed station
       for (let b of blooks) {
-        if (b.state === "waiting" && foodStock[b.wantedFood] > 0) {
+        if (b.state === "waiting" && staffedStations.has(b.wantedFood) && foodStock[b.wantedFood] > 0) {
           b.serve();
           floatingTexts.push(new FloatingText(b.x, b.y - b.size * 1.2, "Auto!", [100, 150, 255]));
           break;
@@ -1951,11 +2047,50 @@ function updateDay(dt) {
     if (coins[i].isDead()) coins.splice(i, 1);
   }
 
+  // Spill system
+  spillSpawnTimer += dt;
+  // Spills start after day 3, get more frequent with more food types
+  let unlockedFoods = foodUnlocked.filter(f => f).length;
+  let effectiveSpillInterval = spillSpawnInterval - unlockedFoods * 1.5 - day * 0.03;
+  effectiveSpillInterval = max(effectiveSpillInterval, 5);
+
+  if (day > 3 && spillSpawnTimer >= effectiveSpillInterval) {
+    spillSpawnTimer = 0;
+    // Only spill on a station that isn't already spilled
+    let candidates = [];
+    for (let i = 0; i < 4; i++) {
+      if (foodUnlocked[i] && !spills.find(s => s.stationIndex === i)) {
+        candidates.push(i);
+      }
+    }
+    if (candidates.length > 0) {
+      let idx = candidates[floor(random(candidates.length))];
+      let stationPos = getStationPosition(idx);
+      spills.push({
+        stationIndex: idx,
+        timer: SPILL_DURATION,
+        maxTimer: SPILL_DURATION,
+        x: stationPos.x,
+        y: stationPos.y + sz(0.15),
+        wobble: random(100)
+      });
+    }
+  }
+
+  // Update spills
+  for (let i = spills.length - 1; i >= 0; i--) {
+    spills[i].timer -= dt;
+    spills[i].wobble += dt * 5;
+    if (spills[i].timer <= 0) {
+      spills.splice(i, 1);
+    }
+  }
+
   // Screen shake decay
   screenShake *= 0.9;
 
-  // Day end
-  if (dayTimer >= dayDuration) {
+  // Day end (don't end while math overlay is showing — wait for it to close)
+  if (dayTimer >= dayDuration && gameState !== "math") {
     endDay();
   }
 }
@@ -1971,6 +2106,7 @@ function drawDay() {
 
   drawCafeBackground();
   drawFoodStations();
+  drawSpills();
 
   // Draw blooks (sorted by y for depth)
   let sortedBlooks = blooks.slice().sort((a, b) => a.y - b.y);
@@ -2113,6 +2249,10 @@ function startMathProblem(foodIndex) {
 }
 
 function drawMathProblem() {
+  // Day keeps running behind the math overlay!
+  let dt = (deltaTime / 1000) * gameSpeed;
+  updateDay(dt);
+
   // Draw the day scene behind (dimmed)
   push();
   if (screenShake > 0.5) {
@@ -2120,9 +2260,15 @@ function drawMathProblem() {
   }
   drawCafeBackground();
   drawFoodStations();
+  drawSpills();
   let sortedBlooks = blooks.slice().sort((a, b) => a.y - b.y);
   for (let b of sortedBlooks) b.draw();
+  for (let p of particles) p.draw();
+  for (let c of coins) c.draw();
+  for (let ft of floatingTexts) ft.draw();
   pop();
+
+  drawHUD();
 
   // Dim overlay
   fill(0, 0, 0, 120);
@@ -2290,8 +2436,10 @@ function handleMathClick() {
       mathCorrect = currentMathProblem.choices[i] === currentMathProblem.answer;
 
       if (mathCorrect) {
-        // Restock food
-        foodStock[mathRestockTarget] = getMaxStock();
+        // Restock food (fills half the max — gotta restock often!)
+        let maxSt = getMaxStock(mathRestockTarget);
+        let restockAmount = ceil(maxSt / 2);
+        foodStock[mathRestockTarget] = min(foodStock[mathRestockTarget] + restockAmount, maxSt);
         mathSolvedToday++;
 
         // Confetti
@@ -2342,9 +2490,10 @@ function startNight() {
       floatingTexts.push(new FloatingText(width / 2, height * 0.5,
         "Salaries paid: -$" + totalSalary, [255, 100, 100]));
     } else {
-      // Can't pay - employees quit
+      // Can't pay - all employees quit
       let firedCount = employeeCount;
       employeeCount = 0;
+      employeeAssignments = [-1, -1, -1];
       money = max(0, money);
       floatingTexts.push(new FloatingText(width / 2, height * 0.5,
         firedCount + " employee(s) quit!", [255, 80, 80], true));
@@ -2597,40 +2746,72 @@ function drawNightCafe(cx, cy, cw, ch) {
 }
 
 function drawNightPantry(cx, cy, cw, ch) {
-  let y = cy + sz(0.03);
+  let y = cy + sz(0.02);
+  let itemH = sz(0.07);
 
   textFont("Fredoka");
   textAlign(CENTER, CENTER);
   fill(255, 220, 150);
-  textSize(sz(0.025));
-  text("Pantry Level: " + pantryLevel + "/" + MAX_UPGRADE_LEVEL, cx + cw / 2, y);
+  textSize(sz(0.02));
+  text("Upgrade pantry storage per food item", cx + cw / 2, y);
 
-  for (let l = 0; l < MAX_UPGRADE_LEVEL; l++) {
-    fill(l < pantryLevel ? [255, 180, 80] : [80, 70, 60]);
-    ellipse(cx + cw / 2 - sz(0.05) + l * sz(0.025), y + sz(0.025), sz(0.012), sz(0.012));
+  y += sz(0.03);
+
+  for (let i = 0; i < 4; i++) {
+    let ix = cx + sz(0.02);
+    let iy = y + i * (itemH + sz(0.01));
+
+    if (iy + itemH > cy + ch) break;
+
+    // Item background
+    fill(55, 48, 42);
+    rect(ix, iy, cw - sz(0.04), itemH, sz(0.008));
+
+    // Food icon
+    drawFoodIcon(ix + sz(0.04), iy + itemH / 2, sz(0.04), i);
+
+    textFont("Fredoka");
+    textAlign(LEFT, CENTER);
+
+    if (!foodUnlocked[i]) {
+      fill(120, 110, 100);
+      textSize(sz(0.018));
+      text(FOOD_TYPES[i].name + " (locked)", ix + sz(0.08), iy + itemH / 2);
+    } else {
+      // Food name
+      fill(255, 220, 150);
+      textSize(sz(0.02));
+      text(FOOD_TYPES[i].name, ix + sz(0.08), iy + itemH * 0.3);
+
+      // Stock info
+      fill(180, 160, 130);
+      textSize(sz(0.014));
+      text("Max stock: " + getMaxStock(i) + "  |  Level " + pantryLevel[i] + "/" + MAX_UPGRADE_LEVEL,
+        ix + sz(0.08), iy + itemH * 0.65);
+
+      // Level dots
+      for (let l = 0; l < MAX_UPGRADE_LEVEL; l++) {
+        fill(l < pantryLevel[i] ? [255, 180, 80] : [80, 70, 60]);
+        ellipse(ix + sz(0.26) + l * sz(0.015), iy + itemH * 0.65, sz(0.008), sz(0.008));
+      }
+
+      if (pantryLevel[i] < MAX_UPGRADE_LEVEL) {
+        let cost = UPGRADE_COSTS.pantry[pantryLevel[i]];
+        let canAfford = money >= cost;
+        let btnX = ix + cw - sz(0.16);
+        drawButton2(btnX, iy + itemH / 2, sz(0.12), sz(0.035),
+          "Upgrade $" + cost,
+          canAfford ? [100, 180, 255] : [100, 100, 100],
+          [255, 255, 255], !canAfford);
+      } else {
+        fill(255, 215, 0);
+        textSize(sz(0.016));
+        textAlign(RIGHT, CENTER);
+        text("MAX!", ix + cw - sz(0.06), iy + itemH / 2);
+      }
+    }
   }
-
-  fill(180, 160, 130);
-  textSize(sz(0.016));
-  text("A bigger pantry means more food stock!", cx + cw / 2, y + sz(0.06));
-
-  fill(150, 140, 120);
-  textSize(sz(0.014));
-  text("Current max stock: " + getMaxStock() + " per food", cx + cw / 2, y + sz(0.09));
-  text("Next level: " + (getMaxStock() + STOCK_PER_PANTRY_LEVEL) + " per food", cx + cw / 2, y + sz(0.11));
-
-  if (pantryLevel < MAX_UPGRADE_LEVEL) {
-    let cost = UPGRADE_COSTS.pantry[pantryLevel];
-    let canAfford = money >= cost;
-    drawButton2(cx + cw / 2, y + sz(0.16), sz(0.18), sz(0.045),
-      "Upgrade Pantry $" + cost,
-      canAfford ? [100, 180, 255] : [100, 100, 100],
-      [255, 255, 255], !canAfford);
-  } else {
-    fill(255, 215, 0);
-    textSize(sz(0.025));
-    text("\u2605 MAXED OUT! \u2605", cx + cw / 2, y + sz(0.16));
-  }
+  textAlign(LEFT, TOP);
 }
 
 function drawNightBlooks(cx, cy, cw, ch) {
@@ -2691,78 +2872,127 @@ function drawNightBlooks(cx, cy, cw, ch) {
   }
 }
 
+function drawEmployeeIcon(x, y, s) {
+  fill(100, 180, 255);
+  ellipse(x, y, s, s);
+  fill(255);
+  ellipse(x - s * 0.17, y - s * 0.1, s * 0.22, s * 0.22);
+  ellipse(x + s * 0.17, y - s * 0.1, s * 0.22, s * 0.22);
+  fill(60, 40, 30);
+  ellipse(x - s * 0.17, y - s * 0.08, s * 0.11, s * 0.11);
+  ellipse(x + s * 0.17, y - s * 0.08, s * 0.11, s * 0.11);
+  noFill();
+  stroke(60, 40, 30);
+  strokeWeight(s * 0.06);
+  arc(x, y + s * 0.15, s * 0.3, s * 0.2, 0, PI);
+  noStroke();
+  // Hat
+  fill(80, 60, 140);
+  arc(x, y - s * 0.35, s * 0.8, s * 0.5, PI, TWO_PI);
+  rect(x - s * 0.5, y - s * 0.37, s, s * 0.08);
+}
+
 function drawNightStaff(cx, cy, cw, ch) {
-  let y = cy + sz(0.03);
+  let y = cy + sz(0.02);
 
   textFont("Fredoka");
   textAlign(CENTER, CENTER);
   fill(255, 220, 150);
-  textSize(sz(0.025));
-  text("Employees: " + employeeCount + "/" + MAX_EMPLOYEES, cx + cw / 2, y);
-
-  fill(180, 160, 130);
-  textSize(sz(0.016));
-  text("Employees auto-serve blooks for you!", cx + cw / 2, y + sz(0.04));
+  textSize(sz(0.02));
+  text("Hire employees and assign them to food stations", cx + cw / 2, y);
 
   fill(150, 140, 120);
-  textSize(sz(0.014));
-  text("Salary: $" + EMPLOYEE_SALARY + " per employee per night", cx + cw / 2, y + sz(0.07));
-  if (employeeCount > 0) {
-    text("Total salary: $" + (employeeCount * EMPLOYEE_SALARY) + "/night", cx + cw / 2, y + sz(0.09));
-    text("Auto-serve speed: every " + (EMPLOYEE_SERVE_INTERVAL / employeeCount).toFixed(1) + "s", cx + cw / 2, y + sz(0.11));
-  }
+  textSize(sz(0.013));
+  text("Salary: $" + EMPLOYEE_SALARY + "/employee/night" +
+    (employeeCount > 0 ? "  |  Total: $" + (employeeCount * EMPLOYEE_SALARY) + "/night" : ""),
+    cx + cw / 2, y + sz(0.025));
 
-  // Draw employee icons
+  let slotY = y + sz(0.05);
+  let slotH = sz(0.08);
+
   for (let i = 0; i < MAX_EMPLOYEES; i++) {
-    let ex = cx + cw / 2 - sz(0.08) + i * sz(0.08);
-    let ey = y + sz(0.16);
+    let sy = slotY + i * (slotH + sz(0.01));
+    let hired = employeeAssignments[i] >= 0;
 
-    if (i < employeeCount) {
-      // Hired employee
-      fill(100, 180, 255);
-      ellipse(ex, ey, sz(0.035), sz(0.035));
-      fill(255);
-      ellipse(ex - sz(0.006), ey - sz(0.004), sz(0.008), sz(0.008));
-      ellipse(ex + sz(0.006), ey - sz(0.004), sz(0.008), sz(0.008));
-      noFill();
-      stroke(255);
-      strokeWeight(1.5);
-      arc(ex, ey + sz(0.005), sz(0.012), sz(0.008), 0, PI);
-      noStroke();
-      // Hat
-      fill(80, 60, 140);
-      arc(ex, ey - sz(0.012), sz(0.03), sz(0.02), PI, TWO_PI);
-      rect(ex - sz(0.02), ey - sz(0.014), sz(0.04), sz(0.005));
-    } else {
-      // Empty slot
-      fill(80, 70, 60);
-      ellipse(ex, ey, sz(0.035), sz(0.035));
+    // Slot background
+    fill(hired ? [55, 55, 45] : [50, 45, 40]);
+    rect(cx + sz(0.02), sy, cw - sz(0.04), slotH, sz(0.008));
+
+    let slotX = cx + sz(0.02);
+
+    if (!hired) {
+      // Not hired — show hire button
       fill(120, 110, 100);
+      textSize(sz(0.018));
+      textAlign(LEFT, CENTER);
+      text("Employee " + (i + 1) + " — Not hired", slotX + sz(0.06), sy + slotH / 2);
+
+      // Empty icon
+      fill(80, 70, 60);
+      ellipse(slotX + sz(0.035), sy + slotH / 2, sz(0.035), sz(0.035));
+      fill(120, 110, 100);
+      textAlign(CENTER, CENTER);
       textSize(sz(0.02));
-      text("?", ex, ey);
+      text("?", slotX + sz(0.035), sy + slotH / 2);
+
+      let canAfford = money >= UPGRADE_COSTS.employeeHire;
+      drawButton2(slotX + cw - sz(0.14), sy + slotH / 2, sz(0.12), sz(0.035),
+        "Hire $" + UPGRADE_COSTS.employeeHire,
+        canAfford ? [100, 180, 100] : [100, 100, 100],
+        [255, 255, 255], !canAfford);
+    } else {
+      // Hired — show employee icon + assigned station + reassign buttons
+      drawEmployeeIcon(slotX + sz(0.035), sy + slotH / 2, sz(0.035));
+
+      textAlign(LEFT, CENTER);
+      fill(255, 220, 150);
+      textSize(sz(0.016));
+      text("Employee " + (i + 1), slotX + sz(0.065), sy + slotH * 0.3);
+
+      // Show assigned station
+      let assignedFood = employeeAssignments[i];
+      fill(180, 160, 130);
+      textSize(sz(0.013));
+      text("Assigned to:", slotX + sz(0.065), sy + slotH * 0.65);
+
+      // Draw food assignment buttons (one per unlocked food)
+      let btnStartX = slotX + sz(0.16);
+      let btnSize = sz(0.032);
+      let bi = 0;
+      for (let f = 0; f < 4; f++) {
+        if (!foodUnlocked[f]) continue;
+        let bx = btnStartX + bi * (btnSize + sz(0.008));
+        let by = sy + slotH * 0.65;
+        let isAssigned = assignedFood === f;
+
+        // Button bg
+        fill(isAssigned ? FOOD_TYPES[f].color : [70, 60, 55]);
+        if (isAssigned) {
+          stroke(255, 220, 100);
+          strokeWeight(2);
+        }
+        rectMode(CENTER);
+        rect(bx, by, btnSize, btnSize * 0.8, sz(0.004));
+        noStroke();
+        rectMode(CORNER);
+
+        // Food icon (small)
+        drawFoodIcon(bx, by, btnSize * 0.65, f);
+        bi++;
+      }
     }
   }
 
   // Warning about salary
+  let warningY = slotY + MAX_EMPLOYEES * (slotH + sz(0.01)) + sz(0.01);
   if (employeeCount > 0) {
     let totalSalary = employeeCount * EMPLOYEE_SALARY;
     if (money < totalSalary * 2) {
       fill(255, 150, 80);
       textSize(sz(0.013));
-      text("Warning: Low funds! Employees may quit!", cx + cw / 2, y + sz(0.21));
+      textAlign(CENTER, CENTER);
+      text("Warning: Low funds! Employees may quit!", cx + cw / 2, warningY);
     }
-  }
-
-  if (employeeCount < MAX_EMPLOYEES) {
-    let canAfford = money >= UPGRADE_COSTS.employeeHire;
-    drawButton2(cx + cw / 2, y + sz(0.26), sz(0.18), sz(0.045),
-      "Hire Employee $" + UPGRADE_COSTS.employeeHire,
-      canAfford ? [100, 180, 100] : [100, 100, 100],
-      [255, 255, 255], !canAfford);
-  } else {
-    fill(255, 215, 0);
-    textSize(sz(0.025));
-    text("Full staff!", cx + cw / 2, y + sz(0.26));
   }
 }
 
@@ -2825,7 +3055,7 @@ function handleNightFoodClick(cx, cy, cw) {
         if (money >= FOOD_TYPES[i].unlockCost) {
           money -= FOOD_TYPES[i].unlockCost;
           foodUnlocked[i] = true;
-          foodStock[i] = getMaxStock();
+          foodStock[i] = getMaxStock(i);
           purchaseFlash = 100;
           floatingTexts.push(new FloatingText(width / 2, height * 0.5,
             FOOD_TYPES[i].name + " Unlocked!", [100, 255, 100], true));
@@ -2870,23 +3100,28 @@ function handleNightCafeClick(cx, cy, cw) {
 }
 
 function handleNightPantryClick(cx, cy, cw) {
-  let y = cy + sz(0.03);
-  if (pantryLevel < MAX_UPGRADE_LEVEL) {
-    if (isInRect(mouseX, mouseY, cx + cw / 2, y + sz(0.16), sz(0.18), sz(0.045))) {
-      let cost = UPGRADE_COSTS.pantry[pantryLevel];
+  let y = cy + sz(0.02) + sz(0.03);
+  let itemH = sz(0.07);
+
+  for (let i = 0; i < 4; i++) {
+    if (!foodUnlocked[i]) continue;
+    let ix = cx + sz(0.02);
+    let iy = y + i * (itemH + sz(0.01));
+    let btnX = ix + cw - sz(0.16);
+    let btnY = iy + itemH / 2;
+
+    if (pantryLevel[i] < MAX_UPGRADE_LEVEL && isInRect(mouseX, mouseY, btnX, btnY, sz(0.12), sz(0.035))) {
+      let cost = UPGRADE_COSTS.pantry[pantryLevel[i]];
       if (money >= cost) {
         money -= cost;
-        pantryLevel++;
-        // Refill stocks to new max
-        for (let i = 0; i < 4; i++) {
-          if (foodUnlocked[i]) {
-            foodStock[i] = getMaxStock();
-          }
-        }
+        pantryLevel[i]++;
+        // Refill this food's stock to new max
+        foodStock[i] = getMaxStock(i);
         purchaseFlash = 80;
         floatingTexts.push(new FloatingText(width / 2, height * 0.5,
-          "Pantry upgraded! Max stock: " + getMaxStock(), [100, 200, 255]));
+          FOOD_TYPES[i].name + " pantry upgraded! Max: " + getMaxStock(i), [100, 200, 255]));
       }
+      return;
     }
   }
 }
@@ -2908,15 +3143,60 @@ function handleNightBlooksClick(cx, cy, cw) {
 }
 
 function handleNightStaffClick(cx, cy, cw) {
-  let y = cy + sz(0.03);
-  if (employeeCount < MAX_EMPLOYEES) {
-    if (isInRect(mouseX, mouseY, cx + cw / 2, y + sz(0.26), sz(0.18), sz(0.045))) {
-      if (money >= UPGRADE_COSTS.employeeHire) {
-        money -= UPGRADE_COSTS.employeeHire;
-        employeeCount++;
-        purchaseFlash = 80;
-        floatingTexts.push(new FloatingText(width / 2, height * 0.5,
-          "New employee hired!", [100, 255, 100], true));
+  let y = cy + sz(0.02);
+  let slotY = y + sz(0.05);
+  let slotH = sz(0.08);
+
+  for (let i = 0; i < MAX_EMPLOYEES; i++) {
+    let sy = slotY + i * (slotH + sz(0.01));
+    let hired = employeeAssignments[i] >= 0;
+    let slotX = cx + sz(0.02);
+
+    if (!hired) {
+      // Hire button
+      let btnX = slotX + cw - sz(0.14);
+      let btnY = sy + slotH / 2;
+      if (isInRect(mouseX, mouseY, btnX, btnY, sz(0.12), sz(0.035))) {
+        if (money >= UPGRADE_COSTS.employeeHire) {
+          money -= UPGRADE_COSTS.employeeHire;
+          // Auto-assign to first unlocked food without an employee
+          let assignTo = 0;
+          for (let f = 0; f < 4; f++) {
+            if (foodUnlocked[f] && !employeeAssignments.includes(f)) {
+              assignTo = f;
+              break;
+            }
+          }
+          // Fallback: assign to first unlocked food
+          if (!foodUnlocked[assignTo]) {
+            for (let f = 0; f < 4; f++) {
+              if (foodUnlocked[f]) { assignTo = f; break; }
+            }
+          }
+          employeeAssignments[i] = assignTo;
+          employeeCount++;
+          purchaseFlash = 80;
+          floatingTexts.push(new FloatingText(width / 2, height * 0.5,
+            "Employee hired for " + FOOD_TYPES[assignTo].name + "!", [100, 255, 100], true));
+        }
+        return;
+      }
+    } else {
+      // Reassign buttons — check food station clicks
+      let btnStartX = slotX + sz(0.16);
+      let btnSize = sz(0.032);
+      let bi = 0;
+      for (let f = 0; f < 4; f++) {
+        if (!foodUnlocked[f]) continue;
+        let bx = btnStartX + bi * (btnSize + sz(0.008));
+        let by = sy + slotH * 0.65;
+        if (isInRect(mouseX, mouseY, bx, by, btnSize, btnSize * 0.8)) {
+          employeeAssignments[i] = f;
+          floatingTexts.push(new FloatingText(width / 2, height * 0.5,
+            "Employee " + (i + 1) + " assigned to " + FOOD_TYPES[f].name, [100, 200, 255]));
+          return;
+        }
+        bi++;
       }
     }
   }
@@ -3110,10 +3390,18 @@ function handleDayClick() {
     return;
   }
 
+  // Check spill clicks first (clean up messes!)
+  if (handleSpillClick(mouseX, mouseY)) return;
+
   // Check blook clicks (serve)
   for (let b of blooks) {
     if (b.state === "waiting" && b.isClicked(mouseX, mouseY)) {
-      if (foodStock[b.wantedFood] > 0) {
+      if (isStationSpilled(b.wantedFood)) {
+        // Station is spilled - show hint
+        floatingTexts.push(new FloatingText(b.x, b.y - b.size,
+          "Clean the spill first!", [255, 150, 50]));
+        screenShake = 2;
+      } else if (foodStock[b.wantedFood] > 0) {
         b.serve();
       } else {
         // Food is empty - show floating text
@@ -3141,7 +3429,7 @@ function handleDayClick() {
     let sx = startX + pos * spacing;
     let btnW = spacing * 0.7 * 0.55;
     let btnH = sz(0.035);
-    let btnY = barY + sz(0.035);
+    let btnY = barY + sz(0.055);
 
     if (isInRect(mouseX, mouseY, sx, btnY, btnW, btnH)) {
       startMathProblem(i);
