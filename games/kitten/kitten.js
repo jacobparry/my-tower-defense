@@ -66,7 +66,7 @@ var FORESTS = [
 var KITTENS = [
   {
     name: "Whiskers",
-    personality: "the hungry adventurer",
+    personality: "loves to eat",
     bodyColor: [255, 160, 60],
     darkColor: [200, 120, 40],
     eyeColor: [80, 190, 80],
@@ -74,11 +74,11 @@ var KITTENS = [
     forestIndex: 0,
     neededItem: "fish",
     hint: "This kitten is SO HUNGRY!\nIt wants something to EAT!",
-    foundText: "Whiskers was hiding near the geyser because he was so hungry!"
+    foundText: "Whiskers was so hungry! Yum yum fish!"
   },
   {
     name: "Mittens",
-    personality: "the playful climber",
+    personality: "loves to play",
     bodyColor: [240, 240, 248],
     darkColor: [170, 170, 185],
     eyeColor: [70, 140, 220],
@@ -86,11 +86,11 @@ var KITTENS = [
     forestIndex: 0,
     neededItem: "yarn",
     hint: "This kitten wants to PLAY\nwith a round toy!",
-    foundText: "Mittens was stuck in the pine tree and wanted to play!"
+    foundText: "Mittens was in a tree! She loves yarn!"
   },
   {
     name: "Shadow",
-    personality: "the shy explorer",
+    personality: "likes to hide",
     bodyColor: [55, 55, 60],
     darkColor: [35, 35, 40],
     eyeColor: [210, 190, 60],
@@ -98,11 +98,11 @@ var KITTENS = [
     forestIndex: 1,
     neededItem: "flashlight",
     hint: "It's SO DARK in here!\nYou need something that makes LIGHT!",
-    foundText: "Shadow was hiding in the dark cave, too shy to come out!"
+    foundText: "Shadow was in a dark cave! The light helped!"
   },
   {
     name: "Sunny",
-    personality: "the butterfly chaser",
+    personality: "loves to chase bugs",
     bodyColor: [255, 215, 80],
     darkColor: [235, 185, 55],
     eyeColor: [100, 185, 100],
@@ -110,11 +110,11 @@ var KITTENS = [
     forestIndex: 1,
     neededItem: "feather",
     hint: "This kitten wants to chase\na FEATHER!",
-    foundText: "Sunny was chasing butterflies in the meadow!"
+    foundText: "Sunny loves to chase the feather! So fun!"
   },
   {
     name: "Patches",
-    personality: "the curious sniffer",
+    personality: "loves to sniff",
     bodyColor: [255, 225, 185],
     darkColor: [235, 140, 60],
     eyeColor: [165, 125, 65],
@@ -122,23 +122,23 @@ var KITTENS = [
     forestIndex: 2,
     neededItem: "catnip",
     hint: "This kitten keeps SNIFFING!\nIt wants something that SMELLS good!",
-    foundText: "Patches was hiding in the big tree, sniffing for something yummy!"
+    foundText: "Patches loves the smell of catnip!"
   },
   {
     name: "Pebble",
-    personality: "the tiny sleeper",
+    personality: "loves to nap",
     bodyColor: [175, 175, 185],
     darkColor: [145, 145, 155],
     eyeColor: [100, 165, 210],
     marking: "none",
     forestIndex: 2,
     neededItem: "bell",
-    hint: "Shhh! You can barely hear it.\nYou need something that JINGLES!",
-    foundText: "Pebble was sleeping under the ferns! The bell woke her up!"
+    hint: "Shhh! So hard to hear!\nUse something that JINGLES!",
+    foundText: "Pebble was asleep! The bell woke her up!"
   },
   {
     name: "Maple",
-    personality: "the leaf diver",
+    personality: "loves fall leaves",
     bodyColor: [225, 115, 50],
     darkColor: [185, 85, 30],
     eyeColor: [80, 165, 80],
@@ -146,11 +146,11 @@ var KITTENS = [
     forestIndex: 3,
     neededItem: "blanket",
     hint: "Brrr! This kitten is SO COLD!\nIt needs something WARM!",
-    foundText: "Maple was shivering in the leaves! The blanket warmed her right up!"
+    foundText: "Maple was so cold! The blanket made her warm!"
   },
   {
     name: "Misty",
-    personality: "the ghost kitty",
+    personality: "so sneaky",
     bodyColor: [230, 230, 240],
     darkColor: [200, 200, 212],
     eyeColor: [155, 135, 210],
@@ -158,11 +158,11 @@ var KITTENS = [
     forestIndex: 3,
     neededItem: "milk",
     hint: "This kitten is SO THIRSTY!\nIt needs something to DRINK!",
-    foundText: "Misty was thirsty from playing in the fog! She loved the milk!"
+    foundText: "Misty was so thirsty! She loved the milk!"
   },
   {
     name: "Fern",
-    personality: "the nature lover",
+    personality: "loves plants",
     bodyColor: [165, 125, 80],
     darkColor: [135, 100, 60],
     eyeColor: [80, 175, 80],
@@ -170,11 +170,11 @@ var KITTENS = [
     forestIndex: 4,
     neededItem: "laser",
     hint: "This kitten is chasing\na tiny RED DOT!",
-    foundText: "Fern couldn't resist chasing the laser pointer!"
+    foundText: "Fern loves the red dot! So fun to chase!"
   },
   {
     name: "Luna",
-    personality: "the stargazer",
+    personality: "loves the stars",
     bodyColor: [90, 90, 105],
     darkColor: [65, 65, 80],
     eyeColor: [175, 175, 255],
@@ -182,62 +182,62 @@ var KITTENS = [
     forestIndex: 4,
     neededItem: "music",
     hint: "This kitten loves MUSIC!\nPlay a SONG for it!",
-    foundText: "Luna came down from the tree when she heard the music!"
+    foundText: "Luna came down for the song! She loves music!"
   }
 ];
 
 var ITEMS = [
   { id: "fish", name: "Fish", price: 5, desc: "Yummy fish to eat!", color: [70, 150, 220] },
   { id: "yarn", name: "Yarn Ball", price: 5, desc: "A fun round toy!", color: [235, 80, 130] },
-  { id: "flashlight", name: "Flashlight", price: 6, desc: "Makes light in the dark!", color: [255, 220, 80] },
-  { id: "feather", name: "Feather Toy", price: 5, desc: "A feather to chase!", color: [185, 105, 225] },
-  { id: "catnip", name: "Catnip", price: 5, desc: "Smells amazing!", color: [80, 195, 80] },
+  { id: "flashlight", name: "Light", price: 6, desc: "Shines in the dark!", color: [255, 220, 80] },
+  { id: "feather", name: "Feather", price: 5, desc: "Fun to chase!", color: [185, 105, 225] },
+  { id: "catnip", name: "Catnip", price: 5, desc: "Smells so good!", color: [80, 195, 80] },
   { id: "bell", name: "Bell", price: 4, desc: "Jingle jingle!", color: [245, 205, 60] },
-  { id: "blanket", name: "Blanket", price: 5, desc: "Warm and cozy!", color: [130, 170, 230] },
+  { id: "blanket", name: "Blanket", price: 5, desc: "Warm and soft!", color: [130, 170, 230] },
   { id: "milk", name: "Milk", price: 4, desc: "A yummy drink!", color: [240, 240, 248] },
-  { id: "laser", name: "Laser Pointer", price: 6, desc: "A red dot to chase!", color: [230, 60, 60] },
-  { id: "music", name: "Music Box", price: 5, desc: "Plays a pretty song!", color: [220, 160, 200] }
+  { id: "laser", name: "Laser", price: 6, desc: "A red dot to chase!", color: [230, 60, 60] },
+  { id: "music", name: "Music Box", price: 5, desc: "Plays a fun song!", color: [220, 160, 200] }
 ];
 
 var SPOT_TEMPLATES = [
   // Forest 0: Yellowstone
   [
-    { rx: 0.20, ry: 0.52, rSize: 0.09, type: "geyser", content: "kitten", kittenIndex: 0, label: "Steamy Geyser" },
-    { rx: 0.75, ry: 0.40, rSize: 0.10, type: "pinetree", content: "kitten", kittenIndex: 1, label: "Tall Pine Tree" },
-    { rx: 0.45, ry: 0.68, rSize: 0.08, type: "pool", content: "coins", coins: 5, label: "Hot Spring" },
-    { rx: 0.88, ry: 0.62, rSize: 0.07, type: "rocks", content: "critter", critter: "butterfly", label: "Rock Pile" },
+    { rx: 0.20, ry: 0.52, rSize: 0.09, type: "geyser", content: "kitten", kittenIndex: 0, label: "Hot Steam" },
+    { rx: 0.75, ry: 0.40, rSize: 0.10, type: "pinetree", content: "kitten", kittenIndex: 1, label: "Big Tree" },
+    { rx: 0.45, ry: 0.68, rSize: 0.08, type: "pool", content: "coins", coins: 5, label: "Hot Pool" },
+    { rx: 0.88, ry: 0.62, rSize: 0.07, type: "rocks", content: "critter", critter: "butterfly", label: "Rocks" },
     { rx: 0.10, ry: 0.72, rSize: 0.07, type: "log", content: "coins", coins: 5, label: "Old Log" }
   ],
   // Forest 1: Yosemite
   [
     { rx: 0.15, ry: 0.60, rSize: 0.09, type: "cave", content: "kitten", kittenIndex: 2, label: "Dark Cave" },
-    { rx: 0.58, ry: 0.53, rSize: 0.10, type: "flowers", content: "kitten", kittenIndex: 3, label: "Flower Meadow" },
-    { rx: 0.82, ry: 0.48, rSize: 0.08, type: "rocks", content: "coins", coins: 5, label: "Waterfall Rocks" },
-    { rx: 0.38, ry: 0.42, rSize: 0.07, type: "log", content: "critter", critter: "bunny", label: "Fallen Tree" },
+    { rx: 0.58, ry: 0.53, rSize: 0.10, type: "flowers", content: "kitten", kittenIndex: 3, label: "Flowers" },
+    { rx: 0.82, ry: 0.48, rSize: 0.08, type: "rocks", content: "coins", coins: 5, label: "Waterfall" },
+    { rx: 0.38, ry: 0.42, rSize: 0.07, type: "log", content: "critter", critter: "bunny", label: "Big Log" },
     { rx: 0.90, ry: 0.70, rSize: 0.07, type: "bush", content: "coins", coins: 5, label: "Berry Bush" }
   ],
   // Forest 2: Redwood
   [
-    { rx: 0.28, ry: 0.48, rSize: 0.10, type: "hollowtree", content: "kitten", kittenIndex: 4, label: "Hollow Tree" },
-    { rx: 0.68, ry: 0.60, rSize: 0.09, type: "ferns", content: "kitten", kittenIndex: 5, label: "Fern Patch" },
-    { rx: 0.48, ry: 0.38, rSize: 0.08, type: "mushroom", content: "coins", coins: 5, label: "Mushroom Ring" },
+    { rx: 0.28, ry: 0.48, rSize: 0.10, type: "hollowtree", content: "kitten", kittenIndex: 4, label: "Tree Hole" },
+    { rx: 0.68, ry: 0.60, rSize: 0.09, type: "ferns", content: "kitten", kittenIndex: 5, label: "Ferns" },
+    { rx: 0.48, ry: 0.38, rSize: 0.08, type: "mushroom", content: "coins", coins: 5, label: "Mushrooms" },
     { rx: 0.12, ry: 0.65, rSize: 0.07, type: "log", content: "critter", critter: "squirrel", label: "Log Bridge" },
     { rx: 0.85, ry: 0.55, rSize: 0.07, type: "rocks", content: "coins", coins: 5, label: "Mossy Rock" }
   ],
   // Forest 3: Smoky Mountains
   [
     { rx: 0.38, ry: 0.62, rSize: 0.10, type: "leaves", content: "kitten", kittenIndex: 6, label: "Leaf Pile" },
-    { rx: 0.78, ry: 0.48, rSize: 0.09, type: "mist", content: "kitten", kittenIndex: 7, label: "Misty Hollow" },
+    { rx: 0.78, ry: 0.48, rSize: 0.09, type: "mist", content: "kitten", kittenIndex: 7, label: "Foggy Spot" },
     { rx: 0.18, ry: 0.55, rSize: 0.08, type: "stream", content: "coins", coins: 5, label: "Stream" },
     { rx: 0.55, ry: 0.40, rSize: 0.07, type: "stump", content: "critter", critter: "bird", label: "Tree Stump" },
-    { rx: 0.90, ry: 0.68, rSize: 0.07, type: "bush", content: "coins", coins: 5, label: "Autumn Bush" }
+    { rx: 0.90, ry: 0.68, rSize: 0.07, type: "bush", content: "coins", coins: 5, label: "Red Bush" }
   ],
   // Forest 4: Olympic Rainforest
   [
-    { rx: 0.32, ry: 0.56, rSize: 0.09, type: "mushroom", content: "kitten", kittenIndex: 8, label: "Giant Mushroom" },
+    { rx: 0.32, ry: 0.56, rSize: 0.09, type: "mushroom", content: "kitten", kittenIndex: 8, label: "Big Mushroom" },
     { rx: 0.72, ry: 0.44, rSize: 0.10, type: "mossybranch", content: "kitten", kittenIndex: 9, label: "Mossy Branch" },
-    { rx: 0.12, ry: 0.64, rSize: 0.07, type: "puddle", content: "coins", coins: 5, label: "Rain Puddle" },
-    { rx: 0.50, ry: 0.50, rSize: 0.07, type: "vines", content: "critter", critter: "frog", label: "Vine Curtain" },
+    { rx: 0.12, ry: 0.64, rSize: 0.07, type: "puddle", content: "coins", coins: 5, label: "Puddle" },
+    { rx: 0.50, ry: 0.50, rSize: 0.07, type: "vines", content: "critter", critter: "frog", label: "Vines" },
     { rx: 0.90, ry: 0.58, rSize: 0.07, type: "ferns", content: "coins", coins: 5, label: "Fern Cave" }
   ]
 ];
@@ -381,7 +381,7 @@ function drawMenu() {
   textSize(titleSize * 0.38);
   textStyle(NORMAL);
   fill(255, 255, 255, 200);
-  text("A Forest Adventure", width / 2, titleY + titleSize * 0.7);
+  text("A Fun Forest Game", width / 2, titleY + titleSize * 0.7);
 
   // Draw cute kittens peeking from sides
   drawMenuKittens();
@@ -400,7 +400,7 @@ function drawMenu() {
   textSize(min(width, height) * 0.025);
   fill(255, 255, 255, 120);
   textAlign(CENTER, CENTER);
-  text("Press ESC for game hub", width / 2, height * 0.93);
+  text("Press ESC to go back", width / 2, height * 0.93);
 }
 
 function drawMenuBackground() {
@@ -509,7 +509,7 @@ function drawStory() {
     textWrap(WORD);
     textLeading(min(width, height) * 0.065);
     text(
-      "Your 10 adorable kittens escaped and\ngot lost in the forest!",
+      "Your 10 cute kittens ran away\nand got lost in the woods!",
       width / 2, height * 0.30
     );
 
@@ -524,7 +524,7 @@ function drawStory() {
     textSize(min(width, height) * 0.038);
     fill(255, 255, 255, 180);
     text(
-      "They're hiding in national parks all over the country.\nCan you find them all?",
+      "They are hiding in parks far away.\nCan you find them all?",
       width / 2, height * 0.78
     );
   } else {
@@ -541,11 +541,11 @@ function drawStory() {
     fill(255, 255, 255, 220);
 
     var tips = [
-      "Read the HINT to pick the right item!",
-      "Each kitten needs a DIFFERENT item!",
-      "Wrong item = kitten runs away!",
-      "Buy items at the SHOP!",
-      "Travel between forests anytime!"
+      "Read the HINT to pick the right thing!",
+      "Each kitten needs its OWN thing!",
+      "Wrong thing = kitten runs away!",
+      "Buy things at the SHOP!",
+      "You can go to any forest!"
     ];
 
     var startY = height * 0.26;
@@ -603,7 +603,7 @@ function drawMap() {
   textStyle(BOLD);
   textSize(min(width, height) * 0.06);
   fill(80, 50, 20);
-  text("Choose a Forest!", width / 2, height * 0.07);
+  text("Pick a Forest!", width / 2, height * 0.07);
 
   // Kitten counter
   var foundCount = countFoundKittens();
@@ -981,7 +981,7 @@ function handleShopClick() {
       spawnSparkles(mouseX, mouseY, 8);
       showFeedback("Got " + item.name + "!", mouseX, mouseY - 30);
     } else if (ownedItems[item.id]) {
-      showFeedback("Already owned!", mouseX, mouseY - 30);
+      showFeedback("You have this!", mouseX, mouseY - 30);
     } else {
       showFeedback("Need more coins!", mouseX, mouseY - 30);
     }
@@ -1165,11 +1165,11 @@ function handleForestClick() {
       // Cute critter!
       spot.investigated = true;
       var critterMsgs = {
-        butterfly: "A pretty butterfly! Not a kitten...",
-        bunny: "A cute bunny! Not a kitten though!",
-        squirrel: "A silly squirrel! Keep looking!",
-        bird: "A little bird! But where are the kittens?",
-        frog: "Ribbit! Just a frog. Keep searching!"
+        butterfly: "A butterfly! Not a kitten!",
+        bunny: "A bunny! Not a kitten!",
+        squirrel: "A squirrel! Not a kitten!",
+        bird: "A bird! Not a kitten!",
+        frog: "Ribbit! A frog! Not a kitten!"
       };
       spawnSparkles(spot.rx * width, spot.ry * height, 6);
       showFeedback(critterMsgs[spot.critter] || "Not a kitten!", spot.rx * width, spot.ry * height - 30);
@@ -1227,13 +1227,13 @@ function drawInvestigate() {
   if (spot.scared) {
     fill(200, 60, 60);
     textSize(min(panelW, panelH) * 0.06);
-    text("Oh no! Wrong item!", panelX, panelY - panelH * 0.02);
+    text("Oh no! Wrong one!", panelX, panelY - panelH * 0.02);
     textSize(min(panelW, panelH) * 0.05);
     fill(200, 60, 60);
     text("The kitten ran away!", panelX, panelY + panelH * 0.06);
     textSize(min(panelW, panelH) * 0.04);
     fill(140, 100, 70);
-    text("Leave and come back to try again!", panelX, panelY + panelH * 0.14);
+    text("Go back and try again!", panelX, panelY + panelH * 0.14);
   } else {
     text(kitten.hint, panelX, panelY + panelH * 0.02);
   }
@@ -1244,12 +1244,12 @@ function drawInvestigate() {
     textAlign(CENTER, CENTER);
     textSize(min(panelW, panelH) * 0.04);
     fill(140, 120, 90);
-    text("Choose an item:", panelX, itemY - panelH * 0.06);
+    text("Pick one:", panelX, itemY - panelH * 0.06);
 
     var ownedList = getOwnedItemsList();
     if (ownedList.length === 0) {
       fill(180, 100, 60);
-      text("You don't have any items! Visit the shop.", panelX, itemY);
+      text("You have no things! Go to the shop!", panelX, itemY);
     } else {
       var iSize = min(panelW / (ownedList.length + 1), panelH * 0.12, 55);
       var totalIW = ownedList.length * iSize * 1.5;
@@ -1326,7 +1326,7 @@ function useItem(itemId, spot) {
   // Wrong item - kitten gets scared and runs away!
   spot.scared = true;
   spawnConfetti(width / 2, height / 2, 15, [200, 60, 60]);
-  showFeedback("Oh no! Wrong item! The kitten ran away!", width / 2, height * 0.3);
+  showFeedback("Oh no! Wrong one! It ran away!", width / 2, height * 0.3);
 }
 
 // ============== SCREEN: FOUND ==============
