@@ -23,14 +23,32 @@ Orbital space station defense with 360-degree combat. Satellites orbit your stat
 - 1000 waves with boss encounters every 10th wave
 - Speed controls: pause, 1x, 5x, 10x
 
-### The Million Dollar Mansion
-Idle/clicker emerald mining adventure. Help a poor villager find emeralds, buy upgrades, and build the Million Dollar Emerald Mansion together.
+### The Billion Dollar Mansion
+Idle/clicker emerald mining adventure. Help a poor villager find emeralds, buy upgrades, and build the Billion Dollar Emerald Mansion together.
 
 - Click-to-mine with combo multiplier system
 - 6 shop items: Detector, Planter, Sucker, Miner, Portal, Mansion
 - Villager companion with happiness mechanic (share emeralds to keep them happy)
 - Visual world that evolves as you progress
 - Milestone celebrations and epic victory sequence
+
+### Cafe
+Run your own cafe! Serve adorable blooks, solve money math problems to restock food, and upgrade your cafe to become the ultimate chef.
+
+- Cute blooks to serve
+- Money math that levels up with difficulty
+- Day/Night upgrade cycle
+- 100 days of cafe fun
+
+### Kitten Finder
+Your 10 adorable kittens got lost in famous national park forests! Search Yellowstone, Yosemite, Redwood, Smoky Mountains, and Olympic Rainforest to find them all.
+
+- 10 unique kittens with different personalities
+- 5 beautiful national park forest scenes
+- Buy items (fish, flashlight, yarn, catnip, feather toy, bell) to lure kittens
+- Don't use milk — kittens run away from it!
+- Travel between forests anytime
+- Designed for young kids (ages 5-7)
 
 ## Tech Stack
 
@@ -51,9 +69,15 @@ my-tower-defense/
 │   ├── space/
 │   │   ├── space.html            # Game page
 │   │   └── space.js              # All game logic
-│   └── mansion/
-│       ├── mansion.html          # Game page
-│       └── mansion.js            # All game logic
+│   ├── mansion/
+│   │   ├── mansion.html          # Game page
+│   │   └── mansion.js            # All game logic
+│   ├── cafe/
+│   │   ├── cafe.html             # Game page
+│   │   └── cafe.js               # All game logic
+│   └── kitten/
+│       ├── kitten.html           # Game page
+│       └── kitten.js             # All game logic
 └── README.md
 ```
 
