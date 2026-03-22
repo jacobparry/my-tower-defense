@@ -73,7 +73,7 @@ var KITTENS = [
     marking: "stripes",
     forestIndex: 0,
     neededItem: "fish",
-    hint: "This kitten looks really hungry!",
+    hint: "This kitten is SO HUNGRY!\nIt wants something to EAT!",
     foundText: "Whiskers was hiding near the geyser because he was so hungry!"
   },
   {
@@ -85,7 +85,7 @@ var KITTENS = [
     marking: "paws",
     forestIndex: 0,
     neededItem: "yarn",
-    hint: "This kitten wants to play with something!",
+    hint: "This kitten wants to PLAY\nwith a round toy!",
     foundText: "Mittens was stuck in the pine tree and wanted to play!"
   },
   {
@@ -97,7 +97,7 @@ var KITTENS = [
     marking: "none",
     forestIndex: 1,
     neededItem: "flashlight",
-    hint: "It's so dark in here! You can barely see...",
+    hint: "It's SO DARK in here!\nYou need something that makes LIGHT!",
     foundText: "Shadow was hiding in the dark cave, too shy to come out!"
   },
   {
@@ -109,7 +109,7 @@ var KITTENS = [
     marking: "none",
     forestIndex: 1,
     neededItem: "feather",
-    hint: "This kitten is watching something fly around...",
+    hint: "This kitten wants to chase\na FEATHER!",
     foundText: "Sunny was chasing butterflies in the meadow!"
   },
   {
@@ -121,7 +121,7 @@ var KITTENS = [
     marking: "calico",
     forestIndex: 2,
     neededItem: "catnip",
-    hint: "This kitten keeps sniffing the air...",
+    hint: "This kitten keeps SNIFFING!\nIt wants something that SMELLS good!",
     foundText: "Patches was hiding in the big tree, sniffing for something yummy!"
   },
   {
@@ -133,7 +133,7 @@ var KITTENS = [
     marking: "none",
     forestIndex: 2,
     neededItem: "bell",
-    hint: "You can barely hear a tiny purr...",
+    hint: "Shhh! You can barely hear it.\nYou need something that JINGLES!",
     foundText: "Pebble was sleeping under the ferns! The bell woke her up!"
   },
   {
@@ -144,9 +144,9 @@ var KITTENS = [
     eyeColor: [80, 165, 80],
     marking: "stripes",
     forestIndex: 3,
-    neededItem: "fish",
-    hint: "This kitten's tummy is rumbling!",
-    foundText: "Maple was diving in the autumn leaves, too hungry to come out!"
+    neededItem: "blanket",
+    hint: "Brrr! This kitten is SO COLD!\nIt needs something WARM!",
+    foundText: "Maple was shivering in the leaves! The blanket warmed her right up!"
   },
   {
     name: "Misty",
@@ -156,9 +156,9 @@ var KITTENS = [
     eyeColor: [155, 135, 210],
     marking: "none",
     forestIndex: 3,
-    neededItem: "flashlight",
-    hint: "It's so foggy! Something is hiding in the mist...",
-    foundText: "Misty was playing in the fog like a little ghost!"
+    neededItem: "milk",
+    hint: "This kitten is SO THIRSTY!\nIt needs something to DRINK!",
+    foundText: "Misty was thirsty from playing in the fog! She loved the milk!"
   },
   {
     name: "Fern",
@@ -168,9 +168,9 @@ var KITTENS = [
     eyeColor: [80, 175, 80],
     marking: "stripes",
     forestIndex: 4,
-    neededItem: "catnip",
-    hint: "This kitten is sniffing around the plants...",
-    foundText: "Fern was hiding under the mushrooms, smelling all the plants!"
+    neededItem: "laser",
+    hint: "This kitten is chasing\na tiny RED DOT!",
+    foundText: "Fern couldn't resist chasing the laser pointer!"
   },
   {
     name: "Luna",
@@ -180,20 +180,23 @@ var KITTENS = [
     eyeColor: [175, 175, 255],
     marking: "star",
     forestIndex: 4,
-    neededItem: "feather",
-    hint: "This kitten is watching something high up in the branches...",
-    foundText: "Luna was up in the mossy tree, looking at the sky!"
+    neededItem: "music",
+    hint: "This kitten loves MUSIC!\nPlay a SONG for it!",
+    foundText: "Luna came down from the tree when she heard the music!"
   }
 ];
 
 var ITEMS = [
-  { id: "fish", name: "Fish", price: 5, desc: "Yummy! Kittens love fish!", color: [70, 150, 220] },
-  { id: "flashlight", name: "Flashlight", price: 8, desc: "Lights up dark places!", color: [255, 220, 80] },
-  { id: "yarn", name: "Yarn Ball", price: 5, desc: "Kittens can't resist playing!", color: [235, 80, 130] },
-  { id: "catnip", name: "Catnip", price: 6, desc: "Smells amazing to kittens!", color: [80, 195, 80] },
-  { id: "feather", name: "Feather Toy", price: 5, desc: "So fun to chase!", color: [185, 105, 225] },
-  { id: "bell", name: "Bell", price: 4, desc: "Jingle jingle! Find hidden kittens!", color: [245, 205, 60] },
-  { id: "milk", name: "Milk", price: 3, desc: "WARNING: Kittens run from milk!", color: [240, 240, 248], warning: true }
+  { id: "fish", name: "Fish", price: 5, desc: "Yummy fish to eat!", color: [70, 150, 220] },
+  { id: "yarn", name: "Yarn Ball", price: 5, desc: "A fun round toy!", color: [235, 80, 130] },
+  { id: "flashlight", name: "Flashlight", price: 6, desc: "Makes light in the dark!", color: [255, 220, 80] },
+  { id: "feather", name: "Feather Toy", price: 5, desc: "A feather to chase!", color: [185, 105, 225] },
+  { id: "catnip", name: "Catnip", price: 5, desc: "Smells amazing!", color: [80, 195, 80] },
+  { id: "bell", name: "Bell", price: 4, desc: "Jingle jingle!", color: [245, 205, 60] },
+  { id: "blanket", name: "Blanket", price: 5, desc: "Warm and cozy!", color: [130, 170, 230] },
+  { id: "milk", name: "Milk", price: 4, desc: "A yummy drink!", color: [240, 240, 248] },
+  { id: "laser", name: "Laser Pointer", price: 6, desc: "A red dot to chase!", color: [230, 60, 60] },
+  { id: "music", name: "Music Box", price: 5, desc: "Plays a pretty song!", color: [220, 160, 200] }
 ];
 
 var SPOT_TEMPLATES = [
@@ -280,7 +283,7 @@ function setup() {
 }
 
 function initGame() {
-  coins = 25;
+  coins = 30;
   ownedItems = {};
   foundKittens = [];
   for (var i = 0; i < 10; i++) foundKittens.push(false);
@@ -358,7 +361,7 @@ function drawMenu() {
 
   // Title
   var titleY = height * 0.28;
-  var titleSize = min(width, height) * 0.09;
+  var titleSize = min(width, height) * 0.12;
 
   // Title glow
   fill(255, 200, 100, 40 + sin(menuFrame * 0.03) * 20);
@@ -375,7 +378,7 @@ function drawMenu() {
   text("KITTEN FINDER", width / 2, titleY);
 
   // Subtitle
-  textSize(titleSize * 0.3);
+  textSize(titleSize * 0.38);
   textStyle(NORMAL);
   fill(255, 255, 255, 200);
   text("A Forest Adventure", width / 2, titleY + titleSize * 0.7);
@@ -385,8 +388,8 @@ function drawMenu() {
 
   // Play button
   var btnY = height * 0.6;
-  var btnW = min(width * 0.4, 280);
-  var btnH = min(height * 0.08, 65);
+  var btnW = min(width * 0.45, 340);
+  var btnH = min(height * 0.1, 85);
   var btnHover = isInRect(mouseX, mouseY, width / 2, btnY, btnW, btnH);
   drawButton(width / 2, btnY, btnW, btnH, "PLAY!", [100, 200, 100], btnHover);
 
@@ -394,7 +397,7 @@ function drawMenu() {
   drawPawPrints(width / 2, height * 0.75, menuFrame);
 
   // Back to games link hint
-  textSize(min(width, height) * 0.02);
+  textSize(min(width, height) * 0.025);
   fill(255, 255, 255, 120);
   textAlign(CENTER, CENTER);
   text("Press ESC for game hub", width / 2, height * 0.93);
@@ -464,8 +467,8 @@ function drawMenuKittens() {
 
 function handleMenuClick() {
   var btnY = height * 0.6;
-  var btnW = min(width * 0.4, 280);
-  var btnH = min(height * 0.08, 65);
+  var btnW = min(width * 0.45, 340);
+  var btnH = min(height * 0.1, 85);
   if (isInRect(mouseX, mouseY, width / 2, btnY, btnW, btnH)) {
     gameState = "story";
     storyPage = 0;
@@ -496,15 +499,15 @@ function drawStory() {
     // Sad scene - kittens running into forest
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    textSize(min(width, height) * 0.055);
+    textSize(min(width, height) * 0.08);
     fill(255, 200, 100);
     text("Oh no!", width / 2, height * 0.15);
 
     textStyle(NORMAL);
-    textSize(min(width, height) * 0.032);
+    textSize(min(width, height) * 0.042);
     fill(255, 255, 255, 230);
     textWrap(WORD);
-    textLeading(min(width, height) * 0.05);
+    textLeading(min(width, height) * 0.065);
     text(
       "Your 10 adorable kittens escaped and\ngot lost in the forest!",
       width / 2, height * 0.30
@@ -518,7 +521,7 @@ function drawStory() {
       drawKittenCharacter(kx, ky + kb, min(width, height) * 0.09, i, "idle");
     }
 
-    textSize(min(width, height) * 0.028);
+    textSize(min(width, height) * 0.038);
     fill(255, 255, 255, 180);
     text(
       "They're hiding in national parks all over the country.\nCan you find them all?",
@@ -528,29 +531,28 @@ function drawStory() {
     // Tips page
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    textSize(min(width, height) * 0.045);
+    textSize(min(width, height) * 0.06);
     fill(255, 200, 100);
     text("How to Find Kittens", width / 2, height * 0.12);
 
     textStyle(NORMAL);
-    var tipSize = min(width, height) * 0.028;
+    var tipSize = min(width, height) * 0.038;
     textSize(tipSize);
     fill(255, 255, 255, 220);
 
     var tips = [
-      "Use FISH to lure hungry kittens!",
-      "Use a FLASHLIGHT in dark places!",
-      "Use YARN, FEATHERS, and more!",
-      "DON'T use MILK - kittens run away!",
+      "Read the HINT to pick the right item!",
+      "Each kitten needs a DIFFERENT item!",
+      "Wrong item = kitten runs away!",
       "Buy items at the SHOP!",
       "Travel between forests anytime!"
     ];
 
-    var startY = height * 0.24;
-    var gap = min(height * 0.09, 55);
+    var startY = height * 0.26;
+    var gap = min(height * 0.1, 65);
     for (var i = 0; i < tips.length; i++) {
       var tipY = startY + i * gap;
-      var icon = ["fish", "flashlight", "yarn", "milk", "coins", "map"][i];
+      var icon = ["fish", "feather", "bell", "coins", "map"][i];
       drawItemMiniIcon(icon, width / 2 - maxW * 0.35, tipY, gap * 0.5);
       textAlign(LEFT, CENTER);
       fill(255, 255, 255, 220);
@@ -562,8 +564,8 @@ function drawStory() {
   // Next / Go button
   var btnLabel = storyPage === 0 ? "NEXT" : "LET'S GO!";
   var btnY = height * 0.91;
-  var btnW = min(width * 0.35, 220);
-  var btnH = min(height * 0.07, 55);
+  var btnW = min(width * 0.4, 280);
+  var btnH = min(height * 0.09, 70);
   var btnHover = isInRect(mouseX, mouseY, width / 2, btnY, btnW, btnH);
   drawButton(width / 2, btnY, btnW, btnH, btnLabel, [100, 180, 240], btnHover);
 
@@ -577,8 +579,8 @@ function drawStory() {
 
 function handleStoryClick() {
   var btnY = height * 0.91;
-  var btnW = min(width * 0.35, 220);
-  var btnH = min(height * 0.07, 55);
+  var btnW = min(width * 0.4, 280);
+  var btnH = min(height * 0.09, 70);
   if (isInRect(mouseX, mouseY, width / 2, btnY, btnW, btnH)) {
     if (storyPage === 0) {
       storyPage = 1;
@@ -599,14 +601,14 @@ function drawMap() {
   // Title
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(min(width, height) * 0.045);
+  textSize(min(width, height) * 0.06);
   fill(80, 50, 20);
   text("Choose a Forest!", width / 2, height * 0.07);
 
   // Kitten counter
   var foundCount = countFoundKittens();
   textStyle(NORMAL);
-  textSize(min(width, height) * 0.025);
+  textSize(min(width, height) * 0.035);
   fill(120, 80, 40);
   text("Kittens Found: " + foundCount + " / 10", width / 2, height * 0.12);
 
@@ -649,16 +651,16 @@ function drawMap() {
 
   // Bottom buttons: Shop and Collection
   var bbY = useRows ? height * 0.87 : height * 0.78;
-  var bbW = min(width * 0.22, 160);
-  var bbH = min(height * 0.065, 50);
+  var bbW = min(width * 0.25, 200);
+  var bbH = min(height * 0.08, 65);
   var shopHover = isInRect(mouseX, mouseY, width * 0.35, bbY, bbW, bbH);
   var collHover = isInRect(mouseX, mouseY, width * 0.65, bbY, bbW, bbH);
   drawButton(width * 0.35, bbY, bbW, bbH, "SHOP", [220, 160, 60], shopHover);
   drawButton(width * 0.65, bbY, bbW, bbH, "MY KITTENS", [200, 100, 160], collHover);
 
   // Back to hub
-  var backHover = isInRect(mouseX, mouseY, 60, 30, 90, 35);
-  drawSmallButton(60, 30, 90, 35, "HOME", backHover);
+  var backHover = isInRect(mouseX, mouseY, 60, 30, 100, 40);
+  drawSmallButton(60, 30, 100, 40, "HOME", backHover);
 }
 
 function drawMapBackground() {
@@ -709,13 +711,13 @@ function drawForestCard(idx, cx, cy, w, h) {
   // Forest name
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(min(w * 0.14, 16));
+  textSize(min(w * 0.18, 20));
   fill(70, 50, 30);
   text(f.name, cx, cy + h * 0.22);
 
   // Subtitle
   textStyle(NORMAL);
-  textSize(min(w * 0.1, 11));
+  textSize(min(w * 0.13, 14));
   fill(140, 120, 90);
   text(f.subtitle, cx, cy + h * 0.32);
 
@@ -832,7 +834,7 @@ function drawForestFeature(idx, x, y, s) {
 
 function handleMapClick() {
   // Back button
-  if (isInRect(mouseX, mouseY, 60, 30, 90, 35)) {
+  if (isInRect(mouseX, mouseY, 60, 30, 100, 40)) {
     window.location.href = "../../index.html";
     return;
   }
@@ -849,8 +851,8 @@ function handleMapClick() {
   // Bottom buttons
   var useRows = width < 700;
   var bbY = useRows ? height * 0.87 : height * 0.78;
-  var bbW = min(width * 0.22, 160);
-  var bbH = min(height * 0.065, 50);
+  var bbW = min(width * 0.25, 200);
+  var bbH = min(height * 0.08, 65);
 
   if (isInRect(mouseX, mouseY, width * 0.35, bbY, bbW, bbH)) {
     gameState = "shop";
@@ -877,7 +879,7 @@ function drawShop() {
   // Title
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(min(width, height) * 0.05);
+  textSize(min(width, height) * 0.065);
   fill(130, 80, 30);
   text("SHOP", width / 2, height * 0.07);
 
@@ -885,9 +887,9 @@ function drawShop() {
   drawCoinHUD(width / 2, height * 0.13);
 
   // Items grid
-  var cols = width > 600 ? 4 : 2;
-  var itemW = min(width / (cols + 1), 160);
-  var itemH = min(height * 0.2, 160);
+  var cols = width > 900 ? 5 : (width > 500 ? 3 : 2);
+  var itemW = min(width / (cols + 1), 155);
+  var itemH = min(height * 0.18, 150);
   var gap = min(width * 0.02, 12);
   shopHoveredItem = -1;
 
@@ -902,8 +904,8 @@ function drawShop() {
   }
 
   // Back button
-  var backHover = isInRect(mouseX, mouseY, width / 2, height * 0.92, 120, 45);
-  drawButton(width / 2, height * 0.92, 120, 45, "BACK", [150, 130, 110], backHover);
+  var backHover = isInRect(mouseX, mouseY, width / 2, height * 0.92, 160, 55);
+  drawButton(width / 2, height * 0.92, 160, 55, "BACK", [150, 130, 110], backHover);
 }
 
 function drawShopItem(idx, cx, cy, w, h) {
@@ -932,14 +934,6 @@ function drawShopItem(idx, cx, cy, w, h) {
   strokeWeight(2);
   rect(cx - w / 2, cy - h / 2, w, h, 10);
 
-  // Warning border for milk
-  if (item.warning && !owned) {
-    stroke(230, 60, 60, 150);
-    strokeWeight(2);
-    noFill();
-    rect(cx - w / 2 + 2, cy - h / 2 + 2, w - 4, h - 4, 8);
-  }
-
   // Item icon
   var iconSize = min(w * 0.4, h * 0.3);
   drawItemIcon(item.id, cx, cy - h * 0.18, iconSize);
@@ -947,13 +941,13 @@ function drawShopItem(idx, cx, cy, w, h) {
   // Name
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(min(w * 0.14, 14));
-  fill(item.warning ? 200 : 70, item.warning ? 50 : 50, item.warning ? 50 : 30);
+  textSize(min(w * 0.17, 18));
+  fill(70, 50, 30);
   text(item.name, cx, cy + h * 0.12);
 
   // Price or "OWNED"
   textStyle(NORMAL);
-  textSize(min(w * 0.12, 12));
+  textSize(min(w * 0.14, 16));
   if (owned) {
     fill(60, 160, 60);
     text("OWNED!", cx, cy + h * 0.28);
@@ -963,8 +957,8 @@ function drawShopItem(idx, cx, cy, w, h) {
   }
 
   // Description
-  textSize(min(w * 0.1, 10));
-  fill(item.warning ? [200, 60, 60] : [130, 110, 80]);
+  textSize(min(w * 0.12, 13));
+  fill(130, 110, 80);
   text(item.desc, cx, cy + h * 0.4);
 
   pop();
@@ -972,7 +966,7 @@ function drawShopItem(idx, cx, cy, w, h) {
 
 function handleShopClick() {
   // Back button
-  if (isInRect(mouseX, mouseY, width / 2, height * 0.92, 120, 45)) {
+  if (isInRect(mouseX, mouseY, width / 2, height * 0.92, 160, 55)) {
     gameState = "map";
     transitionAlpha = 150;
     return;
@@ -999,32 +993,62 @@ function handleShopClick() {
 function enterForest(idx) {
   forestSpots = [];
   var templates = SPOT_TEMPLATES[idx];
+
+  // Create all spots as empty first
   for (var i = 0; i < templates.length; i++) {
     var t = templates[i];
-    var spot = {
-      rx: t.rx,
-      ry: t.ry,
-      rSize: t.rSize,
-      type: t.type,
-      content: t.content,
-      kittenIndex: t.kittenIndex !== undefined ? t.kittenIndex : -1,
-      coins: t.coins || 0,
-      critter: t.critter || "",
-      label: t.label,
-      investigated: false,
-      scared: false
-    };
-    // If kitten already found, mark investigated
-    if (spot.content === "kitten" && foundKittens[spot.kittenIndex]) {
-      spot.investigated = true;
-    }
-    // Reset coin spots (can collect again each visit)
-    var spotKey = idx + "_" + i;
-    if (spot.content === "coins" && collectedSpots[spotKey]) {
-      spot.investigated = true;
-    }
-    forestSpots.push(spot);
+    forestSpots.push({
+      rx: t.rx, ry: t.ry, rSize: t.rSize,
+      type: t.type, label: t.label,
+      content: "empty", kittenIndex: -1,
+      coins: 0, critter: "",
+      investigated: false, scared: false
+    });
   }
+
+  // Find unfound kittens for this forest
+  var forestKittens = getKittensInForest(idx);
+  var unfoundKittens = [];
+  for (var i = 0; i < forestKittens.length; i++) {
+    if (!foundKittens[forestKittens[i]]) unfoundKittens.push(forestKittens[i]);
+  }
+
+  // Shuffle spot indices for random placement
+  var spotIndices = [];
+  for (var i = 0; i < forestSpots.length; i++) spotIndices.push(i);
+  for (var i = spotIndices.length - 1; i > 0; i--) {
+    var j = floor(random(i + 1));
+    var tmp = spotIndices[i];
+    spotIndices[i] = spotIndices[j];
+    spotIndices[j] = tmp;
+  }
+
+  // Assign unfound kittens to random spots
+  var assigned = 0;
+  for (var i = 0; i < unfoundKittens.length && i < spotIndices.length; i++) {
+    var si = spotIndices[i];
+    forestSpots[si].content = "kitten";
+    forestSpots[si].kittenIndex = unfoundKittens[i];
+    assigned++;
+  }
+
+  // Fill remaining spots with coins and critters
+  var critters = ["butterfly", "bunny", "squirrel", "bird", "frog"];
+  var critterIdx = floor(random(critters.length));
+  var fillerIdx = 0;
+  for (var i = assigned; i < spotIndices.length; i++) {
+    var si = spotIndices[i];
+    if (fillerIdx % 3 === 2) {
+      forestSpots[si].content = "critter";
+      forestSpots[si].critter = critters[critterIdx % critters.length];
+      critterIdx++;
+    } else {
+      forestSpots[si].content = "coins";
+      forestSpots[si].coins = 8;
+    }
+    fillerIdx++;
+  }
+
   ambientParticles = [];
   hoveredSpot = -1;
   selectedItem = "";
@@ -1065,14 +1089,14 @@ function drawForestHUD() {
   // Top bar
   noStroke();
   fill(0, 0, 0, 100);
-  rect(0, 0, width, height * 0.08);
+  rect(0, 0, width, height * 0.1);
 
   // Forest name
   textAlign(LEFT, CENTER);
   textStyle(BOLD);
-  textSize(min(width, height) * 0.028);
+  textSize(min(width, height) * 0.04);
   fill(255);
-  text(FORESTS[currentForest].name, 100, height * 0.04);
+  text(FORESTS[currentForest].name, 110, height * 0.04);
 
   // Kitten count for this forest
   var fk = getKittensInForest(currentForest);
@@ -1081,37 +1105,37 @@ function drawForestHUD() {
     if (foundKittens[fk[i]]) fkFound++;
   }
   textStyle(NORMAL);
-  textSize(min(width, height) * 0.02);
+  textSize(min(width, height) * 0.03);
   fill(255, 220, 150);
-  text("Kittens: " + fkFound + "/" + fk.length, 100, height * 0.065);
+  text("Kittens: " + fkFound + "/" + fk.length, 110, height * 0.075);
 
   // Coins
   drawCoinHUD(width - 80, height * 0.04);
 
   // Back button
-  var backHover = isInRect(mouseX, mouseY, 40, height * 0.04, 65, 30);
-  drawSmallButton(40, height * 0.04, 65, 30, "MAP", backHover);
+  var backHover = isInRect(mouseX, mouseY, 45, height * 0.05, 80, 38);
+  drawSmallButton(45, height * 0.05, 80, 38, "MAP", backHover);
 
   // Help hint at bottom
   if (hoveredSpot >= 0) {
     var spot = forestSpots[hoveredSpot];
     textAlign(CENTER, CENTER);
     textStyle(NORMAL);
-    textSize(min(width, height) * 0.025);
+    textSize(min(width, height) * 0.035);
 
     // Background pill
-    var tw = textWidth(spot.label) + 30;
+    var tw = textWidth(spot.label) + 40;
     noStroke();
     fill(0, 0, 0, 150);
-    rect(width / 2 - tw / 2, height * 0.9, tw, 30, 15);
+    rect(width / 2 - tw / 2, height * 0.89, tw, 40, 20);
     fill(255);
-    text(spot.label, width / 2, height * 0.9 + 15);
+    text(spot.label, width / 2, height * 0.89 + 20);
   }
 }
 
 function handleForestClick() {
   // Back button
-  if (isInRect(mouseX, mouseY, 40, height * 0.04, 65, 30)) {
+  if (isInRect(mouseX, mouseY, 45, height * 0.05, 80, 38)) {
     gameState = "map";
     transitionAlpha = 150;
     return;
@@ -1188,7 +1212,7 @@ function drawInvestigate() {
   if (!spot.scared) {
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    textSize(min(panelW, panelH) * 0.06);
+    textSize(min(panelW, panelH) * 0.09);
     fill(255, 150, 100);
     var meowBob = sin(menuFrame * 0.1) * 3;
     text("Meow!", panelX, panelY - panelH * 0.35 + meowBob);
@@ -1196,23 +1220,20 @@ function drawInvestigate() {
 
   // Hint text
   textStyle(NORMAL);
-  textSize(min(panelW, panelH) * 0.045);
+  textSize(min(panelW, panelH) * 0.06);
   fill(80, 60, 40);
   textAlign(CENTER, CENTER);
 
   if (spot.scared) {
     fill(200, 60, 60);
-    text("Oh no! The kitten ran away!", panelX, panelY + panelH * 0.02);
-    textSize(min(panelW, panelH) * 0.035);
+    textSize(min(panelW, panelH) * 0.06);
+    text("Oh no! Wrong item!", panelX, panelY - panelH * 0.02);
+    textSize(min(panelW, panelH) * 0.05);
+    fill(200, 60, 60);
+    text("The kitten ran away!", panelX, panelY + panelH * 0.06);
+    textSize(min(panelW, panelH) * 0.04);
     fill(140, 100, 70);
-    text("Come back later and try again!", panelX, panelY + panelH * 0.1);
-  } else if (wrongItemTimer > 0) {
-    fill(200, 120, 40);
-    text("Hmm, that didn't work!", panelX, panelY + panelH * 0.02);
-    textSize(min(panelW, panelH) * 0.035);
-    fill(140, 100, 70);
-    text("Try something else!", panelX, panelY + panelH * 0.1);
-    wrongItemTimer--;
+    text("Leave and come back to try again!", panelX, panelY + panelH * 0.14);
   } else {
     text(kitten.hint, panelX, panelY + panelH * 0.02);
   }
@@ -1221,7 +1242,7 @@ function drawInvestigate() {
   if (!spot.scared) {
     var itemY = panelY + panelH * 0.25;
     textAlign(CENTER, CENTER);
-    textSize(min(panelW, panelH) * 0.03);
+    textSize(min(panelW, panelH) * 0.04);
     fill(140, 120, 90);
     text("Choose an item:", panelX, itemY - panelH * 0.06);
 
@@ -1244,8 +1265,8 @@ function drawInvestigate() {
 
   // Close/Back button
   var cbY = panelY + panelH * 0.42;
-  var cbHover = isInRect(mouseX, mouseY, panelX, cbY, 100, 36);
-  drawButton(panelX, cbY, 100, 36, "BACK", [160, 140, 120], cbHover);
+  var cbHover = isInRect(mouseX, mouseY, panelX, cbY, 140, 48);
+  drawButton(panelX, cbY, 140, 48, "BACK", [160, 140, 120], cbHover);
 }
 
 function handleInvestigateClick() {
@@ -1257,7 +1278,7 @@ function handleInvestigateClick() {
 
   // Close button
   var cbY = panelY + panelH * 0.42;
-  if (isInRect(mouseX, mouseY, panelX, cbY, 100, 36)) {
+  if (isInRect(mouseX, mouseY, panelX, cbY, 140, 48)) {
     gameState = "forest";
     transitionAlpha = 100;
     if (spot.scared) {
@@ -1289,15 +1310,6 @@ function handleInvestigateClick() {
 function useItem(itemId, spot) {
   var kitten = KITTENS[spot.kittenIndex];
 
-  if (itemId === "milk") {
-    // Milk! Kitten runs away!
-    spot.scared = true;
-    milkScareTimer = 0;
-    spawnConfetti(width / 2, height / 2, 15, [200, 60, 60]);
-    showFeedback("NOOO! Kittens don't like milk!", width / 2, height * 0.3);
-    return;
-  }
-
   if (itemId === kitten.neededItem) {
     // Correct item! Found the kitten!
     foundKittens[spot.kittenIndex] = true;
@@ -1306,14 +1318,15 @@ function useItem(itemId, spot) {
     foundAnimTimer = 0;
     gameState = "found";
     transitionAlpha = 200;
-    coins += 5;
+    coins += 10;
     spawnConfetti(width / 2, height / 2, 40, [255, 200, 100]);
     return;
   }
 
-  // Wrong item
-  wrongItemTimer = 60;
-  wrongItemId = itemId;
+  // Wrong item - kitten gets scared and runs away!
+  spot.scared = true;
+  spawnConfetti(width / 2, height / 2, 15, [200, 60, 60]);
+  showFeedback("Oh no! Wrong item! The kitten ran away!", width / 2, height * 0.3);
 }
 
 // ============== SCREEN: FOUND ==============
@@ -1348,7 +1361,7 @@ function drawFound() {
   var titleBounce = titleScale > 0.9 ? sin(foundAnimTimer * 0.08) * 5 : 0;
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(min(width, height) * 0.06 * titleScale);
+  textSize(min(width, height) * 0.08 * titleScale);
   fill(255, 120, 60);
   text("YOU FOUND", width / 2, height * 0.1 + titleBounce);
 
@@ -1366,7 +1379,7 @@ function drawFound() {
     rect(width / 2 - nameW / 2, height * 0.62, nameW, height * 0.08, 20);
 
     textStyle(BOLD);
-    textSize(min(width, height) * 0.045);
+    textSize(min(width, height) * 0.06);
     fill(kitten.bodyColor[0], kitten.bodyColor[1], kitten.bodyColor[2], nameAlpha);
     stroke(0, 0, 0, nameAlpha * 0.3);
     strokeWeight(2);
@@ -1375,7 +1388,7 @@ function drawFound() {
 
     // Personality
     textStyle(NORMAL);
-    textSize(min(width, height) * 0.025);
+    textSize(min(width, height) * 0.035);
     fill(120, 90, 60, nameAlpha);
     text(kitten.personality, width / 2, height * 0.71);
   }
@@ -1383,23 +1396,23 @@ function drawFound() {
   // Story text
   if (foundAnimTimer > 30) {
     var storyAlpha = min(255, (foundAnimTimer - 30) * 10);
-    textSize(min(width, height) * 0.025);
+    textSize(min(width, height) * 0.032);
     fill(100, 75, 50, storyAlpha);
     text(kitten.foundText, width / 2, height * 0.78);
 
-    // +5 coins
+    // +10 coins
     textStyle(BOLD);
-    textSize(min(width, height) * 0.03);
+    textSize(min(width, height) * 0.04);
     fill(240, 190, 50, storyAlpha);
-    text("+5 coins!", width / 2, height * 0.83);
+    text("+10 coins!", width / 2, height * 0.83);
   }
 
   // Continue button
   if (foundAnimTimer > 50) {
     var btnAlpha = min(255, (foundAnimTimer - 50) * 10);
-    var btnHover = isInRect(mouseX, mouseY, width / 2, height * 0.91, 150, 45);
+    var btnHover = isInRect(mouseX, mouseY, width / 2, height * 0.91, 200, 60);
     if (btnAlpha >= 200) {
-      drawButton(width / 2, height * 0.91, 150, 45, "YAY!", [100, 200, 120], btnHover);
+      drawButton(width / 2, height * 0.91, 200, 60, "YAY!", [100, 200, 120], btnHover);
     }
   }
 
@@ -1414,7 +1427,7 @@ function drawFound() {
 function handleFoundClick() {
   if (foundAnimTimer < 50) return;
 
-  if (isInRect(mouseX, mouseY, width / 2, height * 0.91, 150, 45)) {
+  if (isInRect(mouseX, mouseY, width / 2, height * 0.91, 200, 60)) {
     // Check if all kittens found
     if (countFoundKittens() >= 10) {
       gameState = "win";
@@ -1440,13 +1453,13 @@ function drawCollection() {
   // Title
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(min(width, height) * 0.05);
+  textSize(min(width, height) * 0.065);
   fill(160, 80, 120);
   text("My Kittens", width / 2, height * 0.07);
 
   var foundCount = countFoundKittens();
   textStyle(NORMAL);
-  textSize(min(width, height) * 0.025);
+  textSize(min(width, height) * 0.035);
   fill(140, 110, 130);
   text(foundCount + " of 10 found", width / 2, height * 0.12);
 
@@ -1468,8 +1481,8 @@ function drawCollection() {
   }
 
   // Back button
-  var backHover = isInRect(mouseX, mouseY, width / 2, height * 0.93, 120, 40);
-  drawButton(width / 2, height * 0.93, 120, 40, "BACK", [160, 120, 150], backHover);
+  var backHover = isInRect(mouseX, mouseY, width / 2, height * 0.93, 160, 55);
+  drawButton(width / 2, height * 0.93, 160, 55, "BACK", [160, 120, 150], backHover);
 }
 
 function drawCollectionKitten(idx, cx, cy, w, h) {
@@ -1500,14 +1513,14 @@ function drawCollectionKitten(idx, cx, cy, w, h) {
     // Name
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    textSize(min(w * 0.15, 13));
+    textSize(min(w * 0.18, 17));
     noStroke();
     fill(80, 60, 40);
     text(kitten.name, cx, cy + h * 0.33);
 
     // Forest hint
     textStyle(NORMAL);
-    textSize(min(w * 0.1, 9));
+    textSize(min(w * 0.13, 13));
     fill(150, 130, 110);
     text(FORESTS[kitten.forestIndex].name, cx, cy + h * 0.42);
   } else {
@@ -1529,11 +1542,11 @@ function drawCollectionKitten(idx, cx, cy, w, h) {
 
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
-    textSize(min(w * 0.25, 22));
+    textSize(min(w * 0.3, 28));
     fill(180, 170, 165);
     text("?", cx, cy + h * 0.02);
 
-    textSize(min(w * 0.11, 10));
+    textSize(min(w * 0.14, 14));
     fill(170, 165, 160);
     text("???", cx, cy + h * 0.35);
   }
@@ -1541,7 +1554,7 @@ function drawCollectionKitten(idx, cx, cy, w, h) {
 }
 
 function handleCollectionClick() {
-  if (isInRect(mouseX, mouseY, width / 2, height * 0.93, 120, 40)) {
+  if (isInRect(mouseX, mouseY, width / 2, height * 0.93, 160, 55)) {
     gameState = "map";
     transitionAlpha = 150;
   }
@@ -1574,7 +1587,7 @@ function drawWin() {
   var titleBounce = sin(winTimer * 0.06) * 10;
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(min(width, height) * 0.07);
+  textSize(min(width, height) * 0.085);
   fill(255, 100, 150);
   stroke(255, 255, 255);
   strokeWeight(3);
@@ -1599,7 +1612,7 @@ function drawWin() {
   // Message
   if (winTimer > 30) {
     textStyle(NORMAL);
-    textSize(min(width, height) * 0.03);
+    textSize(min(width, height) * 0.04);
     noStroke();
     fill(120, 60, 80);
     text("Your kittens are so happy to be home!", width / 2, height * 0.8);
@@ -1607,8 +1620,8 @@ function drawWin() {
 
   // Play again button
   if (winTimer > 60) {
-    var btnHover = isInRect(mouseX, mouseY, width / 2, height * 0.9, 180, 50);
-    drawButton(width / 2, height * 0.9, 180, 50, "PLAY AGAIN!", [200, 100, 150], btnHover);
+    var btnHover = isInRect(mouseX, mouseY, width / 2, height * 0.9, 220, 65);
+    drawButton(width / 2, height * 0.9, 220, 65, "PLAY AGAIN!", [200, 100, 150], btnHover);
   }
 
   // Ongoing confetti
@@ -1621,7 +1634,7 @@ function drawWin() {
 
 function handleWinClick() {
   if (winTimer < 60) return;
-  if (isInRect(mouseX, mouseY, width / 2, height * 0.9, 180, 50)) {
+  if (isInRect(mouseX, mouseY, width / 2, height * 0.9, 220, 65)) {
     initGame();
     gameState = "menu";
     transitionAlpha = 255;
@@ -2736,16 +2749,65 @@ function drawItemIcon(itemId, x, y, size) {
     fill(240, 240, 248);
     rect(-s * 0.15, -s * 0.15, s * 0.3, s * 0.4, 3);
     // Cap
-    fill(200, 50, 50);
+    fill(100, 160, 220);
     rect(-s * 0.12, -s * 0.22, s * 0.24, s * 0.1, 3, 3, 0, 0);
     // Label
-    fill(200, 50, 50, 80);
+    fill(100, 160, 220, 60);
     rect(-s * 0.1, 0, s * 0.2, s * 0.12);
-    // X
-    stroke(200, 50, 50);
-    strokeWeight(2.5);
-    line(-s * 0.2, -s * 0.3, s * 0.2, s * 0.3);
-    line(s * 0.2, -s * 0.3, -s * 0.2, s * 0.3);
+    // Milk drop
+    fill(240, 240, 248);
+    ellipse(0, s * 0.05, s * 0.1, s * 0.08);
+  } else if (itemId === "blanket") {
+    // Folded blanket
+    fill(130, 170, 230);
+    rect(-s * 0.25, -s * 0.1, s * 0.5, s * 0.3, 5);
+    fill(110, 150, 210);
+    rect(-s * 0.25, -s * 0.1, s * 0.5, s * 0.12, 5, 5, 0, 0);
+    // Pattern
+    fill(160, 195, 240);
+    ellipse(-s * 0.1, s * 0.05, s * 0.08, s * 0.08);
+    ellipse(s * 0.1, s * 0.05, s * 0.08, s * 0.08);
+    // Fold edge
+    fill(150, 185, 235);
+    rect(-s * 0.22, -s * 0.15, s * 0.44, s * 0.06, 3);
+  } else if (itemId === "laser") {
+    // Laser pointer body
+    fill(180, 180, 190);
+    rect(-s * 0.06, -s * 0.05, s * 0.12, s * 0.35, 3);
+    // Button
+    fill(230, 60, 60);
+    ellipse(0, s * 0.05, s * 0.08, s * 0.06);
+    // Laser beam
+    fill(230, 60, 60, 120);
+    triangle(-s * 0.03, -s * 0.05, s * 0.03, -s * 0.05, 0, -s * 0.4);
+    // Red dot
+    fill(255, 40, 40);
+    ellipse(0, -s * 0.4, s * 0.1, s * 0.1);
+    fill(255, 100, 100, 150);
+    ellipse(0, -s * 0.4, s * 0.18, s * 0.18);
+  } else if (itemId === "music") {
+    // Music box body
+    fill(180, 130, 90);
+    rect(-s * 0.2, -s * 0.05, s * 0.4, s * 0.25, 4);
+    // Lid
+    fill(200, 150, 100);
+    rect(-s * 0.22, -s * 0.12, s * 0.44, s * 0.1, 4, 4, 0, 0);
+    // Handle/crank
+    fill(220, 190, 50);
+    rect(s * 0.18, 0, s * 0.08, s * 0.04);
+    ellipse(s * 0.28, s * 0.02, s * 0.06, s * 0.06);
+    // Music notes
+    fill(220, 160, 200);
+    ellipse(-s * 0.15, -s * 0.25, s * 0.08, s * 0.06);
+    stroke(220, 160, 200);
+    strokeWeight(1.5);
+    line(-s * 0.11, -s * 0.25, -s * 0.11, -s * 0.4);
+    noStroke();
+    fill(220, 160, 200);
+    ellipse(s * 0.1, -s * 0.32, s * 0.07, s * 0.05);
+    stroke(220, 160, 200);
+    strokeWeight(1.5);
+    line(s * 0.135, -s * 0.32, s * 0.135, -s * 0.45);
     noStroke();
   }
 
@@ -2798,21 +2860,13 @@ function drawItemButton(itemId, x, y, size, hovered) {
   }
   ellipse(x, y, s * 1.4, s * 1.4);
 
-  // Warning ring for milk
-  if (item && item.warning) {
-    noFill();
-    stroke(230, 60, 60, 180);
-    strokeWeight(2);
-    ellipse(x, y, s * 1.3, s * 1.3);
-  }
-
   noStroke();
   drawItemIcon(itemId, x, y - s * 0.05, s * 0.6);
 
   // Name below
   textAlign(CENTER, CENTER);
   textStyle(NORMAL);
-  textSize(s * 0.18);
+  textSize(s * 0.22);
   fill(80, 60, 40);
   text(item ? item.name : itemId, x, y + s * 0.55);
 }
@@ -2877,7 +2931,7 @@ function drawCoinHUD(x, y) {
   drawCoinIcon(x - 25, y, 10);
   textAlign(LEFT, CENTER);
   textStyle(BOLD);
-  textSize(16);
+  textSize(22);
   fill(220, 180, 50);
   noStroke();
   text(coins, x - 10, y);
@@ -3050,13 +3104,13 @@ function drawFeedback() {
 
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(min(width, height) * 0.028);
+  textSize(min(width, height) * 0.038);
 
   // Background pill
-  var tw = textWidth(feedbackMsg) + 24;
+  var tw = textWidth(feedbackMsg) + 30;
   noStroke();
   fill(0, 0, 0, alpha * 0.5);
-  rect(feedbackX - tw / 2, floatY - 14, tw, 28, 14);
+  rect(feedbackX - tw / 2, floatY - 18, tw, 36, 18);
 
   fill(255, 255, 255, alpha);
   text(feedbackMsg, feedbackX, floatY);
