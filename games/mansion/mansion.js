@@ -60,6 +60,8 @@ let worldEntities = {
   portals: [],
   factories: [],
   volcanos: [],
+  tornados: [],
+  hurricanes: [],
 };
 let particles = [];
 let floatingTexts = [];
@@ -155,6 +157,28 @@ function initShopItems() {
       passivePerUnit: 50000,
       clickPowerPerUnit: 0,
       col: [231, 60, 60],
+    },
+    {
+      id: 'tornado',
+      name: 'Emerald Tornado',
+      emoji: '\uD83C\uDF2A\uFE0F',
+      baseCost: 50000000,
+      count: 0,
+      desc: '+250,000 emeralds/sec',
+      passivePerUnit: 250000,
+      clickPowerPerUnit: 0,
+      col: [0, 210, 180],
+    },
+    {
+      id: 'hurricane',
+      name: 'Emerald Hurricane',
+      emoji: '\uD83C\uDF0A',
+      baseCost: 500000000,
+      count: 0,
+      desc: '+2,500,000 emeralds/sec',
+      passivePerUnit: 2500000,
+      clickPowerPerUnit: 0,
+      col: [0, 255, 130],
     },
     {
       id: 'mansion',
@@ -1121,6 +1145,183 @@ class EmeraldVolcano {
   }
 }
 
+// ==================== EMERALD TORNADO ====================
+
+class EmeraldTornado {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.angle = random(TWO_PI);
+    this.spinSpeed = random(0.06, 0.1);
+    this.swayOffset = random(1000);
+    this.emeraldTimer = 0;
+  }
+
+  update() {
+    this.angle += this.spinSpeed;
+    this.emeraldTimer++;
+
+    // Sway left and right
+    this.x += sin(frameCount * 0.02 + this.swayOffset) * 0.5;
+
+    // Whirling debris particles
+    if (this.emeraldTimer % 6 === 0) {
+      let spawnAngle = this.angle + random(-1, 1);
+      let dist = random(8, 25);
+      particles.push(new Particle(
+        this.x + cos(spawnAngle) * dist, this.y - random(10, 60),
+        cos(spawnAngle + HALF_PI) * 2, random(-2, -0.5),
+        [46, 204, 113, 180], random(20, 35), random(2, 5)
+      ));
+    }
+
+    // Emerald output
+    if (this.emeraldTimer % 30 === 0) {
+      for (let i = 0; i < 3; i++) {
+        emeraldDrops.push(new EmeraldDrop(
+          this.x + random(-15, 15), this.y - 50,
+          random(-3, 3), random(-6, -2), 5
+        ));
+      }
+    }
+  }
+
+  draw() {
+    push();
+    translate(this.x, this.y);
+
+    // Funnel shape - layered spinning ellipses
+    noStroke();
+    for (let i = 0; i < 8; i++) {
+      let t = i / 8;
+      let yOff = -t * 70;
+      let w = lerp(35, 10, t);
+      let sway = sin(this.angle + i * 0.5) * (5 + i * 2);
+      let alpha = lerp(180, 100, t);
+      fill(0, 210, 180, alpha);
+      ellipse(sway, yOff, w, 10);
+      // Inner emerald glow
+      fill(46, 255, 130, alpha * 0.5);
+      ellipse(sway, yOff, w * 0.5, 6);
+    }
+
+    // Ground dust ring
+    fill(150, 140, 120, 80);
+    ellipse(0, 2, 45, 12);
+
+    // Spinning emerald fragments in the funnel
+    fill(46, 204, 113);
+    for (let i = 0; i < 4; i++) {
+      let a = this.angle * 2 + i * HALF_PI;
+      let r = 8 + sin(frameCount * 0.1 + i) * 4;
+      let fy = -15 - i * 14;
+      ellipse(cos(a) * r, fy + sin(a) * 3, 5, 5);
+    }
+
+    pop();
+  }
+}
+
+// ==================== EMERALD HURRICANE ====================
+
+class EmeraldHurricane {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.angle = 0;
+    this.pulseTimer = 0;
+    this.emeraldTimer = 0;
+    this.armCount = 5;
+  }
+
+  update() {
+    this.angle += 0.03;
+    this.pulseTimer++;
+    this.emeraldTimer++;
+
+    // Swirling wind particles
+    if (this.emeraldTimer % 4 === 0) {
+      let a = this.angle + random(TWO_PI);
+      let dist = random(20, 55);
+      particles.push(new Particle(
+        this.x + cos(a) * dist, this.y - 30 + sin(a) * dist * 0.4,
+        cos(a + HALF_PI) * 3, random(-1.5, -0.5),
+        [0, 255, 130, 150], random(15, 30), random(2, 4)
+      ));
+    }
+
+    // Massive emerald bursts
+    if (this.emeraldTimer % 20 === 0) {
+      for (let i = 0; i < 5; i++) {
+        let a = random(TWO_PI);
+        emeraldDrops.push(new EmeraldDrop(
+          this.x + cos(a) * 30, this.y - 35,
+          cos(a) * random(2, 5), random(-7, -3), 5
+        ));
+      }
+      screenShakeAmount = max(screenShakeAmount, 1);
+    }
+  }
+
+  draw() {
+    push();
+    translate(this.x, this.y - 30);
+
+    // Outer glow
+    let pulse = sin(this.pulseTimer * 0.05) * 0.2 + 0.8;
+    noStroke();
+    fill(0, 255, 130, 30 * pulse);
+    ellipse(0, 0, 120, 80);
+
+    // Spiral arms
+    for (let arm = 0; arm < this.armCount; arm++) {
+      let baseAngle = this.angle + (TWO_PI / this.armCount) * arm;
+      stroke(0, 255, 130, 160);
+      strokeWeight(3);
+      noFill();
+      beginShape();
+      for (let j = 0; j < 20; j++) {
+        let t = j / 20;
+        let r = t * 50;
+        let a = baseAngle + t * 3;
+        let sx = cos(a) * r;
+        let sy = sin(a) * r * 0.5;
+        vertex(sx, sy);
+      }
+      endShape();
+    }
+    noStroke();
+
+    // Central eye
+    fill(0, 180, 120);
+    ellipse(0, 0, 22, 22);
+    fill(46, 255, 180);
+    ellipse(0, 0, 12, 12);
+    // Bright core
+    fill(200, 255, 230);
+    ellipse(0, 0, 5, 5);
+
+    // Orbiting emerald gems
+    fill(46, 204, 113);
+    for (let i = 0; i < 6; i++) {
+      let a = this.angle * 1.5 + i * (TWO_PI / 6);
+      let r = 28 + sin(frameCount * 0.08 + i) * 6;
+      push();
+      translate(cos(a) * r, sin(a) * r * 0.5);
+      rotate(a);
+      beginShape();
+      vertex(0, -4);
+      vertex(3, 0);
+      vertex(0, 4);
+      vertex(-3, 0);
+      endShape(CLOSE);
+      pop();
+    }
+
+    pop();
+  }
+}
+
 // ==================== P5.JS LIFECYCLE ====================
 
 function setup() {
@@ -1318,6 +1519,8 @@ function updatePlaying() {
   for (let e of worldEntities.portals) e.update();
   for (let e of worldEntities.factories) e.update();
   for (let e of worldEntities.volcanos) e.update();
+  for (let e of worldEntities.tornados) e.update();
+  for (let e of worldEntities.hurricanes) e.update();
 
   // Update particles (backward iteration for safe removal)
   for (let i = particles.length - 1; i >= 0; i--) {
@@ -1557,6 +1760,8 @@ function drawPlaying() {
   for (let e of worldEntities.planters) e.draw();
   for (let e of worldEntities.factories) e.draw();
   for (let e of worldEntities.volcanos) e.draw();
+  for (let e of worldEntities.tornados) e.draw();
+  for (let e of worldEntities.hurricanes) e.draw();
   for (let e of worldEntities.portals) e.draw();
   for (let d of emeraldDrops) d.draw();
   for (let e of worldEntities.miners) e.draw();
@@ -2373,6 +2578,8 @@ function buyItem(item) {
   else if (item.id === 'portal') villager.say('AMAZING!');
   else if (item.id === 'factory') villager.say('A whole factory!');
   else if (item.id === 'volcano') villager.say('A VOLCANO?!');
+  else if (item.id === 'tornado') villager.say('A TORNADO! WOW!');
+  else if (item.id === 'hurricane') villager.say('HURRICANE POWER!!!');
   else if (item.id === 'miner') villager.say('A robot helper!');
   else if (item.count === 1 && item.id === 'planter') villager.say('We\'re farming!');
 
@@ -2423,6 +2630,16 @@ function spawnEntity(itemId) {
       y = groundLevel + random(-5, 15);
       worldEntities.volcanos.push(new EmeraldVolcano(x, y));
       break;
+    case 'tornado':
+      x = random(worldW * 0.15, worldW * 0.8);
+      y = groundLevel + random(-5, 15);
+      worldEntities.tornados.push(new EmeraldTornado(x, y));
+      break;
+    case 'hurricane':
+      x = random(worldW * 0.2, worldW * 0.75);
+      y = hudH + worldH * random(0.3, 0.5);
+      worldEntities.hurricanes.push(new EmeraldHurricane(x, y));
+      break;
   }
 }
 
@@ -2448,7 +2665,7 @@ function resetGame() {
   villager = new Villager();
   villager.init();
 
-  worldEntities = { detectors: [], planters: [], suckers: [], miners: [], portals: [], factories: [], volcanos: [] };
+  worldEntities = { detectors: [], planters: [], suckers: [], miners: [], portals: [], factories: [], volcanos: [], tornados: [], hurricanes: [] };
   particles = [];
   floatingTexts = [];
   confettis = [];
