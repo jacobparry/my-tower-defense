@@ -740,8 +740,8 @@ class PlanterPlot {
 
 class SuckerBot {
   constructor() {
-    this.x = random(worldW * 0.15, worldW * 0.85);
-    this.y = groundLevel + random(5, 40);
+    this.x = random(worldW * 0.05, worldW * 0.9);
+    this.y = random(groundLevel + 5, height - 30);
     this.targetX = this.x;
     this.targetY = this.y;
     this.speed = 2.5;
@@ -758,8 +758,8 @@ class SuckerBot {
       this.y += (dy / d) * this.speed;
       this.angle = atan2(dy, dx);
     } else {
-      this.targetX = random(worldW * 0.1, worldW * 0.85);
-      this.targetY = groundLevel + random(-10, 50);
+      this.targetX = random(worldW * 0.05, worldW * 0.9);
+      this.targetY = random(groundLevel + 5, height - 30);
     }
     this.trail.push({ x: this.x, y: this.y });
     if (this.trail.length > 12) this.trail.shift();
@@ -806,8 +806,8 @@ class SuckerBot {
 
 class MinerBot {
   constructor() {
-    this.x = random(worldW * 0.05, worldW * 0.35);
-    this.y = groundLevel + random(10, 50);
+    this.x = random(worldW * 0.05, worldW * 0.9);
+    this.y = random(groundLevel + 5, height - 30);
     this.targetX = this.x;
     this.isMining = false;
     this.mineTimer = 0;
@@ -825,7 +825,7 @@ class MinerBot {
         for (let i = 0; i < 3; i++) {
           particles.push(new Particle(this.x, this.y - 5, random(-1, 1), random(-2, 0), [150, 150, 150], 20, 3));
         }
-        this.targetX = random(worldW * 0.05, worldW * 0.4);
+        this.targetX = random(worldW * 0.05, worldW * 0.9);
       }
     } else {
       let dx = this.targetX - this.x;
@@ -2600,13 +2600,13 @@ function spawnEntity(itemId) {
   let x, y;
   switch (itemId) {
     case 'detector':
-      x = random(worldW * 0.1, worldW * 0.85);
-      y = groundLevel + random(5, 40);
+      x = random(worldW * 0.05, worldW * 0.9);
+      y = random(groundLevel + 5, height - 30);
       worldEntities.detectors.push(new DetectorDevice(x, y));
       break;
     case 'planter':
-      x = random(worldW * 0.35, worldW * 0.8);
-      y = groundLevel + random(8, 45);
+      x = random(worldW * 0.05, worldW * 0.9);
+      y = random(groundLevel + 5, height - 30);
       worldEntities.planters.push(new PlanterPlot(x, y));
       break;
     case 'sucker':
@@ -2616,28 +2616,28 @@ function spawnEntity(itemId) {
       worldEntities.miners.push(new MinerBot());
       break;
     case 'portal':
-      x = random(worldW * 0.25, worldW * 0.75);
-      y = hudH + worldH * random(0.25, 0.45);
+      x = random(worldW * 0.1, worldW * 0.85);
+      y = random(hudH + 20, groundLevel - 30);
       worldEntities.portals.push(new EmeraldPortal(x, y));
       break;
     case 'factory':
-      x = random(worldW * 0.3, worldW * 0.75);
-      y = groundLevel + random(5, 30);
+      x = random(worldW * 0.05, worldW * 0.9);
+      y = random(groundLevel + 5, height - 40);
       worldEntities.factories.push(new EmeraldFactory(x, y));
       break;
     case 'volcano':
-      x = random(worldW * 0.15, worldW * 0.7);
-      y = groundLevel + random(-5, 15);
+      x = random(worldW * 0.05, worldW * 0.9);
+      y = random(groundLevel + 5, height - 50);
       worldEntities.volcanos.push(new EmeraldVolcano(x, y));
       break;
     case 'tornado':
-      x = random(worldW * 0.15, worldW * 0.8);
-      y = groundLevel + random(-5, 15);
+      x = random(worldW * 0.05, worldW * 0.9);
+      y = random(groundLevel + 5, height - 50);
       worldEntities.tornados.push(new EmeraldTornado(x, y));
       break;
     case 'hurricane':
-      x = random(worldW * 0.2, worldW * 0.75);
-      y = hudH + worldH * random(0.3, 0.5);
+      x = random(worldW * 0.1, worldW * 0.85);
+      y = random(hudH + 30, groundLevel - 30);
       worldEntities.hurricanes.push(new EmeraldHurricane(x, y));
       break;
   }
