@@ -1,6 +1,6 @@
 // ================================================
 // KITTEN FINDER - A Forest Adventure Game
-// Find 10 lost kittens in America's National Parks!
+// Find 20 lost kittens in America's National Parks!
 // ================================================
 
 // ============== DATA & CONFIGURATION ==============
@@ -60,6 +60,171 @@ var FORESTS = [
     treeType: "mossy",
     ambientType: "rain",
     iconEmoji: "rain"
+  },
+  {
+    name: "Grand Canyon",
+    subtitle: "Arizona",
+    skyTop: [80, 160, 240],
+    skyBottom: [200, 170, 130],
+    groundColor: [190, 120, 70],
+    groundColor2: [170, 100, 55],
+    treeType: "pine",
+    ambientType: "motes",
+    iconEmoji: "canyon"
+  },
+  {
+    name: "Zion",
+    subtitle: "Utah",
+    skyTop: [90, 170, 240],
+    skyBottom: [180, 160, 130],
+    groundColor: [195, 130, 80],
+    groundColor2: [175, 110, 65],
+    treeType: "pine",
+    ambientType: "motes",
+    iconEmoji: "cliff"
+  },
+  {
+    name: "Glacier",
+    subtitle: "Montana",
+    skyTop: [130, 190, 240],
+    skyBottom: [200, 220, 240],
+    groundColor: [70, 140, 60],
+    groundColor2: [55, 120, 45],
+    treeType: "pine",
+    ambientType: "spray",
+    iconEmoji: "glacier"
+  },
+  {
+    name: "Acadia",
+    subtitle: "Maine",
+    skyTop: [110, 160, 220],
+    skyBottom: [170, 200, 230],
+    groundColor: [90, 130, 55],
+    groundColor2: [75, 110, 40],
+    treeType: "autumn",
+    ambientType: "spray",
+    iconEmoji: "lighthouse"
+  },
+  {
+    name: "Everglades",
+    subtitle: "Florida",
+    skyTop: [140, 200, 230],
+    skyBottom: [180, 220, 200],
+    groundColor: [75, 130, 55],
+    groundColor2: [55, 110, 40],
+    treeType: "mossy",
+    ambientType: "steam",
+    iconEmoji: "swamp"
+  },
+  {
+    name: "Rocky Mountain",
+    subtitle: "Colorado",
+    skyTop: [100, 170, 240],
+    skyBottom: [190, 210, 230],
+    groundColor: [80, 145, 55],
+    groundColor2: [65, 120, 40],
+    treeType: "pine",
+    ambientType: "motes",
+    iconEmoji: "mountain"
+  },
+  {
+    name: "Joshua Tree",
+    subtitle: "California",
+    skyTop: [120, 170, 230],
+    skyBottom: [230, 200, 150],
+    groundColor: [210, 185, 140],
+    groundColor2: [190, 165, 120],
+    treeType: "pine",
+    ambientType: "motes",
+    iconEmoji: "desert"
+  },
+  {
+    name: "Denali",
+    subtitle: "Alaska",
+    skyTop: [150, 200, 240],
+    skyBottom: [210, 225, 240],
+    groundColor: [100, 145, 70],
+    groundColor2: [80, 125, 55],
+    treeType: "pine",
+    ambientType: "rain",
+    iconEmoji: "snowpeak"
+  },
+  {
+    name: "Shenandoah",
+    subtitle: "Virginia",
+    skyTop: [130, 170, 220],
+    skyBottom: [180, 200, 210],
+    groundColor: [90, 140, 55],
+    groundColor2: [70, 120, 40],
+    treeType: "autumn",
+    ambientType: "leaves",
+    iconEmoji: "valley"
+  },
+  {
+    name: "Big Bend",
+    subtitle: "Texas",
+    skyTop: [100, 160, 230],
+    skyBottom: [220, 190, 140],
+    groundColor: [180, 150, 100],
+    groundColor2: [160, 130, 85],
+    treeType: "pine",
+    ambientType: "motes",
+    iconEmoji: "cactus"
+  },
+  {
+    name: "Crater Lake",
+    subtitle: "Oregon",
+    skyTop: [90, 155, 230],
+    skyBottom: [160, 195, 230],
+    groundColor: [70, 130, 55],
+    groundColor2: [55, 110, 40],
+    treeType: "pine",
+    ambientType: "spray",
+    iconEmoji: "lake"
+  },
+  {
+    name: "Bryce Canyon",
+    subtitle: "Utah",
+    skyTop: [95, 165, 240],
+    skyBottom: [210, 170, 130],
+    groundColor: [205, 130, 75],
+    groundColor2: [185, 110, 60],
+    treeType: "pine",
+    ambientType: "motes",
+    iconEmoji: "hoodoo"
+  },
+  {
+    name: "Sequoia",
+    subtitle: "California",
+    skyTop: [95, 130, 85],
+    skyBottom: [125, 155, 105],
+    groundColor: [65, 105, 45],
+    groundColor2: [50, 85, 35],
+    treeType: "redwood",
+    ambientType: "motes",
+    iconEmoji: "bigtree"
+  },
+  {
+    name: "Hawaii Volcanoes",
+    subtitle: "Hawaii",
+    skyTop: [120, 160, 210],
+    skyBottom: [180, 140, 110],
+    groundColor: [60, 60, 55],
+    groundColor2: [45, 45, 40],
+    treeType: "mossy",
+    ambientType: "steam",
+    iconEmoji: "volcano"
+  },
+  {
+    name: "Carlsbad Caverns",
+    subtitle: "New Mexico",
+    skyTop: [70, 90, 120],
+    skyBottom: [50, 60, 80],
+    groundColor: [100, 90, 75],
+    groundColor2: [80, 70, 55],
+    treeType: "pine",
+    ambientType: "motes",
+    iconEmoji: "cave"
   }
 ];
 
@@ -83,7 +248,7 @@ var KITTENS = [
     darkColor: [170, 170, 185],
     eyeColor: [70, 140, 220],
     marking: "paws",
-    forestIndex: 0,
+    forestIndex: 1,
     neededItem: "yarn",
     hint: "This kitten wants to PLAY\nwith a round toy!",
     foundText: "Mittens was in a tree! She loves yarn!"
@@ -95,7 +260,7 @@ var KITTENS = [
     darkColor: [35, 35, 40],
     eyeColor: [210, 190, 60],
     marking: "none",
-    forestIndex: 1,
+    forestIndex: 2,
     neededItem: "flashlight",
     hint: "It's SO DARK in here!\nYou need something that makes LIGHT!",
     foundText: "Shadow was in a dark cave! The light helped!"
@@ -107,9 +272,9 @@ var KITTENS = [
     darkColor: [235, 185, 55],
     eyeColor: [100, 185, 100],
     marking: "none",
-    forestIndex: 1,
+    forestIndex: 3,
     neededItem: "feather",
-    hint: "This kitten wants to chase\na FEATHER!",
+    hint: "This kitten wants to chase\nsomething FLUFFY and TICKLY!",
     foundText: "Sunny loves to chase the feather! So fun!"
   },
   {
@@ -119,7 +284,7 @@ var KITTENS = [
     darkColor: [235, 140, 60],
     eyeColor: [165, 125, 65],
     marking: "calico",
-    forestIndex: 2,
+    forestIndex: 4,
     neededItem: "catnip",
     hint: "This kitten keeps SNIFFING!\nIt wants something that SMELLS good!",
     foundText: "Patches loves the smell of catnip!"
@@ -131,7 +296,7 @@ var KITTENS = [
     darkColor: [145, 145, 155],
     eyeColor: [100, 165, 210],
     marking: "none",
-    forestIndex: 2,
+    forestIndex: 5,
     neededItem: "bell",
     hint: "Shhh! So hard to hear!\nUse something that JINGLES!",
     foundText: "Pebble was asleep! The bell woke her up!"
@@ -143,7 +308,7 @@ var KITTENS = [
     darkColor: [185, 85, 30],
     eyeColor: [80, 165, 80],
     marking: "stripes",
-    forestIndex: 3,
+    forestIndex: 6,
     neededItem: "blanket",
     hint: "Brrr! This kitten is SO COLD!\nIt needs something WARM!",
     foundText: "Maple was so cold! The blanket made her warm!"
@@ -155,7 +320,7 @@ var KITTENS = [
     darkColor: [200, 200, 212],
     eyeColor: [155, 135, 210],
     marking: "none",
-    forestIndex: 3,
+    forestIndex: 7,
     neededItem: "milk",
     hint: "This kitten is SO THIRSTY!\nIt needs something to DRINK!",
     foundText: "Misty was so thirsty! She loved the milk!"
@@ -167,7 +332,7 @@ var KITTENS = [
     darkColor: [135, 100, 60],
     eyeColor: [80, 175, 80],
     marking: "stripes",
-    forestIndex: 4,
+    forestIndex: 8,
     neededItem: "laser",
     hint: "This kitten is chasing\na tiny RED DOT!",
     foundText: "Fern loves the red dot! So fun to chase!"
@@ -179,10 +344,130 @@ var KITTENS = [
     darkColor: [65, 65, 80],
     eyeColor: [175, 175, 255],
     marking: "star",
-    forestIndex: 4,
+    forestIndex: 9,
     neededItem: "music",
-    hint: "This kitten loves MUSIC!\nPlay a SONG for it!",
+    hint: "This kitten loves SOUNDS!\nPlay a TUNE for it!",
     foundText: "Luna came down for the song! She loves music!"
+  },
+  {
+    name: "Rusty",
+    personality: "loves to explore",
+    bodyColor: [200, 100, 50],
+    darkColor: [160, 75, 35],
+    eyeColor: [180, 160, 60],
+    marking: "stripes",
+    forestIndex: 10,
+    neededItem: "compass",
+    hint: "This kitten is SO LOST!\nIt needs something to show the WAY!",
+    foundText: "Rusty found the way! The compass helped!"
+  },
+  {
+    name: "Dusty",
+    personality: "loves the desert",
+    bodyColor: [220, 190, 140],
+    darkColor: [190, 160, 110],
+    eyeColor: [160, 130, 60],
+    marking: "none",
+    forestIndex: 11,
+    neededItem: "hat",
+    hint: "This kitten's head is SO HOT!\nIt needs something to block the SUN!",
+    foundText: "Dusty is cool now! The hat blocks the sun!"
+  },
+  {
+    name: "Snowball",
+    personality: "loves the cold",
+    bodyColor: [240, 245, 255],
+    darkColor: [200, 210, 225],
+    eyeColor: [80, 150, 220],
+    marking: "none",
+    forestIndex: 12,
+    neededItem: "scarf",
+    hint: "This kitten's neck is SO CHILLY!\nIt needs something long and COZY!",
+    foundText: "Snowball loves the scarf! So warm and snuggly!"
+  },
+  {
+    name: "Clover",
+    personality: "loves to pick flowers",
+    bodyColor: [140, 180, 100],
+    darkColor: [110, 150, 75],
+    eyeColor: [100, 200, 100],
+    marking: "calico",
+    forestIndex: 13,
+    neededItem: "butterfly_net",
+    hint: "This kitten sees something FLYING!\nIt needs something to CATCH it!",
+    foundText: "Clover caught a butterfly! What a fun net!"
+  },
+  {
+    name: "Pepper",
+    personality: "loves to be sneaky",
+    bodyColor: [70, 65, 60],
+    darkColor: [45, 40, 35],
+    eyeColor: [220, 170, 50],
+    marking: "none",
+    forestIndex: 14,
+    neededItem: "treat",
+    hint: "This kitten's tummy is GROWLING!\nGive it a yummy SNACK!",
+    foundText: "Pepper loved the treat! Munch munch munch!"
+  },
+  {
+    name: "Splash",
+    personality: "loves water",
+    bodyColor: [150, 180, 210],
+    darkColor: [120, 150, 180],
+    eyeColor: [60, 160, 200],
+    marking: "stripes",
+    forestIndex: 15,
+    neededItem: "boat",
+    hint: "This kitten is stuck by the WATER!\nIt needs something that FLOATS!",
+    foundText: "Splash rode the boat across! What fun!"
+  },
+  {
+    name: "Ziggy",
+    personality: "loves to climb",
+    bodyColor: [210, 150, 80],
+    darkColor: [180, 120, 55],
+    eyeColor: [130, 200, 100],
+    marking: "stripes",
+    forestIndex: 16,
+    neededItem: "rope",
+    hint: "This kitten is stuck UP HIGH!\nIt needs something long to CLIMB DOWN!",
+    foundText: "Ziggy climbed down the rope! So brave!"
+  },
+  {
+    name: "Acorn",
+    personality: "loves to collect things",
+    bodyColor: [180, 130, 70],
+    darkColor: [150, 100, 45],
+    eyeColor: [140, 180, 80],
+    marking: "calico",
+    forestIndex: 17,
+    neededItem: "basket",
+    hint: "This kitten found so many TREASURES!\nIt needs something to CARRY them!",
+    foundText: "Acorn filled the basket! What a collector!"
+  },
+  {
+    name: "Ember",
+    personality: "loves warm things",
+    bodyColor: [230, 100, 50],
+    darkColor: [190, 70, 30],
+    eyeColor: [255, 180, 50],
+    marking: "stripes",
+    forestIndex: 18,
+    neededItem: "torch",
+    hint: "This kitten wants something\nBRIGHT and GLOWING!",
+    foundText: "Ember loves the warm glow! So pretty!"
+  },
+  {
+    name: "Echo",
+    personality: "loves dark places",
+    bodyColor: [100, 95, 110],
+    darkColor: [70, 65, 80],
+    eyeColor: [170, 200, 170],
+    marking: "star",
+    forestIndex: 19,
+    neededItem: "gem",
+    hint: "This kitten wants something\nSHINY and SPARKLY!",
+    foundText: "Echo loves the sparkly gem! It glows so bright!"
   }
 ];
 
@@ -196,49 +481,158 @@ var ITEMS = [
   { id: "blanket", name: "Blanket", price: 5, desc: "Warm and soft!", color: [130, 170, 230] },
   { id: "milk", name: "Milk", price: 4, desc: "A yummy drink!", color: [240, 240, 248] },
   { id: "laser", name: "Laser", price: 6, desc: "A red dot to chase!", color: [230, 60, 60] },
-  { id: "music", name: "Music Box", price: 5, desc: "Plays a fun song!", color: [220, 160, 200] }
+  { id: "music", name: "Music Box", price: 5, desc: "Plays a fun song!", color: [220, 160, 200] },
+  { id: "compass", name: "Compass", price: 5, desc: "Shows the way!", color: [180, 50, 50] },
+  { id: "hat", name: "Sun Hat", price: 4, desc: "Blocks the sun!", color: [240, 220, 150] },
+  { id: "scarf", name: "Scarf", price: 5, desc: "Long and cozy!", color: [200, 80, 80] },
+  { id: "butterfly_net", name: "Net", price: 5, desc: "Catch things!", color: [180, 220, 180] },
+  { id: "treat", name: "Treat", price: 4, desc: "A yummy snack!", color: [200, 150, 80] },
+  { id: "boat", name: "Toy Boat", price: 6, desc: "Floats on water!", color: [80, 140, 200] },
+  { id: "rope", name: "Rope", price: 5, desc: "Strong and long!", color: [180, 150, 100] },
+  { id: "basket", name: "Basket", price: 4, desc: "Holds treasures!", color: [170, 120, 60] },
+  { id: "torch", name: "Torch", price: 6, desc: "Bright and glowy!", color: [255, 160, 50] },
+  { id: "gem", name: "Gem", price: 5, desc: "Shiny and sparkly!", color: [150, 100, 220] }
 ];
 
 var SPOT_TEMPLATES = [
   // Forest 0: Yellowstone
   [
     { rx: 0.20, ry: 0.52, rSize: 0.09, type: "geyser", content: "kitten", kittenIndex: 0, label: "Hot Steam" },
-    { rx: 0.75, ry: 0.40, rSize: 0.10, type: "pinetree", content: "kitten", kittenIndex: 1, label: "Big Tree" },
     { rx: 0.45, ry: 0.68, rSize: 0.08, type: "pool", content: "coins", coins: 5, label: "Hot Pool" },
     { rx: 0.88, ry: 0.62, rSize: 0.07, type: "rocks", content: "critter", critter: "butterfly", label: "Rocks" },
     { rx: 0.10, ry: 0.72, rSize: 0.07, type: "log", content: "coins", coins: 5, label: "Old Log" }
   ],
   // Forest 1: Yosemite
   [
-    { rx: 0.15, ry: 0.60, rSize: 0.09, type: "cave", content: "kitten", kittenIndex: 2, label: "Dark Cave" },
-    { rx: 0.58, ry: 0.53, rSize: 0.10, type: "flowers", content: "kitten", kittenIndex: 3, label: "Flowers" },
+    { rx: 0.58, ry: 0.53, rSize: 0.10, type: "flowers", content: "kitten", kittenIndex: 1, label: "Flowers" },
     { rx: 0.82, ry: 0.48, rSize: 0.08, type: "rocks", content: "coins", coins: 5, label: "Waterfall" },
     { rx: 0.38, ry: 0.42, rSize: 0.07, type: "log", content: "critter", critter: "bunny", label: "Big Log" },
     { rx: 0.90, ry: 0.70, rSize: 0.07, type: "bush", content: "coins", coins: 5, label: "Berry Bush" }
   ],
   // Forest 2: Redwood
   [
-    { rx: 0.28, ry: 0.48, rSize: 0.10, type: "hollowtree", content: "kitten", kittenIndex: 4, label: "Tree Hole" },
-    { rx: 0.68, ry: 0.60, rSize: 0.09, type: "ferns", content: "kitten", kittenIndex: 5, label: "Ferns" },
+    { rx: 0.28, ry: 0.48, rSize: 0.10, type: "hollowtree", content: "kitten", kittenIndex: 2, label: "Tree Hole" },
     { rx: 0.48, ry: 0.38, rSize: 0.08, type: "mushroom", content: "coins", coins: 5, label: "Mushrooms" },
     { rx: 0.12, ry: 0.65, rSize: 0.07, type: "log", content: "critter", critter: "squirrel", label: "Log Bridge" },
     { rx: 0.85, ry: 0.55, rSize: 0.07, type: "rocks", content: "coins", coins: 5, label: "Mossy Rock" }
   ],
   // Forest 3: Smoky Mountains
   [
-    { rx: 0.38, ry: 0.62, rSize: 0.10, type: "leaves", content: "kitten", kittenIndex: 6, label: "Leaf Pile" },
-    { rx: 0.78, ry: 0.48, rSize: 0.09, type: "mist", content: "kitten", kittenIndex: 7, label: "Foggy Spot" },
+    { rx: 0.38, ry: 0.62, rSize: 0.10, type: "leaves", content: "kitten", kittenIndex: 3, label: "Leaf Pile" },
     { rx: 0.18, ry: 0.55, rSize: 0.08, type: "stream", content: "coins", coins: 5, label: "Stream" },
     { rx: 0.55, ry: 0.40, rSize: 0.07, type: "stump", content: "critter", critter: "bird", label: "Tree Stump" },
     { rx: 0.90, ry: 0.68, rSize: 0.07, type: "bush", content: "coins", coins: 5, label: "Red Bush" }
   ],
   // Forest 4: Olympic Rainforest
   [
-    { rx: 0.32, ry: 0.56, rSize: 0.09, type: "mushroom", content: "kitten", kittenIndex: 8, label: "Big Mushroom" },
-    { rx: 0.72, ry: 0.44, rSize: 0.10, type: "mossybranch", content: "kitten", kittenIndex: 9, label: "Mossy Branch" },
+    { rx: 0.32, ry: 0.56, rSize: 0.09, type: "mushroom", content: "kitten", kittenIndex: 4, label: "Big Mushroom" },
     { rx: 0.12, ry: 0.64, rSize: 0.07, type: "puddle", content: "coins", coins: 5, label: "Puddle" },
     { rx: 0.50, ry: 0.50, rSize: 0.07, type: "vines", content: "critter", critter: "frog", label: "Vines" },
     { rx: 0.90, ry: 0.58, rSize: 0.07, type: "ferns", content: "coins", coins: 5, label: "Fern Cave" }
+  ],
+  // Forest 5: Grand Canyon
+  [
+    { rx: 0.25, ry: 0.55, rSize: 0.09, type: "rocks", content: "kitten", kittenIndex: 5, label: "Red Rocks" },
+    { rx: 0.65, ry: 0.45, rSize: 0.08, type: "cave", content: "coins", coins: 5, label: "Rock Cave" },
+    { rx: 0.85, ry: 0.60, rSize: 0.07, type: "bush", content: "critter", critter: "bird", label: "Dry Bush" },
+    { rx: 0.45, ry: 0.70, rSize: 0.07, type: "log", content: "coins", coins: 5, label: "Old Log" }
+  ],
+  // Forest 6: Zion
+  [
+    { rx: 0.35, ry: 0.50, rSize: 0.10, type: "cave", content: "kitten", kittenIndex: 6, label: "Canyon Cave" },
+    { rx: 0.70, ry: 0.60, rSize: 0.08, type: "rocks", content: "coins", coins: 5, label: "Big Boulder" },
+    { rx: 0.15, ry: 0.65, rSize: 0.07, type: "stream", content: "critter", critter: "frog", label: "Creek" },
+    { rx: 0.85, ry: 0.50, rSize: 0.07, type: "pinetree", content: "coins", coins: 5, label: "Pine Tree" }
+  ],
+  // Forest 7: Glacier
+  [
+    { rx: 0.40, ry: 0.48, rSize: 0.09, type: "rocks", content: "kitten", kittenIndex: 7, label: "Icy Rocks" },
+    { rx: 0.75, ry: 0.55, rSize: 0.08, type: "pool", content: "coins", coins: 5, label: "Glacier Pool" },
+    { rx: 0.20, ry: 0.62, rSize: 0.07, type: "pinetree", content: "critter", critter: "squirrel", label: "Tall Pine" },
+    { rx: 0.60, ry: 0.70, rSize: 0.07, type: "flowers", content: "coins", coins: 5, label: "Wildflowers" }
+  ],
+  // Forest 8: Acadia
+  [
+    { rx: 0.30, ry: 0.55, rSize: 0.09, type: "rocks", content: "kitten", kittenIndex: 8, label: "Beach Rocks" },
+    { rx: 0.60, ry: 0.45, rSize: 0.08, type: "pinetree", content: "coins", coins: 5, label: "Shore Pine" },
+    { rx: 0.85, ry: 0.60, rSize: 0.07, type: "bush", content: "critter", critter: "bird", label: "Blueberry Bush" },
+    { rx: 0.15, ry: 0.70, rSize: 0.07, type: "pool", content: "coins", coins: 5, label: "Tidepool" }
+  ],
+  // Forest 9: Everglades
+  [
+    { rx: 0.25, ry: 0.52, rSize: 0.10, type: "vines", content: "kitten", kittenIndex: 9, label: "Tangled Vines" },
+    { rx: 0.55, ry: 0.65, rSize: 0.08, type: "puddle", content: "coins", coins: 5, label: "Swamp Puddle" },
+    { rx: 0.80, ry: 0.48, rSize: 0.07, type: "log", content: "critter", critter: "frog", label: "Swamp Log" },
+    { rx: 0.40, ry: 0.72, rSize: 0.07, type: "ferns", content: "coins", coins: 5, label: "Swamp Ferns" }
+  ],
+  // Forest 10: Rocky Mountain
+  [
+    { rx: 0.35, ry: 0.50, rSize: 0.09, type: "pinetree", content: "kitten", kittenIndex: 10, label: "Mountain Pine" },
+    { rx: 0.70, ry: 0.58, rSize: 0.08, type: "rocks", content: "coins", coins: 5, label: "Mountain Rocks" },
+    { rx: 0.15, ry: 0.62, rSize: 0.07, type: "stream", content: "critter", critter: "butterfly", label: "Mountain Stream" },
+    { rx: 0.88, ry: 0.68, rSize: 0.07, type: "flowers", content: "coins", coins: 5, label: "Alpine Flowers" }
+  ],
+  // Forest 11: Joshua Tree
+  [
+    { rx: 0.30, ry: 0.55, rSize: 0.09, type: "rocks", content: "kitten", kittenIndex: 11, label: "Desert Rocks" },
+    { rx: 0.65, ry: 0.48, rSize: 0.08, type: "bush", content: "coins", coins: 5, label: "Sage Bush" },
+    { rx: 0.85, ry: 0.65, rSize: 0.07, type: "log", content: "critter", critter: "bird", label: "Old Cactus" }
+  ],
+  // Forest 12: Denali
+  [
+    { rx: 0.40, ry: 0.52, rSize: 0.09, type: "rocks", content: "kitten", kittenIndex: 12, label: "Snowy Rocks" },
+    { rx: 0.75, ry: 0.60, rSize: 0.08, type: "pinetree", content: "coins", coins: 5, label: "Snow Pine" },
+    { rx: 0.15, ry: 0.65, rSize: 0.07, type: "stream", content: "critter", critter: "bunny", label: "Icy Stream" },
+    { rx: 0.55, ry: 0.72, rSize: 0.07, type: "bush", content: "coins", coins: 5, label: "Snow Bush" }
+  ],
+  // Forest 13: Shenandoah
+  [
+    { rx: 0.35, ry: 0.55, rSize: 0.10, type: "flowers", content: "kitten", kittenIndex: 13, label: "Wildflower Patch" },
+    { rx: 0.70, ry: 0.45, rSize: 0.08, type: "stump", content: "coins", coins: 5, label: "Old Stump" },
+    { rx: 0.15, ry: 0.60, rSize: 0.07, type: "bush", content: "critter", critter: "butterfly", label: "Berry Bush" },
+    { rx: 0.85, ry: 0.68, rSize: 0.07, type: "leaves", content: "coins", coins: 5, label: "Leaf Pile" }
+  ],
+  // Forest 14: Big Bend
+  [
+    { rx: 0.30, ry: 0.52, rSize: 0.09, type: "cave", content: "kitten", kittenIndex: 14, label: "Desert Cave" },
+    { rx: 0.65, ry: 0.62, rSize: 0.08, type: "rocks", content: "coins", coins: 5, label: "Hot Rocks" },
+    { rx: 0.85, ry: 0.48, rSize: 0.07, type: "bush", content: "critter", critter: "bird", label: "Thorny Bush" },
+    { rx: 0.15, ry: 0.70, rSize: 0.07, type: "log", content: "coins", coins: 5, label: "Dry Log" }
+  ],
+  // Forest 15: Crater Lake
+  [
+    { rx: 0.25, ry: 0.55, rSize: 0.09, type: "pool", content: "kitten", kittenIndex: 15, label: "Blue Pool" },
+    { rx: 0.60, ry: 0.45, rSize: 0.08, type: "pinetree", content: "coins", coins: 5, label: "Lake Pine" },
+    { rx: 0.80, ry: 0.62, rSize: 0.07, type: "rocks", content: "critter", critter: "squirrel", label: "Crater Rocks" },
+    { rx: 0.45, ry: 0.72, rSize: 0.07, type: "ferns", content: "coins", coins: 5, label: "Lake Ferns" }
+  ],
+  // Forest 16: Bryce Canyon
+  [
+    { rx: 0.35, ry: 0.50, rSize: 0.09, type: "rocks", content: "kitten", kittenIndex: 16, label: "Red Pillar" },
+    { rx: 0.70, ry: 0.58, rSize: 0.08, type: "cave", content: "coins", coins: 5, label: "Rock Arch" },
+    { rx: 0.15, ry: 0.65, rSize: 0.07, type: "pinetree", content: "critter", critter: "bird", label: "Canyon Pine" },
+    { rx: 0.88, ry: 0.68, rSize: 0.07, type: "bush", content: "coins", coins: 5, label: "Canyon Bush" }
+  ],
+  // Forest 17: Sequoia
+  [
+    { rx: 0.28, ry: 0.48, rSize: 0.10, type: "hollowtree", content: "kitten", kittenIndex: 17, label: "Giant Tree" },
+    { rx: 0.60, ry: 0.60, rSize: 0.08, type: "ferns", content: "coins", coins: 5, label: "Big Ferns" },
+    { rx: 0.85, ry: 0.52, rSize: 0.07, type: "mushroom", content: "critter", critter: "squirrel", label: "Mushroom Ring" },
+    { rx: 0.15, ry: 0.68, rSize: 0.07, type: "log", content: "coins", coins: 5, label: "Fallen Giant" }
+  ],
+  // Forest 18: Hawaii Volcanoes
+  [
+    { rx: 0.30, ry: 0.55, rSize: 0.09, type: "geyser", content: "kitten", kittenIndex: 18, label: "Lava Vent" },
+    { rx: 0.65, ry: 0.48, rSize: 0.08, type: "rocks", content: "coins", coins: 5, label: "Lava Rocks" },
+    { rx: 0.85, ry: 0.62, rSize: 0.07, type: "ferns", content: "critter", critter: "bird", label: "Tropical Ferns" },
+    { rx: 0.15, ry: 0.70, rSize: 0.07, type: "vines", content: "coins", coins: 5, label: "Jungle Vines" }
+  ],
+  // Forest 19: Carlsbad Caverns
+  [
+    { rx: 0.35, ry: 0.52, rSize: 0.09, type: "cave", content: "kitten", kittenIndex: 19, label: "Deep Cavern" },
+    { rx: 0.65, ry: 0.60, rSize: 0.08, type: "rocks", content: "coins", coins: 5, label: "Crystal Rocks" },
+    { rx: 0.20, ry: 0.65, rSize: 0.07, type: "puddle", content: "critter", critter: "frog", label: "Cave Pool" },
+    { rx: 0.80, ry: 0.48, rSize: 0.07, type: "mushroom", content: "coins", coins: 5, label: "Cave Mushroom" }
   ]
 ];
 
@@ -286,7 +680,7 @@ function initGame() {
   coins = 30;
   ownedItems = {};
   foundKittens = [];
-  for (var i = 0; i < 10; i++) foundKittens.push(false);
+  for (var i = 0; i < KITTENS.length; i++) foundKittens.push(false);
   currentForest = -1;
   currentSpotIndex = -1;
   forestSpots = [];
@@ -509,16 +903,18 @@ function drawStory() {
     textWrap(WORD);
     textLeading(min(width, height) * 0.065);
     text(
-      "Your 10 cute kittens ran away\nand got lost in the woods!",
+      "Your 20 cute kittens ran away\nand got lost in the woods!",
       width / 2, height * 0.30
     );
 
     // Draw scattered kitten silhouettes
-    for (var i = 0; i < 10; i++) {
-      var kx = width * 0.15 + (i % 5) * (width * 0.17);
-      var ky = height * 0.48 + floor(i / 5) * (height * 0.14);
+    var storyCols = 5;
+    var storyRows = ceil(KITTENS.length / storyCols);
+    for (var i = 0; i < KITTENS.length; i++) {
+      var kx = width * 0.15 + (i % storyCols) * (width * 0.17);
+      var ky = height * 0.42 + floor(i / storyCols) * (height * 0.10);
       var kb = sin(menuFrame * 0.06 + i * 0.7) * 4;
-      drawKittenCharacter(kx, ky + kb, min(width, height) * 0.09, i, "idle");
+      drawKittenCharacter(kx, ky + kb, min(width, height) * 0.065, i, "idle");
     }
 
     textSize(min(width, height) * 0.038);
@@ -610,47 +1006,33 @@ function drawMap() {
   textStyle(NORMAL);
   textSize(min(width, height) * 0.035);
   fill(120, 80, 40);
-  text("Kittens Found: " + foundCount + " / 10", width / 2, height * 0.12);
+  text("Kittens Found: " + foundCount + " / " + KITTENS.length, width / 2, height * 0.12);
 
   // Coin counter
   drawCoinHUD(width - 80, height * 0.06);
 
-  // Forest cards - 2 rows
-  var cardW = min(width * 0.17, 180);
-  var cardH = min(height * 0.32, 250);
-  var gap = min(width * 0.02, 15);
-  var totalW = 5 * cardW + 4 * gap;
-
-  // If screen is narrow, use 2 rows
-  var useRows = width < 700;
+  // Forest cards - scrollable grid
+  var mapCols = width > 900 ? 5 : (width > 600 ? 4 : 3);
+  var mapRows = ceil(FORESTS.length / mapCols);
+  var cardW = min((width * 0.85) / mapCols, 150);
+  var cardH = min((height * 0.58) / mapRows, 140);
+  var gap = min(width * 0.015, 10);
   mapHoveredForest = -1;
 
-  if (useRows) {
-    cardW = min(width * 0.28, 160);
-    cardH = min(height * 0.28, 200);
-    // Row 1: 3 cards
-    for (var i = 0; i < 3; i++) {
-      var cx = width / 2 + (i - 1) * (cardW + gap);
-      var cy = height * 0.35;
-      drawForestCard(i, cx, cy, cardW, cardH);
-    }
-    // Row 2: 2 cards
-    for (var i = 3; i < 5; i++) {
-      var cx = width / 2 + (i - 3.5) * (cardW + gap);
-      var cy = height * 0.35 + cardH + gap * 2;
-      drawForestCard(i, cx, cy, cardW, cardH);
-    }
-  } else {
-    var startX = (width - totalW) / 2 + cardW / 2;
-    for (var i = 0; i < 5; i++) {
-      var cx = startX + i * (cardW + gap);
-      var cy = height * 0.42;
-      drawForestCard(i, cx, cy, cardW, cardH);
-    }
+  var totalGridW = mapCols * cardW + (mapCols - 1) * gap;
+  var gridStartX = (width - totalGridW) / 2 + cardW / 2;
+  var gridStartY = height * 0.19;
+
+  for (var i = 0; i < FORESTS.length; i++) {
+    var col = i % mapCols;
+    var row = floor(i / mapCols);
+    var cx = gridStartX + col * (cardW + gap);
+    var cy = gridStartY + row * (cardH + gap) + cardH / 2;
+    drawForestCard(i, cx, cy, cardW, cardH);
   }
 
   // Bottom buttons: Shop and Collection
-  var bbY = useRows ? height * 0.87 : height * 0.78;
+  var bbY = height * 0.93;
   var bbW = min(width * 0.25, 200);
   var bbH = min(height * 0.08, 65);
   var shopHover = isInRect(mouseX, mouseY, width * 0.35, bbY, bbW, bbH);
@@ -778,39 +1160,41 @@ function drawMiniForest(idx, cx, cy, w, h) {
 }
 
 function getTreeColor(idx) {
-  var colors = [
-    [35, 85, 35],   // Yellowstone - dark pine
-    [25, 75, 30],   // Yosemite - forest green
-    [100, 55, 25],  // Redwood - reddish brown
-    [200, 110, 40], // Smoky - autumn orange
-    [30, 80, 35]    // Olympic - deep green
-  ];
-  return colors[idx];
+  var f = FORESTS[idx];
+  if (f.treeType === "redwood") return [100, 55, 25];
+  if (f.treeType === "autumn") return [200, 110, 40];
+  if (f.treeType === "mossy") return [30, 80, 35];
+  // pine and default
+  return [35, 85, 35];
 }
 
 function drawForestFeature(idx, x, y, s) {
   push();
   noStroke();
-  if (idx === 0) {
-    // Yellowstone - geyser steam
+  var f = FORESTS[idx];
+  var ambient = f.ambientType;
+  var tree = f.treeType;
+
+  if (ambient === "steam") {
+    // Geyser steam
     fill(200, 220, 255, 150);
     ellipse(x, y, s * 0.5, s);
     fill(100, 180, 230, 100);
     ellipse(x, y + s * 0.3, s * 0.6, s * 0.3);
-  } else if (idx === 1) {
-    // Yosemite - waterfall
+  } else if (ambient === "spray") {
+    // Waterfall / spray
     fill(180, 190, 200);
     rect(x - s * 0.4, y - s * 0.4, s * 0.3, s * 0.9);
     fill(200, 230, 255, 180);
     rect(x - s * 0.35, y - s * 0.3, s * 0.2, s * 0.8);
-  } else if (idx === 2) {
-    // Redwood - big tree trunk
+  } else if (tree === "redwood") {
+    // Big tree trunk
     fill(120, 65, 30);
     rect(x - s * 0.12, y - s * 0.3, s * 0.24, s * 0.7);
     fill(60, 130, 50);
     ellipse(x, y - s * 0.4, s * 0.6, s * 0.4);
-  } else if (idx === 3) {
-    // Smoky - autumn leaves
+  } else if (tree === "autumn") {
+    // Autumn leaves
     var lcolors = [[220, 80, 40], [240, 180, 40], [200, 50, 30]];
     for (var i = 0; i < 5; i++) {
       var lc = lcolors[i % 3];
@@ -819,14 +1203,22 @@ function drawForestFeature(idx, x, y, s) {
       var ly = y + cos(i * 1.8) * s * 0.2;
       ellipse(lx, ly, s * 0.2, s * 0.15);
     }
-  } else {
-    // Olympic - rain drops
+  } else if (ambient === "rain") {
+    // Rain drops
     stroke(150, 200, 220, 150);
     strokeWeight(1);
     for (var i = 0; i < 6; i++) {
       var rx = x - s * 0.4 + i * s * 0.16;
       var ry = y - s * 0.3 + (i % 3) * s * 0.2;
       line(rx, ry, rx - 2, ry + s * 0.15);
+    }
+  } else {
+    // Default - motes / dust
+    fill(255, 255, 200, 120);
+    for (var i = 0; i < 4; i++) {
+      var mx = x + sin(i * 2.1) * s * 0.3;
+      var my = y + cos(i * 1.7) * s * 0.2;
+      ellipse(mx, my, s * 0.1, s * 0.1);
     }
   }
   pop();
@@ -849,8 +1241,7 @@ function handleMapClick() {
   }
 
   // Bottom buttons
-  var useRows = width < 700;
-  var bbY = useRows ? height * 0.87 : height * 0.78;
+  var bbY = height * 0.93;
   var bbW = min(width * 0.25, 200);
   var bbH = min(height * 0.08, 65);
 
@@ -1429,7 +1820,7 @@ function handleFoundClick() {
 
   if (isInRect(mouseX, mouseY, width / 2, height * 0.91, 200, 60)) {
     // Check if all kittens found
-    if (countFoundKittens() >= 10) {
+    if (countFoundKittens() >= KITTENS.length) {
       gameState = "win";
       winTimer = 0;
       transitionAlpha = 255;
@@ -1461,16 +1852,16 @@ function drawCollection() {
   textStyle(NORMAL);
   textSize(min(width, height) * 0.035);
   fill(140, 110, 130);
-  text(foundCount + " of 10 found", width / 2, height * 0.12);
+  text(foundCount + " of " + KITTENS.length + " found", width / 2, height * 0.12);
 
-  // Kitten grid - 2 rows of 5
-  var cols = width > 500 ? 5 : 3;
-  var rows = ceil(10 / cols);
-  var cellW = min(width / (cols + 1), 140);
-  var cellH = min((height * 0.65) / rows, 160);
-  var gap = min(width * 0.01, 8);
+  // Kitten grid
+  var cols = width > 900 ? 5 : (width > 500 ? 4 : 3);
+  var rows = ceil(KITTENS.length / cols);
+  var cellW = min(width / (cols + 1), 120);
+  var cellH = min((height * 0.7) / rows, 130);
+  var gap = min(width * 0.01, 6);
 
-  for (var i = 0; i < 10; i++) {
+  for (var i = 0; i < KITTENS.length; i++) {
     var col = i % cols;
     var row = floor(i / cols);
     var totalRowW = cols * cellW + (cols - 1) * gap;
@@ -1594,10 +1985,10 @@ function drawWin() {
   text("YOU FOUND THEM ALL!", width / 2, height * 0.1 + titleBounce);
   noStroke();
 
-  // All 10 kittens in a cute arrangement
-  var kitSize = min(width, height) * 0.1;
-  for (var i = 0; i < 10; i++) {
-    var angle = (i / 10) * TWO_PI - HALF_PI;
+  // All kittens in a cute arrangement
+  var kitSize = min(width, height) * 0.07;
+  for (var i = 0; i < KITTENS.length; i++) {
+    var angle = (i / KITTENS.length) * TWO_PI - HALF_PI;
     var radius = min(width, height) * 0.25;
     var kx = width / 2 + cos(angle + winTimer * 0.005) * radius;
     var ky = height * 0.48 + sin(angle + winTimer * 0.005) * radius * 0.6;
@@ -1665,6 +2056,7 @@ function drawForestBackground(idx) {
     case 2: drawRedwoodScene(); break;
     case 3: drawSmokyScene(); break;
     case 4: drawOlympicScene(); break;
+    default: drawGenericForestScene(idx); break;
   }
 }
 
@@ -2018,6 +2410,112 @@ function drawOlympicScene() {
     line(rx, ry, rx - 2, ry + 12);
   }
   noStroke();
+}
+
+function drawGenericForestScene(idx) {
+  var f = FORESTS[idx];
+  noStroke();
+
+  // Mountains
+  fill(f.groundColor[0] - 20, f.groundColor[1] - 10, f.groundColor[2] - 5, 150);
+  drawMountainRange(height * 0.35, 5, 0.15, 0.1);
+  fill(f.groundColor[0] - 10, f.groundColor[1] - 5, f.groundColor[2], 180);
+  drawMountainRange(height * 0.42, 4, 0.18, 0.08);
+
+  // Ground
+  fill(f.groundColor[0], f.groundColor[1], f.groundColor[2]);
+  rect(0, height * 0.55, width, height * 0.45);
+  fill(f.groundColor2[0], f.groundColor2[1], f.groundColor2[2]);
+  rect(0, height * 0.7, width, height * 0.3);
+
+  // Trees based on treeType
+  var treeC = getTreeColor(idx);
+  if (f.treeType === "pine") {
+    for (var i = 0; i < 8; i++) {
+      var tx = width * (0.05 + i * 0.13);
+      var ty = height * (0.42 + sin(i * 2.1) * 0.06);
+      var th = height * (0.12 + sin(i * 1.5) * 0.04);
+      drawPineTree(tx, ty, th, [treeC[0] + i * 3, treeC[1] + i * 2, treeC[2]]);
+    }
+  } else if (f.treeType === "redwood") {
+    var trunkColors = [[120, 65, 30], [110, 58, 25], [130, 70, 35]];
+    var trunkPositions = [0.1, 0.4, 0.65, 0.9];
+    for (var i = 0; i < trunkPositions.length; i++) {
+      var tc = trunkColors[i % trunkColors.length];
+      fill(tc[0], tc[1], tc[2]);
+      var tw = width * 0.07;
+      var tx = width * trunkPositions[i];
+      rect(tx - tw / 2, 0, tw, height * 0.72);
+      fill(tc[0] - 15, tc[1] - 10, tc[2] - 8, 80);
+      for (var j = 0; j < 6; j++) {
+        var by = j * height * 0.1 + 10;
+        rect(tx - tw / 2 + 3, by, tw - 6, 3);
+      }
+    }
+    for (var i = 0; i < 10; i++) {
+      var fx = (i / 9) * width;
+      var fy = height * (0.6 + sin(i * 1.7) * 0.04);
+      drawFern(fx, fy, 22 + sin(i * 2.3) * 6);
+    }
+  } else if (f.treeType === "autumn") {
+    var autumnColors = [
+      [220, 80, 30], [240, 160, 30], [200, 50, 25],
+      [180, 120, 30], [230, 130, 40], [210, 190, 40]
+    ];
+    for (var i = 0; i < 9; i++) {
+      var tx = width * (0.05 + i * 0.11);
+      var ty = height * (0.42 + sin(i * 1.9) * 0.06);
+      var th = height * (0.1 + sin(i * 2.3) * 0.03);
+      var tc = autumnColors[i % autumnColors.length];
+      fill(100, 70, 40);
+      rect(tx - 4, ty, 8, th * 0.5);
+      fill(tc[0], tc[1], tc[2]);
+      ellipse(tx, ty - th * 0.1, th * 0.8, th * 0.9);
+    }
+  } else if (f.treeType === "mossy") {
+    for (var i = 0; i < 7; i++) {
+      var tx = width * (0.05 + i * 0.14);
+      var ty = height * 0.5;
+      var th = height * (0.2 + sin(i * 1.6) * 0.06);
+      fill(50, 40, 30);
+      rect(tx - 8, ty - th, 16, th + 8);
+      fill(80, 150, 60, 180);
+      rect(tx - 10, ty - th * 0.8, 6, th * 0.5);
+      fill(30, 75, 30);
+      ellipse(tx, ty - th - 8, 40, 32);
+    }
+    for (var i = 0; i < 8; i++) {
+      var fx = (i / 7) * width;
+      var fy = height * (0.55 + sin(i * 2.1) * 0.04);
+      drawFern(fx, fy, 25 + sin(i * 1.4) * 8);
+    }
+  }
+
+  // Ambient details based on ambientType
+  if (f.ambientType === "steam") {
+    for (var i = 0; i < 4; i++) {
+      var sx = width * (0.2 + i * 0.2) + sin(menuFrame * 0.02 + i) * 8;
+      var sy = height * 0.55 - sin(menuFrame * 0.015 + i * 1.5) * 20;
+      var sa = 80 + sin(menuFrame * 0.03 + i * 2) * 30;
+      fill(255, 255, 255, sa);
+      ellipse(sx, sy, 20 + i * 5, 15 + i * 3);
+    }
+  } else if (f.ambientType === "spray") {
+    for (var i = 0; i < 6; i++) {
+      var sx = width * 0.5 + sin(i * 1.8 + menuFrame * 0.03) * 15;
+      var sy = height * 0.55 + cos(i * 2.3 + menuFrame * 0.02) * 8;
+      fill(220, 235, 255, 80 + sin(menuFrame * 0.05 + i) * 30);
+      ellipse(sx, sy, 6 + i % 3 * 3, 6 + i % 2 * 2);
+    }
+  }
+
+  // Ground details
+  fill(f.groundColor[0] + 20, f.groundColor[1] + 10, f.groundColor[2] - 10);
+  for (var i = 0; i < 8; i++) {
+    var rx = (sin(i * 5.7) * 0.5 + 0.5) * width;
+    var ry = height * 0.7 + (cos(i * 3.2) * 0.5 + 0.5) * height * 0.12;
+    ellipse(rx, ry, 7 + i % 3 * 3, 4 + i % 2 * 2);
+  }
 }
 
 // ============== FOREST HELPERS ==============
@@ -2809,6 +3307,153 @@ function drawItemIcon(itemId, x, y, size) {
     strokeWeight(1.5);
     line(s * 0.135, -s * 0.32, s * 0.135, -s * 0.45);
     noStroke();
+  } else if (itemId === "compass") {
+    // Compass body
+    fill(180, 50, 50);
+    ellipse(0, 0, s * 0.7, s * 0.7);
+    fill(240, 235, 220);
+    ellipse(0, 0, s * 0.55, s * 0.55);
+    // Needle
+    fill(220, 40, 40);
+    triangle(0, -s * 0.2, -s * 0.04, s * 0.02, s * 0.04, s * 0.02);
+    fill(200, 200, 210);
+    triangle(0, s * 0.2, -s * 0.04, -s * 0.02, s * 0.04, -s * 0.02);
+    // Center dot
+    fill(80, 80, 90);
+    ellipse(0, 0, s * 0.06, s * 0.06);
+    // N marker
+    fill(220, 40, 40);
+    textAlign(CENTER, CENTER);
+    textSize(s * 0.12);
+    textStyle(BOLD);
+    text("N", 0, -s * 0.28);
+    textStyle(NORMAL);
+  } else if (itemId === "hat") {
+    // Sun hat
+    fill(240, 220, 150);
+    ellipse(0, s * 0.05, s * 0.8, s * 0.2);
+    fill(230, 210, 140);
+    arc(0, s * 0.05, s * 0.5, s * 0.5, PI, TWO_PI);
+    // Ribbon
+    fill(200, 80, 80);
+    rect(-s * 0.25, -s * 0.02, s * 0.5, s * 0.07);
+  } else if (itemId === "scarf") {
+    // Scarf
+    fill(200, 80, 80);
+    rect(-s * 0.3, -s * 0.1, s * 0.6, s * 0.12, 4);
+    rect(-s * 0.3, -s * 0.1, s * 0.12, s * 0.4, 4);
+    // Fringe
+    fill(180, 60, 60);
+    for (var i = 0; i < 3; i++) {
+      rect(-s * 0.28 + i * s * 0.04, s * 0.25, s * 0.02, s * 0.06);
+    }
+    // Pattern
+    fill(240, 220, 150);
+    ellipse(-s * 0.05, -s * 0.04, s * 0.06, s * 0.06);
+    ellipse(s * 0.1, -s * 0.04, s * 0.06, s * 0.06);
+  } else if (itemId === "butterfly_net") {
+    // Net handle
+    stroke(160, 120, 70);
+    strokeWeight(3);
+    line(0, s * 0.35, 0, -s * 0.05);
+    noStroke();
+    // Net ring
+    noFill();
+    stroke(100, 160, 100);
+    strokeWeight(2);
+    ellipse(0, -s * 0.2, s * 0.4, s * 0.35);
+    noStroke();
+    // Net mesh
+    fill(180, 220, 180, 80);
+    triangle(-s * 0.2, -s * 0.2, s * 0.2, -s * 0.2, 0, -s * 0.45);
+  } else if (itemId === "treat") {
+    // Treat / biscuit
+    fill(200, 150, 80);
+    ellipse(0, 0, s * 0.5, s * 0.4);
+    fill(180, 130, 60);
+    ellipse(0, s * 0.02, s * 0.4, s * 0.3);
+    // Sprinkles
+    fill(255, 100, 100);
+    ellipse(-s * 0.08, -s * 0.04, s * 0.04, s * 0.04);
+    fill(100, 200, 100);
+    ellipse(s * 0.06, s * 0.02, s * 0.04, s * 0.04);
+    fill(100, 150, 255);
+    ellipse(-s * 0.02, s * 0.06, s * 0.04, s * 0.04);
+  } else if (itemId === "boat") {
+    // Toy boat hull
+    fill(80, 140, 200);
+    arc(0, s * 0.1, s * 0.7, s * 0.3, 0, PI);
+    // Sail
+    fill(255, 250, 240);
+    triangle(0, -s * 0.35, 0, s * 0.05, s * 0.2, s * 0.0);
+    // Mast
+    stroke(160, 120, 70);
+    strokeWeight(2);
+    line(0, -s * 0.35, 0, s * 0.1);
+    noStroke();
+    // Flag
+    fill(230, 60, 60);
+    triangle(0, -s * 0.35, 0, -s * 0.28, s * 0.08, -s * 0.32);
+  } else if (itemId === "rope") {
+    // Coiled rope
+    noFill();
+    stroke(180, 150, 100);
+    strokeWeight(3);
+    arc(0, 0, s * 0.4, s * 0.4, 0, PI + HALF_PI);
+    arc(s * 0.05, s * 0.02, s * 0.28, s * 0.28, PI, TWO_PI + HALF_PI);
+    noStroke();
+    // End
+    fill(180, 150, 100);
+    ellipse(s * 0.15, s * 0.2, s * 0.06, s * 0.06);
+    ellipse(-s * 0.2, 0, s * 0.06, s * 0.06);
+  } else if (itemId === "basket") {
+    // Woven basket
+    fill(170, 120, 60);
+    arc(0, s * 0.05, s * 0.6, s * 0.4, 0, PI);
+    rect(-s * 0.3, -s * 0.02, s * 0.6, s * 0.08);
+    // Handle
+    noFill();
+    stroke(150, 100, 45);
+    strokeWeight(2.5);
+    arc(0, -s * 0.02, s * 0.4, s * 0.3, PI, TWO_PI);
+    noStroke();
+    // Weave pattern
+    fill(190, 140, 75);
+    for (var i = 0; i < 4; i++) {
+      rect(-s * 0.22 + i * s * 0.13, s * 0.06, s * 0.04, s * 0.12);
+    }
+  } else if (itemId === "torch") {
+    // Torch handle
+    fill(140, 100, 50);
+    rect(-s * 0.06, -s * 0.05, s * 0.12, s * 0.4, 3);
+    // Flame
+    fill(255, 160, 50, 200);
+    ellipse(0, -s * 0.15, s * 0.25, s * 0.35);
+    fill(255, 220, 80, 180);
+    ellipse(0, -s * 0.2, s * 0.15, s * 0.25);
+    fill(255, 250, 200, 150);
+    ellipse(0, -s * 0.22, s * 0.08, s * 0.15);
+    // Glow
+    fill(255, 200, 80, 30);
+    ellipse(0, -s * 0.15, s * 0.5, s * 0.5);
+  } else if (itemId === "gem") {
+    // Gem
+    fill(150, 100, 220);
+    beginShape();
+    vertex(0, -s * 0.3);
+    vertex(s * 0.2, -s * 0.1);
+    vertex(s * 0.15, s * 0.15);
+    vertex(-s * 0.15, s * 0.15);
+    vertex(-s * 0.2, -s * 0.1);
+    endShape(CLOSE);
+    // Facet
+    fill(180, 140, 240, 150);
+    triangle(0, -s * 0.3, s * 0.2, -s * 0.1, 0, s * 0.05);
+    // Sparkle
+    fill(255, 255, 255, 200);
+    ellipse(-s * 0.05, -s * 0.15, s * 0.06, s * 0.06);
+    fill(255, 255, 255, 120);
+    ellipse(s * 0.08, -s * 0.05, s * 0.04, s * 0.04);
   }
 
   pop();
@@ -2816,15 +3461,7 @@ function drawItemIcon(itemId, x, y, size) {
 
 function drawItemMiniIcon(type, x, y, size) {
   push();
-  if (type === "fish") {
-    drawItemIcon("fish", x, y, size * 0.7);
-  } else if (type === "flashlight") {
-    drawItemIcon("flashlight", x, y, size * 0.7);
-  } else if (type === "yarn") {
-    drawItemIcon("yarn", x, y, size * 0.7);
-  } else if (type === "milk") {
-    drawItemIcon("milk", x, y, size * 0.7);
-  } else if (type === "coins") {
+  if (type === "coins") {
     drawCoinIcon(x, y, size * 0.3);
   } else if (type === "map") {
     noStroke();
@@ -2836,6 +3473,8 @@ function drawItemMiniIcon(type, x, y, size) {
     line(x - size * 0.1, y, x + size * 0.1, y);
     line(x - size * 0.15, y + size * 0.1, x + size * 0.15, y + size * 0.1);
     noStroke();
+  } else {
+    drawItemIcon(type, x, y, size * 0.7);
   }
   pop();
 }
