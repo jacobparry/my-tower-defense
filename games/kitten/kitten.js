@@ -1583,47 +1583,47 @@ function drawInvestigate() {
   strokeWeight(3);
   rect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 20);
 
-  // Hiding spot visual - kitten peeking
-  var peekY = panelY - panelH * 0.18;
-  drawKittenPeek(panelX, peekY, panelW * 0.3, spot.kittenIndex, spot.scared);
-
-  // "Meow!" text
+  // "Meow!" text at the top of panel
   if (!spot.scared) {
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     textSize(min(panelW, panelH) * 0.09);
     fill(255, 150, 100);
     var meowBob = sin(menuFrame * 0.1) * 3;
-    text("Meow!", panelX, panelY - panelH * 0.35 + meowBob);
+    text("Meow!", panelX, panelY - panelH * 0.42 + meowBob);
   }
 
-  // Hint text
+  // Hiding spot visual - kitten peeking (higher up)
+  var peekY = panelY - panelH * 0.28;
+  drawKittenPeek(panelX, peekY, panelW * 0.3, spot.kittenIndex, spot.scared);
+
+  // Hint text (below kitten with clear gap)
   textStyle(NORMAL);
-  textSize(min(panelW, panelH) * 0.06);
+  textSize(min(panelW, panelH) * 0.055);
   fill(80, 60, 40);
   textAlign(CENTER, CENTER);
 
   if (spot.scared) {
     fill(200, 60, 60);
     textSize(min(panelW, panelH) * 0.06);
-    text("Oh no! Wrong one!", panelX, panelY - panelH * 0.02);
+    text("Oh no! Wrong one!", panelX, panelY - panelH * 0.05);
     textSize(min(panelW, panelH) * 0.05);
     fill(200, 60, 60);
-    text("The kitten ran away!", panelX, panelY + panelH * 0.06);
+    text("The kitten ran away!", panelX, panelY + panelH * 0.04);
     textSize(min(panelW, panelH) * 0.04);
     fill(140, 100, 70);
-    text("Go back and try again!", panelX, panelY + panelH * 0.14);
+    text("Go back and try again!", panelX, panelY + panelH * 0.12);
   } else {
-    text(kitten.hint, panelX, panelY + panelH * 0.02);
+    text(kitten.hint, panelX, panelY - panelH * 0.08);
   }
 
-  // Item inventory
+  // Item inventory (more space, bigger items)
   if (!spot.scared) {
-    var itemY = panelY + panelH * 0.22;
+    var itemY = panelY + panelH * 0.18;
     textAlign(CENTER, CENTER);
     textSize(min(panelW, panelH) * 0.045);
     fill(140, 120, 90);
-    text("Pick one:", panelX, itemY - panelH * 0.07);
+    text("Pick one:", panelX, itemY - panelH * 0.1);
 
     var ownedList = getOwnedItemsList();
     if (ownedList.length === 0) {
@@ -1631,10 +1631,10 @@ function drawInvestigate() {
       text("You have no things! Find more kittens!", panelX, itemY);
     } else {
       // Grid layout for bigger items
-      var maxCols = min(ownedList.length, 5);
+      var maxCols = min(ownedList.length, 4);
       var itemRows = ceil(ownedList.length / maxCols);
-      var iSize = min(panelW / (maxCols + 1.5), panelH * 0.15, 70);
-      var iGap = iSize * 0.3;
+      var iSize = min(panelW / (maxCols + 1), panelH * 0.2, 90);
+      var iGap = iSize * 0.25;
       var totalGridW = maxCols * iSize + (maxCols - 1) * iGap;
       var totalGridH = itemRows * iSize + (itemRows - 1) * iGap;
       var gridStartX = panelX - totalGridW / 2 + iSize / 2;
@@ -1652,9 +1652,9 @@ function drawInvestigate() {
   }
 
   // Close/Back button
-  var cbY = panelY + panelH * 0.42;
-  var cbHover = isInRect(mouseX, mouseY, panelX, cbY, 140, 48);
-  drawButton(panelX, cbY, 140, 48, "BACK", [160, 140, 120], cbHover);
+  var cbY = panelY + panelH * 0.43;
+  var cbHover = isInRect(mouseX, mouseY, panelX, cbY, 160, 55);
+  drawButton(panelX, cbY, 160, 55, "BACK", [160, 140, 120], cbHover);
 }
 
 function handleInvestigateClick() {
@@ -1665,8 +1665,8 @@ function handleInvestigateClick() {
   var panelY = height * 0.45;
 
   // Close button
-  var cbY = panelY + panelH * 0.42;
-  if (isInRect(mouseX, mouseY, panelX, cbY, 140, 48)) {
+  var cbY = panelY + panelH * 0.43;
+  if (isInRect(mouseX, mouseY, panelX, cbY, 160, 55)) {
     gameState = "forest";
     transitionAlpha = 100;
     if (spot.scared) {
@@ -1679,11 +1679,11 @@ function handleInvestigateClick() {
   if (spot.scared) return;
 
   var ownedList = getOwnedItemsList();
-  var itemY = panelY + panelH * 0.22;
-  var maxCols = min(ownedList.length, 5);
+  var itemY = panelY + panelH * 0.18;
+  var maxCols = min(ownedList.length, 4);
   var itemRows = ceil(ownedList.length / maxCols);
-  var iSize = min(panelW / (maxCols + 1.5), panelH * 0.15, 70);
-  var iGap = iSize * 0.3;
+  var iSize = min(panelW / (maxCols + 1), panelH * 0.2, 90);
+  var iGap = iSize * 0.25;
   var totalGridW = maxCols * iSize + (maxCols - 1) * iGap;
   var totalGridH = itemRows * iSize + (itemRows - 1) * iGap;
   var gridStartX = panelX - totalGridW / 2 + iSize / 2;
@@ -3525,12 +3525,12 @@ function drawItemButton(itemId, x, y, size, hovered) {
   ellipse(x, y, s * 1.4, s * 1.4);
 
   noStroke();
-  drawItemIcon(itemId, x, y - s * 0.05, s * 0.6);
+  drawItemIcon(itemId, x, y - s * 0.08, s * 0.85);
 
   // Name below
   textAlign(CENTER, CENTER);
-  textStyle(NORMAL);
-  textSize(s * 0.22);
+  textStyle(BOLD);
+  textSize(s * 0.28);
   fill(80, 60, 40);
   text(item ? item.name : itemId, x, y + s * 0.55);
 }
