@@ -8,7 +8,7 @@
 
 // ==================== CONFIGURATION ====================
 
-const MANSION_COST = 1000000000;
+const MANSION_COST = 100000000000;
 const COMBO_WINDOW = 25; // frames before combo resets
 const HAPPINESS_DRAIN = 1.5; // per second
 const SHARE_HAPPINESS_RESTORE = 30;
