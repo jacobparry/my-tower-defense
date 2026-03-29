@@ -652,6 +652,7 @@ var ambientParticles = [];
 var menuFrame = 0;
 var foundAnimTimer = 0;
 var foundKittenIdx = -1;
+var lastRewardItem = "";
 var feedbackMsg = "";
 var feedbackTimer = 0;
 var feedbackX = 0;
@@ -677,8 +678,9 @@ function setup() {
 }
 
 function initGame() {
-  coins = 30;
-  ownedItems = {};
+  coins = 0;
+  ownedItems = { "milk": true };
+  lastRewardItem = "";
   foundKittens = [];
   for (var i = 0; i < KITTENS.length; i++) foundKittens.push(false);
   currentForest = -1;
@@ -940,7 +942,7 @@ function drawStory() {
       "Read the HINT to pick the right thing!",
       "Each kitten needs its OWN thing!",
       "Wrong thing = kitten runs away!",
-      "Buy things at the SHOP!",
+      "Find a kitten to get a NEW thing!",
       "You can go to any forest!"
     ];
 
@@ -948,7 +950,7 @@ function drawStory() {
     var gap = min(height * 0.1, 65);
     for (var i = 0; i < tips.length; i++) {
       var tipY = startY + i * gap;
-      var icon = ["fish", "feather", "bell", "coins", "map"][i];
+      var icon = ["fish", "feather", "bell", "yarn", "map"][i];
       drawItemMiniIcon(icon, width / 2 - maxW * 0.35, tipY, gap * 0.5);
       textAlign(LEFT, CENTER);
       fill(255, 255, 255, 220);
@@ -1008,9 +1010,6 @@ function drawMap() {
   fill(120, 80, 40);
   text("Kittens Found: " + foundCount + " / " + KITTENS.length, width / 2, height * 0.12);
 
-  // Coin counter
-  drawCoinHUD(width - 80, height * 0.06);
-
   // Forest cards - scrollable grid
   var mapCols = width > 900 ? 5 : (width > 600 ? 4 : 3);
   var mapRows = ceil(FORESTS.length / mapCols);
@@ -1031,14 +1030,12 @@ function drawMap() {
     drawForestCard(i, cx, cy, cardW, cardH);
   }
 
-  // Bottom buttons: Shop and Collection
+  // Bottom button: Collection
   var bbY = height * 0.93;
   var bbW = min(width * 0.25, 200);
   var bbH = min(height * 0.08, 65);
-  var shopHover = isInRect(mouseX, mouseY, width * 0.35, bbY, bbW, bbH);
-  var collHover = isInRect(mouseX, mouseY, width * 0.65, bbY, bbW, bbH);
-  drawButton(width * 0.35, bbY, bbW, bbH, "SHOP", [220, 160, 60], shopHover);
-  drawButton(width * 0.65, bbY, bbW, bbH, "MY KITTENS", [200, 100, 160], collHover);
+  var collHover = isInRect(mouseX, mouseY, width / 2, bbY, bbW, bbH);
+  drawButton(width / 2, bbY, bbW, bbH, "MY KITTENS", [200, 100, 160], collHover);
 
   // Back to hub
   var backHover = isInRect(mouseX, mouseY, 60, 30, 100, 40);
@@ -1240,17 +1237,12 @@ function handleMapClick() {
     return;
   }
 
-  // Bottom buttons
+  // Bottom button
   var bbY = height * 0.93;
   var bbW = min(width * 0.25, 200);
   var bbH = min(height * 0.08, 65);
 
-  if (isInRect(mouseX, mouseY, width * 0.35, bbY, bbW, bbH)) {
-    gameState = "shop";
-    transitionAlpha = 200;
-    return;
-  }
-  if (isInRect(mouseX, mouseY, width * 0.65, bbY, bbW, bbH)) {
+  if (isInRect(mouseX, mouseY, width / 2, bbY, bbW, bbH)) {
     gameState = "collection";
     transitionAlpha = 200;
     return;
@@ -1500,9 +1492,6 @@ function drawForestHUD() {
   fill(255, 220, 150);
   text("Kittens: " + fkFound + "/" + fk.length, 110, height * 0.075);
 
-  // Coins
-  drawCoinHUD(width - 80, height * 0.04);
-
   // Back button
   var backHover = isInRect(mouseX, mouseY, 45, height * 0.05, 80, 38);
   drawSmallButton(45, height * 0.05, 80, 38, "MAP", backHover);
@@ -1545,13 +1534,12 @@ function handleForestClick() {
       gameState = "investigate";
       transitionAlpha = 150;
     } else if (spot.content === "coins") {
-      // Collect coins!
-      coins += spot.coins;
+      // Fun discovery!
       spot.investigated = true;
       var spotKey = currentForest + "_" + hoveredSpot;
       collectedSpots[spotKey] = true;
       spawnSparkles(spot.rx * width, spot.ry * height, 12);
-      showFeedback("+" + spot.coins + " coins!", spot.rx * width, spot.ry * height - 30);
+      showFeedback("You found a pretty spot!", spot.rx * width, spot.ry * height - 30);
     } else if (spot.content === "critter") {
       // Cute critter!
       spot.investigated = true;
@@ -1631,24 +1619,33 @@ function drawInvestigate() {
 
   // Item inventory
   if (!spot.scared) {
-    var itemY = panelY + panelH * 0.25;
+    var itemY = panelY + panelH * 0.22;
     textAlign(CENTER, CENTER);
-    textSize(min(panelW, panelH) * 0.04);
+    textSize(min(panelW, panelH) * 0.045);
     fill(140, 120, 90);
-    text("Pick one:", panelX, itemY - panelH * 0.06);
+    text("Pick one:", panelX, itemY - panelH * 0.07);
 
     var ownedList = getOwnedItemsList();
     if (ownedList.length === 0) {
       fill(180, 100, 60);
-      text("You have no things! Go to the shop!", panelX, itemY);
+      text("You have no things! Find more kittens!", panelX, itemY);
     } else {
-      var iSize = min(panelW / (ownedList.length + 1), panelH * 0.12, 55);
-      var totalIW = ownedList.length * iSize * 1.5;
-      var startIX = panelX - totalIW / 2 + iSize * 0.75;
+      // Grid layout for bigger items
+      var maxCols = min(ownedList.length, 5);
+      var itemRows = ceil(ownedList.length / maxCols);
+      var iSize = min(panelW / (maxCols + 1.5), panelH * 0.15, 70);
+      var iGap = iSize * 0.3;
+      var totalGridW = maxCols * iSize + (maxCols - 1) * iGap;
+      var totalGridH = itemRows * iSize + (itemRows - 1) * iGap;
+      var gridStartX = panelX - totalGridW / 2 + iSize / 2;
+      var gridStartY = itemY - totalGridH / 2 + iSize / 2;
+
       for (var i = 0; i < ownedList.length; i++) {
-        var iix = startIX + i * iSize * 1.5;
-        var iiy = itemY + iSize * 0.2;
-        var itemHovered = dist(mouseX, mouseY, iix, iiy) < iSize * 0.7;
+        var col = i % maxCols;
+        var row = floor(i / maxCols);
+        var iix = gridStartX + col * (iSize + iGap);
+        var iiy = gridStartY + row * (iSize + iGap);
+        var itemHovered = dist(mouseX, mouseY, iix, iiy) < iSize * 0.55;
         drawItemButton(ownedList[i], iix, iiy, iSize, itemHovered);
       }
     }
@@ -1682,15 +1679,22 @@ function handleInvestigateClick() {
   if (spot.scared) return;
 
   var ownedList = getOwnedItemsList();
-  var itemY = panelY + panelH * 0.25;
-  var iSize = min(panelW / (ownedList.length + 1), panelH * 0.12, 55);
-  var totalIW = ownedList.length * iSize * 1.5;
-  var startIX = panelX - totalIW / 2 + iSize * 0.75;
+  var itemY = panelY + panelH * 0.22;
+  var maxCols = min(ownedList.length, 5);
+  var itemRows = ceil(ownedList.length / maxCols);
+  var iSize = min(panelW / (maxCols + 1.5), panelH * 0.15, 70);
+  var iGap = iSize * 0.3;
+  var totalGridW = maxCols * iSize + (maxCols - 1) * iGap;
+  var totalGridH = itemRows * iSize + (itemRows - 1) * iGap;
+  var gridStartX = panelX - totalGridW / 2 + iSize / 2;
+  var gridStartY = itemY - totalGridH / 2 + iSize / 2;
 
   for (var i = 0; i < ownedList.length; i++) {
-    var iix = startIX + i * iSize * 1.5;
-    var iiy = itemY + iSize * 0.2;
-    if (dist(mouseX, mouseY, iix, iiy) < iSize * 0.7) {
+    var col = i % maxCols;
+    var row = floor(i / maxCols);
+    var iix = gridStartX + col * (iSize + iGap);
+    var iiy = gridStartY + row * (iSize + iGap);
+    if (dist(mouseX, mouseY, iix, iiy) < iSize * 0.55) {
       var itemId = ownedList[i];
       useItem(itemId, spot);
       return;
@@ -1702,14 +1706,31 @@ function useItem(itemId, spot) {
   var kitten = KITTENS[spot.kittenIndex];
 
   if (itemId === kitten.neededItem) {
-    // Correct item! Found the kitten!
     foundKittens[spot.kittenIndex] = true;
     spot.investigated = true;
     foundKittenIdx = spot.kittenIndex;
     foundAnimTimer = 0;
     gameState = "found";
     transitionAlpha = 200;
-    coins += 10;
+
+    // Remove used item
+    delete ownedItems[itemId];
+
+    // Reward a random item needed by a remaining unfound kitten
+    var neededItems = [];
+    for (var i = 0; i < KITTENS.length; i++) {
+      if (!foundKittens[i]) {
+        neededItems.push(KITTENS[i].neededItem);
+      }
+    }
+    if (neededItems.length > 0) {
+      var rewardItem = neededItems[floor(random(neededItems.length))];
+      ownedItems[rewardItem] = true;
+      lastRewardItem = rewardItem;
+    } else {
+      lastRewardItem = "";
+    }
+
     spawnConfetti(width / 2, height / 2, 40, [255, 200, 100]);
     return;
   }
@@ -1791,11 +1812,15 @@ function drawFound() {
     fill(100, 75, 50, storyAlpha);
     text(kitten.foundText, width / 2, height * 0.78);
 
-    // +10 coins
-    textStyle(BOLD);
-    textSize(min(width, height) * 0.04);
-    fill(240, 190, 50, storyAlpha);
-    text("+10 coins!", width / 2, height * 0.83);
+    // Reward item
+    if (lastRewardItem !== "") {
+      textStyle(BOLD);
+      textSize(min(width, height) * 0.04);
+      fill(100, 180, 80, storyAlpha);
+      var rewardData = getItemData(lastRewardItem);
+      var rewardName = rewardData ? rewardData.name : lastRewardItem;
+      text("You got: " + rewardName + "!", width / 2, height * 0.83);
+    }
   }
 
   // Continue button
@@ -1825,7 +1850,7 @@ function handleFoundClick() {
       winTimer = 0;
       transitionAlpha = 255;
     } else {
-      gameState = "forest";
+      gameState = "map";
       transitionAlpha = 200;
     }
   }
