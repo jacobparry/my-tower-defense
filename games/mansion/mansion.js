@@ -62,6 +62,7 @@ let worldEntities = {
   volcanos: [],
   tornados: [],
   hurricanes: [],
+  moons: [],
 };
 let particles = [];
 let floatingTexts = [];
@@ -179,6 +180,17 @@ function initShopItems() {
       passivePerUnit: 2500000,
       clickPowerPerUnit: 0,
       col: [0, 255, 130],
+    },
+    {
+      id: 'moon',
+      name: 'Emerald Moon',
+      emoji: '\uD83C\uDF19',
+      baseCost: 5000000000,
+      count: 0,
+      desc: '+25,000,000 emeralds/sec',
+      passivePerUnit: 25000000,
+      clickPowerPerUnit: 0,
+      col: [130, 200, 255],
     },
     {
       id: 'mansion',
@@ -1322,6 +1334,127 @@ class EmeraldHurricane {
   }
 }
 
+// ==================== EMERALD MOON ====================
+
+class EmeraldMoon {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.orbitAngle = random(TWO_PI);
+    this.orbitSpeed = random(0.008, 0.015);
+    this.emeraldTimer = 0;
+    this.craterOffsets = [];
+    for (let i = 0; i < 5; i++) {
+      this.craterOffsets.push({
+        x: random(-12, 12),
+        y: random(-12, 12),
+        s: random(3, 7)
+      });
+    }
+  }
+
+  update() {
+    this.orbitAngle += this.orbitSpeed;
+    this.emeraldTimer++;
+
+    // Sparkle trail particles
+    if (this.emeraldTimer % 5 === 0) {
+      let trailX = this.x + cos(this.orbitAngle - 0.3) * 8;
+      let trailY = this.y + sin(this.orbitAngle - 0.3) * 4;
+      particles.push(new Particle(
+        trailX + random(-5, 5), trailY + random(-5, 5),
+        random(-0.5, 0.5), random(-0.5, 0.5),
+        [130, 200, 255, 150], random(15, 25), random(2, 4)
+      ));
+    }
+
+    // Emerald rain from the moon
+    if (this.emeraldTimer % 25 === 0) {
+      for (let i = 0; i < 4; i++) {
+        emeraldDrops.push(new EmeraldDrop(
+          this.x + random(-20, 20), this.y + 20,
+          random(-2, 2), random(1, 4), 5
+        ));
+      }
+    }
+
+    // Orbiting small asteroids spawn particles
+    if (this.emeraldTimer % 12 === 0) {
+      let a = this.orbitAngle * 3;
+      particles.push(new Particle(
+        this.x + cos(a) * 35, this.y + sin(a) * 20,
+        random(-1, 1), random(-1, 1),
+        [46, 204, 113, 120], 20, random(2, 3)
+      ));
+    }
+  }
+
+  draw() {
+    push();
+    translate(this.x, this.y);
+
+    // Glow aura
+    let pulse = sin(frameCount * 0.04) * 0.15 + 0.85;
+    noStroke();
+    fill(130, 200, 255, 25 * pulse);
+    ellipse(0, 0, 80, 80);
+    fill(130, 200, 255, 15 * pulse);
+    ellipse(0, 0, 100, 100);
+
+    // Moon body
+    fill(200, 220, 235);
+    ellipse(0, 0, 40, 40);
+
+    // Crescent shadow (dark side)
+    fill(60, 80, 100, 120);
+    arc(3, 0, 38, 38, -HALF_PI, HALF_PI);
+
+    // Craters
+    fill(170, 195, 210);
+    for (let c of this.craterOffsets) {
+      ellipse(c.x * 0.6, c.y * 0.6, c.s, c.s);
+    }
+
+    // Green emerald veins
+    stroke(46, 204, 113, 160);
+    strokeWeight(1.5);
+    line(-8, -5, -3, 5);
+    line(2, -8, 7, 2);
+    line(-5, 8, 4, 12);
+    noStroke();
+
+    // Emerald crystal embedded on surface
+    fill(46, 204, 113);
+    beginShape();
+    vertex(0, -14);
+    vertex(5, -8);
+    vertex(0, -2);
+    vertex(-5, -8);
+    endShape(CLOSE);
+    fill(80, 255, 150, 180);
+    beginShape();
+    vertex(0, -13);
+    vertex(3, -8);
+    vertex(0, -4);
+    endShape(CLOSE);
+
+    // Orbiting mini asteroids
+    for (let i = 0; i < 3; i++) {
+      let a = this.orbitAngle * 2 + i * (TWO_PI / 3);
+      let r = 30 + sin(frameCount * 0.05 + i) * 5;
+      let ax = cos(a) * r;
+      let ay = sin(a) * r * 0.5;
+      fill(140, 130, 110);
+      ellipse(ax, ay, 6, 5);
+      // Tiny emerald sparkle on asteroid
+      fill(46, 204, 113, 200);
+      ellipse(ax + 1, ay - 1, 2, 2);
+    }
+
+    pop();
+  }
+}
+
 // ==================== P5.JS LIFECYCLE ====================
 
 function setup() {
@@ -1521,6 +1654,7 @@ function updatePlaying() {
   for (let e of worldEntities.volcanos) e.update();
   for (let e of worldEntities.tornados) e.update();
   for (let e of worldEntities.hurricanes) e.update();
+  for (let e of worldEntities.moons) e.update();
 
   // Update particles (backward iteration for safe removal)
   for (let i = particles.length - 1; i >= 0; i--) {
@@ -1762,6 +1896,7 @@ function drawPlaying() {
   for (let e of worldEntities.volcanos) e.draw();
   for (let e of worldEntities.tornados) e.draw();
   for (let e of worldEntities.hurricanes) e.draw();
+  for (let e of worldEntities.moons) e.draw();
   for (let e of worldEntities.portals) e.draw();
   for (let d of emeraldDrops) d.draw();
   for (let e of worldEntities.miners) e.draw();
@@ -2580,6 +2715,7 @@ function buyItem(item) {
   else if (item.id === 'volcano') villager.say('A VOLCANO?!');
   else if (item.id === 'tornado') villager.say('A TORNADO! WOW!');
   else if (item.id === 'hurricane') villager.say('HURRICANE POWER!!!');
+  else if (item.id === 'moon') villager.say('A MOON! IN SPACE!');
   else if (item.id === 'miner') villager.say('A robot helper!');
   else if (item.count === 1 && item.id === 'planter') villager.say('We\'re farming!');
 
@@ -2640,6 +2776,11 @@ function spawnEntity(itemId) {
       y = random(hudH + 30, groundLevel - 30);
       worldEntities.hurricanes.push(new EmeraldHurricane(x, y));
       break;
+    case 'moon':
+      x = random(worldW * 0.15, worldW * 0.8);
+      y = random(hudH + 20, groundLevel - 40);
+      worldEntities.moons.push(new EmeraldMoon(x, y));
+      break;
   }
 }
 
@@ -2665,7 +2806,7 @@ function resetGame() {
   villager = new Villager();
   villager.init();
 
-  worldEntities = { detectors: [], planters: [], suckers: [], miners: [], portals: [], factories: [], volcanos: [], tornados: [], hurricanes: [] };
+  worldEntities = { detectors: [], planters: [], suckers: [], miners: [], portals: [], factories: [], volcanos: [], tornados: [], hurricanes: [], moons: [] };
   particles = [];
   floatingTexts = [];
   confettis = [];
