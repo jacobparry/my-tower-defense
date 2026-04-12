@@ -1364,7 +1364,7 @@ class EmeraldMoon {
       particles.push(new Particle(
         trailX + random(-5, 5), trailY + random(-5, 5),
         random(-0.5, 0.5), random(-0.5, 0.5),
-        [130, 200, 255, 150], random(15, 25), random(2, 4)
+        [46, 204, 113, 150], random(15, 25), random(2, 4)
       ));
     }
 
@@ -1396,59 +1396,59 @@ class EmeraldMoon {
     // Glow aura
     let pulse = sin(frameCount * 0.04) * 0.15 + 0.85;
     noStroke();
-    fill(130, 200, 255, 25 * pulse);
-    ellipse(0, 0, 80, 80);
-    fill(130, 200, 255, 15 * pulse);
-    ellipse(0, 0, 100, 100);
+    fill(46, 204, 113, 25 * pulse);
+    ellipse(0, 0, 140, 140);
+    fill(46, 204, 113, 15 * pulse);
+    ellipse(0, 0, 180, 180);
 
     // Moon body
-    fill(200, 220, 235);
-    ellipse(0, 0, 40, 40);
+    fill(40, 170, 90);
+    ellipse(0, 0, 70, 70);
 
     // Crescent shadow (dark side)
-    fill(60, 80, 100, 120);
-    arc(3, 0, 38, 38, -HALF_PI, HALF_PI);
+    fill(20, 80, 45, 120);
+    arc(5, 0, 66, 66, -HALF_PI, HALF_PI);
 
     // Craters
-    fill(170, 195, 210);
+    fill(30, 140, 75);
     for (let c of this.craterOffsets) {
-      ellipse(c.x * 0.6, c.y * 0.6, c.s, c.s);
+      ellipse(c.x, c.y, c.s * 1.5, c.s * 1.5);
     }
 
-    // Green emerald veins
-    stroke(46, 204, 113, 160);
-    strokeWeight(1.5);
-    line(-8, -5, -3, 5);
-    line(2, -8, 7, 2);
-    line(-5, 8, 4, 12);
+    // Bright emerald veins
+    stroke(80, 255, 150, 180);
+    strokeWeight(2);
+    line(-14, -9, -5, 9);
+    line(4, -14, 12, 4);
+    line(-9, 14, 7, 21);
     noStroke();
 
     // Emerald crystal embedded on surface
-    fill(46, 204, 113);
+    fill(80, 255, 150);
     beginShape();
-    vertex(0, -14);
-    vertex(5, -8);
-    vertex(0, -2);
-    vertex(-5, -8);
-    endShape(CLOSE);
-    fill(80, 255, 150, 180);
-    beginShape();
-    vertex(0, -13);
-    vertex(3, -8);
+    vertex(0, -24);
+    vertex(9, -14);
     vertex(0, -4);
+    vertex(-9, -14);
+    endShape(CLOSE);
+    fill(130, 255, 180, 200);
+    beginShape();
+    vertex(0, -22);
+    vertex(5, -14);
+    vertex(0, -7);
     endShape(CLOSE);
 
     // Orbiting mini asteroids
     for (let i = 0; i < 3; i++) {
       let a = this.orbitAngle * 2 + i * (TWO_PI / 3);
-      let r = 30 + sin(frameCount * 0.05 + i) * 5;
+      let r = 50 + sin(frameCount * 0.05 + i) * 8;
       let ax = cos(a) * r;
       let ay = sin(a) * r * 0.5;
-      fill(140, 130, 110);
-      ellipse(ax, ay, 6, 5);
+      fill(40, 140, 80);
+      ellipse(ax, ay, 9, 8);
       // Tiny emerald sparkle on asteroid
-      fill(46, 204, 113, 200);
-      ellipse(ax + 1, ay - 1, 2, 2);
+      fill(80, 255, 150, 200);
+      ellipse(ax + 1, ay - 1, 3, 3);
     }
 
     pop();
