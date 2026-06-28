@@ -11,6 +11,13 @@ let pickaxeTier; // 0 none, 1 wood, 2 stone, 3 iron, 4 ruby
 const PICK_NAMES = ["Bare hands", "Wood Pickaxe", "Stone Pickaxe", "Iron Pickaxe", "Ruby Pickaxe"];
 let trees = [];
 
+let gameStartMs = 0;
+function gameTime() { return millis() - gameStartMs; } // ms since this run started
+
+let caves = [];
+let currentCave = null; // null = overworld
+let lastCaveSpawnMs = 0;
+
 // Crafting recipes
 const RECIPES = [
   { key: "sticks", label: "Sticks (1 wood → 2 sticks)", cost: { wood: 1 },
@@ -60,6 +67,24 @@ function spawnTrees(n) {
   }
 }
 
+class Cave {
+  constructor(x, y) {
+    this.x = x; this.y = y;
+    this.r = 26;
+    this.ores = []; // filled in Task 6
+    this.exit = { x: CW / 2, y: CH - 50, r: 26 }; // exit pad inside the cave
+  }
+  drawEntrance() {
+    noStroke();
+    fill(20, 20, 25);
+    ellipse(this.x, this.y, this.r * 2);
+    fill(50, 45, 40);
+    ellipse(this.x, this.y, this.r * 2 + 10, this.r * 2 + 10);
+    fill(15, 15, 18);
+    ellipse(this.x, this.y, this.r * 2 - 6);
+  }
+}
+
 function resetPlayer() {
   player = {
     x: CW / 2,
@@ -68,6 +93,60 @@ function resetPlayer() {
     speed: 3.2,
     facing: { x: 0, y: 1 }, // default facing down
   };
+}
+
+function updateCaveTimer() {
+  if (gameTime() - lastCaveSpawnMs >= 15000) {
+    lastCaveSpawnMs = gameTime();
+    if (caves.length < 6) {
+      caves.push(new Cave(random(60, CW - 60), random(80, CH - 60)));
+    }
+  }
+}
+
+function enterCave(cave) {
+  currentCave = cave;
+  player.x = CW / 2;
+  player.y = 80; // drop in near the top
+}
+
+function exitCave() {
+  currentCave = null;
+  player.x = CW / 2;
+  player.y = CH / 2;
+}
+
+function checkCaveEntry() {
+  for (const c of caves) {
+    if (dist(player.x, player.y, c.x, c.y) < c.r) { enterCave(c); return; }
+  }
+}
+
+function checkCaveExit() {
+  const e = currentCave.exit;
+  if (dist(player.x, player.y, e.x, e.y) < e.r) exitCave();
+}
+
+function drawOverworldCaves() {
+  for (const c of caves) c.drawEntrance();
+}
+
+function drawCaveInterior() {
+  background(35, 30, 28);
+  // rocky border
+  noStroke();
+  fill(25, 22, 20);
+  rect(0, 0, CW, 24); rect(0, CH - 24, CW, 24);
+  rect(0, 0, 24, CH); rect(CW - 24, 0, 24, CH);
+  // exit pad
+  const e = currentCave.exit;
+  fill(90, 200, 120);
+  ellipse(e.x, e.y, e.r * 2);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(12);
+  text("EXIT", e.x, e.y);
+  // (ore drawn in Task 6)
 }
 
 function setup() {
@@ -82,6 +161,10 @@ function startGame() {
   pickaxeTier = 0;
   trees = [];
   spawnTrees(8);
+  caves = [];
+  currentCave = null;
+  gameStartMs = millis();
+  lastCaveSpawnMs = 0;
   gameState = "play";
 }
 
@@ -136,14 +219,24 @@ function draw() {
   if (gameState === "menu") {
     drawMenu();
   } else if (gameState === "play") {
-    background(90, 150, 80);
-    for (const t of trees) t.draw();
-    updatePlayer();
-    drawPlayer();
+    if (currentCave === null) {
+      background(90, 150, 80);
+      updateCaveTimer();
+      for (const t of trees) t.draw();
+      drawOverworldCaves();
+      updatePlayer();
+      drawPlayer();
+      checkCaveEntry();
+    } else {
+      drawCaveInterior();
+      updatePlayer();
+      drawPlayer();
+      checkCaveExit();
+    }
     drawHUD();
   } else if (gameState === "craft") {
-    background(90, 150, 80);
-    for (const t of trees) t.draw();
+    if (currentCave === null) { background(90, 150, 80); for (const t of trees) t.draw(); drawOverworldCaves(); }
+    else { drawCaveInterior(); }
     drawPlayer();
     drawHUD();
     drawCraftMenu();
