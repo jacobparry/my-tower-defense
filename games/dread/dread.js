@@ -42,6 +42,33 @@ function craft(recipeKey) {
   if (r && r.can()) r.make();
 }
 
+const ORE_TYPES = [
+  { key: "stone",   inv: "stone",   color: [130, 130, 130], requiredTier: 1, weight: 60 },
+  { key: "iron",    inv: "iron",    color: [200, 170, 130], requiredTier: 2, weight: 25 },
+  { key: "ruby",    inv: "ruby",    color: [200, 40, 60],   requiredTier: 3, weight: 12 },
+  { key: "diamond", inv: "diamond", color: [120, 230, 240], requiredTier: 4, weight: 3 },
+];
+
+function pickWeightedOre() {
+  const total = ORE_TYPES.reduce((s, o) => s + o.weight, 0);
+  let r = random(total);
+  for (const o of ORE_TYPES) { if (r < o.weight) return o; r -= o.weight; }
+  return ORE_TYPES[0];
+}
+
+function fillCaveOres(cave) {
+  const n = floor(random(5, 9));
+  for (let i = 0; i < n; i++) {
+    const type = pickWeightedOre();
+    cave.ores.push({
+      x: random(60, CW - 60),
+      y: random(60, CH - 120),
+      r: 16,
+      type,
+    });
+  }
+}
+
 class Tree {
   constructor(x, y) {
     this.x = x; this.y = y;
@@ -99,7 +126,9 @@ function updateCaveTimer() {
   if (gameTime() - lastCaveSpawnMs >= 15000) {
     lastCaveSpawnMs = gameTime();
     if (caves.length < 6) {
-      caves.push(new Cave(random(60, CW - 60), random(80, CH - 60)));
+      const c = new Cave(random(60, CW - 60), random(80, CH - 60));
+      fillCaveOres(c);
+      caves.push(c);
     }
   }
 }
@@ -138,6 +167,17 @@ function drawCaveInterior() {
   fill(25, 22, 20);
   rect(0, 0, CW, 24); rect(0, CH - 24, CW, 24);
   rect(0, 0, 24, CH); rect(CW - 24, 0, 24, CH);
+  // ore nodes
+  for (const ore of currentCave.ores) {
+    const col = ore.type.color;
+    noStroke();
+    fill(70, 65, 60); // rock matrix
+    ellipse(ore.x, ore.y, ore.r * 2 + 8);
+    fill(col[0], col[1], col[2]);
+    ellipse(ore.x, ore.y, ore.r * 2);
+    fill(255, 255, 255, 70);
+    ellipse(ore.x - 4, ore.y - 4, 6);
+  }
   // exit pad
   const e = currentCave.exit;
   fill(90, 200, 120);
@@ -146,7 +186,6 @@ function drawCaveInterior() {
   textAlign(CENTER, CENTER);
   textSize(12);
   text("EXIT", e.x, e.y);
-  // (ore drawn in Task 6)
 }
 
 function setup() {
@@ -214,6 +253,42 @@ function tryPunch() {
   }
 }
 
+let flashMsg = "";
+let flashUntil = 0;
+function flashMessage(m) { flashMsg = m; flashUntil = millis() + 1500; }
+function drawFlash() {
+  if (millis() < flashUntil) {
+    fill(0, 0, 0, 160);
+    noStroke();
+    rectMode(CENTER);
+    rect(CW / 2, CH - 70, textWidth(flashMsg) + 40, 36, 8);
+    rectMode(CORNER);
+    fill(255, 230, 120);
+    textAlign(CENTER, CENTER);
+    textSize(18);
+    text(flashMsg, CW / 2, CH - 70);
+  }
+}
+
+function tryMine() {
+  if (!currentCave) return;
+  let best = null, bestD = 46;
+  for (const ore of currentCave.ores) {
+    const d = dist(player.x, player.y, ore.x, ore.y);
+    if (d < bestD) { best = ore; bestD = d; }
+  }
+  if (!best) return;
+  if (pickaxeTier < best.type.requiredTier) {
+    flashMessage("Need a better pickaxe!");
+    return;
+  }
+  inventory[best.type.inv] += 1;
+  currentCave.ores.splice(currentCave.ores.indexOf(best), 1);
+  if (best.type.key === "diamond") {
+    gameState = "win";
+  }
+}
+
 function draw() {
   background(30, 30, 35);
   if (gameState === "menu") {
@@ -234,12 +309,16 @@ function draw() {
       checkCaveExit();
     }
     drawHUD();
+    drawFlash();
   } else if (gameState === "craft") {
     if (currentCave === null) { background(90, 150, 80); for (const t of trees) t.draw(); drawOverworldCaves(); }
     else { drawCaveInterior(); }
     drawPlayer();
     drawHUD();
     drawCraftMenu();
+    drawFlash();
+  } else if (gameState === "win") {
+    drawWin();
   }
 }
 
@@ -260,6 +339,19 @@ function drawMenu() {
   textSize(24);
   text("START", CW / 2, CH / 2 + 60);
   rectMode(CORNER);
+}
+
+function drawWin() {
+  background(20, 30, 50);
+  fill(120, 230, 240);
+  textAlign(CENTER, CENTER);
+  textSize(54);
+  text("💎 DIAMOND!", CW / 2, CH / 2 - 60);
+  fill(255);
+  textSize(22);
+  text("You mined your first diamond. You win.", CW / 2, CH / 2);
+  textSize(16);
+  text("Click to play again", CW / 2, CH / 2 + 50);
 }
 
 function drawHUD() {
@@ -321,12 +413,16 @@ function mousePressed() {
         craft(RECIPES[i].key);
       }
     }
+  } else if (gameState === "win" || gameState === "gameover") {
+    gameState = "menu";
   }
 }
 
 function keyPressed() {
   keys[keyCode] = true;
-  if (gameState === "play" && key === " ") tryPunch();
+  if (gameState === "play" && key === " ") {
+    if (currentCave === null) tryPunch(); else tryMine();
+  }
   if (gameState === "play" && (key === "c" || key === "C")) gameState = "craft";
   else if (gameState === "craft" && (key === "c" || key === "C")) gameState = "play";
 }
