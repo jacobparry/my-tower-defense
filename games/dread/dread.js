@@ -6,6 +6,36 @@ let gameState = "menu"; // "menu" | "play" | "craft" | "wyr" | "gameover" | "win
 let player; // set in startGame()
 const keys = {}; // keyCode -> bool
 
+let inventory;
+let pickaxeTier; // 0 none, 1 wood, 2 stone, 3 iron, 4 ruby
+const PICK_NAMES = ["Bare hands", "Wood Pickaxe", "Stone Pickaxe", "Iron Pickaxe", "Ruby Pickaxe"];
+let trees = [];
+
+class Tree {
+  constructor(x, y) {
+    this.x = x; this.y = y;
+    this.r = 18;
+    this.wood = 4; // wood remaining
+  }
+  draw() {
+    noStroke();
+    fill(90, 60, 30); // trunk
+    rect(this.x - 4, this.y, 8, 16);
+    fill(40, 110, 50); // canopy
+    ellipse(this.x, this.y - 4, this.r * 2);
+    if (this.wood < 4) { // damaged tint
+      fill(255, 255, 255, 40);
+      ellipse(this.x, this.y - 4, this.r * 2);
+    }
+  }
+}
+
+function spawnTrees(n) {
+  for (let i = 0; i < n; i++) {
+    trees.push(new Tree(random(40, CW - 40), random(60, CH - 40)));
+  }
+}
+
 function resetPlayer() {
   player = {
     x: CW / 2,
@@ -24,6 +54,10 @@ function setup() {
 
 function startGame() {
   resetPlayer();
+  inventory = { wood: 0, sticks: 0, stone: 0, iron: 0, ruby: 0, diamond: 0 };
+  pickaxeTier = 0;
+  trees = [];
+  spawnTrees(8);
   gameState = "play";
 }
 
@@ -57,14 +91,32 @@ function drawPlayer() {
   ellipse(player.x + fx * player.r * 0.6, player.y + fy * player.r * 0.6, 7);
 }
 
+function tryPunch() {
+  let best = null, bestD = 50; // reach
+  for (const t of trees) {
+    const d = dist(player.x, player.y, t.x, t.y);
+    if (d < bestD) { best = t; bestD = d; }
+  }
+  if (best) {
+    best.wood -= 1;
+    inventory.wood += 1;
+    if (best.wood <= 0) {
+      trees.splice(trees.indexOf(best), 1);
+      spawnTrees(1); // keep the world stocked
+    }
+  }
+}
+
 function draw() {
   background(30, 30, 35);
   if (gameState === "menu") {
     drawMenu();
   } else if (gameState === "play") {
     background(90, 150, 80);
+    for (const t of trees) t.draw();
     updatePlayer();
     drawPlayer();
+    drawHUD();
   }
 }
 
@@ -87,6 +139,20 @@ function drawMenu() {
   rectMode(CORNER);
 }
 
+function drawHUD() {
+  // panel
+  noStroke();
+  fill(0, 0, 0, 140);
+  rect(0, 0, CW, 34);
+  fill(255);
+  textAlign(LEFT, CENTER);
+  textSize(15);
+  const inv = inventory;
+  text(`🌳${inv.wood}  🪵${inv.sticks}  🪨${inv.stone}  ⛓️${inv.iron}  🔴${inv.ruby}  💎${inv.diamond}`, 12, 17);
+  textAlign(RIGHT, CENTER);
+  text(PICK_NAMES[pickaxeTier], CW - 12, 17);
+}
+
 function mousePressed() {
   if (gameState === "menu") {
     if (mouseX > CW / 2 - 100 && mouseX < CW / 2 + 100 &&
@@ -98,6 +164,7 @@ function mousePressed() {
 
 function keyPressed() {
   keys[keyCode] = true;
+  if (gameState === "play" && key === " ") tryPunch();
 }
 function keyReleased() {
   keys[keyCode] = false;
