@@ -11,6 +11,30 @@ let pickaxeTier; // 0 none, 1 wood, 2 stone, 3 iron, 4 ruby
 const PICK_NAMES = ["Bare hands", "Wood Pickaxe", "Stone Pickaxe", "Iron Pickaxe", "Ruby Pickaxe"];
 let trees = [];
 
+// Crafting recipes
+const RECIPES = [
+  { key: "sticks", label: "Sticks (1 wood → 2 sticks)", cost: { wood: 1 },
+    can: () => inventory.wood >= 1,
+    make: () => { inventory.wood -= 1; inventory.sticks += 2; } },
+  { key: "wood_pick", label: "Wood Pickaxe (2 sticks, 3 wood)", cost: { sticks: 2, wood: 3 },
+    can: () => pickaxeTier < 1 && inventory.sticks >= 2 && inventory.wood >= 3,
+    make: () => { inventory.sticks -= 2; inventory.wood -= 3; pickaxeTier = Math.max(pickaxeTier, 1); } },
+  { key: "stone_pick", label: "Stone Pickaxe (2 sticks, 3 stone)", cost: { sticks: 2, stone: 3 },
+    can: () => pickaxeTier < 2 && inventory.sticks >= 2 && inventory.stone >= 3,
+    make: () => { inventory.sticks -= 2; inventory.stone -= 3; pickaxeTier = Math.max(pickaxeTier, 2); } },
+  { key: "iron_pick", label: "Iron Pickaxe (2 sticks, 3 iron)", cost: { sticks: 2, iron: 3 },
+    can: () => pickaxeTier < 3 && inventory.sticks >= 2 && inventory.iron >= 3,
+    make: () => { inventory.sticks -= 2; inventory.iron -= 3; pickaxeTier = Math.max(pickaxeTier, 3); } },
+  { key: "ruby_pick", label: "Ruby Pickaxe (2 sticks, 3 ruby)", cost: { sticks: 2, ruby: 3 },
+    can: () => pickaxeTier < 4 && inventory.sticks >= 2 && inventory.ruby >= 3,
+    make: () => { inventory.sticks -= 2; inventory.ruby -= 3; pickaxeTier = Math.max(pickaxeTier, 4); } },
+];
+
+function craft(recipeKey) {
+  const r = RECIPES.find((x) => x.key === recipeKey);
+  if (r && r.can()) r.make();
+}
+
 class Tree {
   constructor(x, y) {
     this.x = x; this.y = y;
@@ -117,6 +141,12 @@ function draw() {
     updatePlayer();
     drawPlayer();
     drawHUD();
+  } else if (gameState === "craft") {
+    background(90, 150, 80);
+    for (const t of trees) t.draw();
+    drawPlayer();
+    drawHUD();
+    drawCraftMenu();
   }
 }
 
@@ -153,11 +183,50 @@ function drawHUD() {
   text(PICK_NAMES[pickaxeTier], CW - 12, 17);
 }
 
+function craftRowRect(i) {
+  // returns {x,y,w,h} for recipe row i
+  return { x: CW / 2 - 220, y: 150 + i * 64, w: 440, h: 52 };
+}
+
+function drawCraftMenu() {
+  // dim background behind menu
+  noStroke();
+  fill(0, 0, 0, 180);
+  rect(0, 0, CW, CH);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(34);
+  text("CRAFTING", CW / 2, 90);
+  textSize(14);
+  text("Press C to close", CW / 2, 122);
+  for (let i = 0; i < RECIPES.length; i++) {
+    const r = RECIPES[i];
+    const b = craftRowRect(i);
+    const ok = r.can();
+    fill(ok ? color(60, 150, 90) : color(80, 80, 80));
+    rect(b.x, b.y, b.w, b.h, 8);
+    fill(255);
+    textAlign(LEFT, CENTER);
+    textSize(18);
+    text(r.label, b.x + 16, b.y + b.h / 2);
+    textAlign(RIGHT, CENTER);
+    textSize(14);
+    text(ok ? "CRAFT" : "need more", b.x + b.w - 14, b.y + b.h / 2);
+  }
+}
+
 function mousePressed() {
   if (gameState === "menu") {
     if (mouseX > CW / 2 - 100 && mouseX < CW / 2 + 100 &&
         mouseY > CH / 2 + 30 && mouseY < CH / 2 + 90) {
       startGame();
+    }
+  } else if (gameState === "craft") {
+    for (let i = 0; i < RECIPES.length; i++) {
+      const b = craftRowRect(i);
+      if (mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h) {
+        craft(RECIPES[i].key);
+      }
     }
   }
 }
@@ -165,6 +234,8 @@ function mousePressed() {
 function keyPressed() {
   keys[keyCode] = true;
   if (gameState === "play" && key === " ") tryPunch();
+  if (gameState === "play" && (key === "c" || key === "C")) gameState = "craft";
+  else if (gameState === "craft" && (key === "c" || key === "C")) gameState = "play";
 }
 function keyReleased() {
   keys[keyCode] = false;
