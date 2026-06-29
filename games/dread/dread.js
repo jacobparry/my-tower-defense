@@ -370,6 +370,8 @@ function startGame() {
   isNight = false;
   monsters = [];
   lastMonsterSpawnMs = 0;
+  flashMsg = "";
+  flashUntil = 0;
   gameState = "play";
 }
 
@@ -436,6 +438,33 @@ function drawFlash() {
   }
 }
 
+function drawClockAndHints() {
+  const t = floor(gameTime() / 1000);
+  const mm = floor(t / 60), ss = t % 60;
+  fill(255);
+  textAlign(LEFT, CENTER);
+  textSize(13);
+  const phase = isNight ? "NIGHT" : "DAY";
+  text(`${phase}  ${mm}:${ss < 10 ? "0" : ""}${ss}   [SPACE] act  [C] craft`, 12, CH - 16);
+}
+
+function drawDemonProximity() {
+  if (!demon) return;
+  const d = dist(demon.x, demon.y, player.x, player.y);
+  if (d < 180 && !demon.frozen) {
+    const a = map(d, 60, 180, 200, 40);
+    noFill();
+    stroke(220, 40, 40, a);
+    strokeWeight(4);
+    rect(2, 2, CW - 4, CH - 4);
+    noStroke();
+    fill(220, 40, 40, a);
+    textAlign(CENTER, TOP);
+    textSize(16);
+    text("⚠ THE DEMON IS NEAR — LOOK AT IT", CW / 2, 40);
+  }
+}
+
 function tryMine() {
   if (!currentCave) return;
   let best = null, bestD = 46;
@@ -483,8 +512,10 @@ function draw() {
       drawDemon();
       checkCaveExit();
     }
+    drawDemonProximity();
     drawHUD();
     drawFlash();
+    drawClockAndHints();
   } else if (gameState === "craft") {
     if (currentCave === null) { background(90, 150, 80); for (const t of trees) t.draw(); drawOverworldCaves(); }
     else { drawCaveInterior(); }
