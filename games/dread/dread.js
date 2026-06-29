@@ -7,7 +7,8 @@ let player; // set in startGame()
 const keys = {}; // keyCode -> bool
 
 let demon;
-const GAZE_COS = 0.64; // cone half-angle ≈ 50°
+let GAZE_COS = 0.64; // cone half-angle ≈ 50°
+function GAZE_HALF_COS_ADJUST(delta) { GAZE_COS = constrain(GAZE_COS + delta, 0.2, 0.95); }
 
 let inventory;
 let pickaxeTier; // 0 none, 1 wood, 2 stone, 3 iron, 4 ruby
@@ -20,6 +21,24 @@ function gameTime() { return millis() - gameStartMs; } // ms since this run star
 let caves = [];
 let currentCave = null; // null = overworld
 let lastCaveSpawnMs = 0;
+
+let lastWyrMs = 0;
+let currentWyr = null;
+
+const WYR_POOL = [
+  { a: { label: "Move faster (+speed), BUT the demon speeds up too",
+         apply: () => { player.speed += 0.8; demon.speed += 0.5; } },
+    b: { label: "Slow the demon, BUT you move slower too",
+         apply: () => { demon.speed = Math.max(0.6, demon.speed - 0.6); player.speed = Math.max(1.6, player.speed - 0.6); } } },
+  { a: { label: "Gain 10 wood now, BUT the demon jumps closer",
+         apply: () => { inventory.wood += 10; const a = atan2(player.y - demon.y, player.x - demon.x); demon.x = player.x - cos(a) * 120; demon.y = player.y - sin(a) * 120; } },
+    b: { label: "Gain 5 stone now, BUT lose all your sticks",
+         apply: () => { inventory.stone += 5; inventory.sticks = 0; } } },
+  { a: { label: "Wider gaze cone (demon easier to freeze), BUT you move slower",
+         apply: () => { GAZE_HALF_COS_ADJUST(-0.15); player.speed = Math.max(1.6, player.speed - 0.5); } },
+    b: { label: "Gain 5 iron now, BUT the demon speeds up",
+         apply: () => { inventory.iron += 5; demon.speed += 0.6; } } },
+];
 
 // Crafting recipes
 const RECIPES = [
@@ -180,6 +199,14 @@ function updateCaveTimer() {
   }
 }
 
+function maybeTriggerWyr() {
+  if (gameTime() - lastWyrMs >= 60000) {
+    lastWyrMs = gameTime();
+    currentWyr = random(WYR_POOL);
+    gameState = "wyr";
+  }
+}
+
 function enterCave(cave) {
   currentCave = cave;
   player.x = CW / 2;
@@ -251,6 +278,8 @@ function startGame() {
   currentCave = null;
   gameStartMs = millis();
   lastCaveSpawnMs = 0;
+  lastWyrMs = 0;
+  currentWyr = null;
   resetDemon();
   gameState = "play";
 }
@@ -342,6 +371,7 @@ function draw() {
   if (gameState === "menu") {
     drawMenu();
   } else if (gameState === "play") {
+    maybeTriggerWyr();
     if (currentCave === null) {
       background(90, 150, 80);
       updateCaveTimer();
@@ -369,6 +399,8 @@ function draw() {
     drawHUD();
     drawCraftMenu();
     drawFlash();
+  } else if (gameState === "wyr") {
+    drawWyr();
   } else if (gameState === "win") {
     drawWin();
   } else if (gameState === "gameover") {
@@ -467,6 +499,40 @@ function drawCraftMenu() {
   }
 }
 
+function wyrOptionRect(which) {
+  const w = 360, h = 140, gap = 40;
+  const totalW = w * 2 + gap;
+  const x = which === "a" ? CW / 2 - totalW / 2 : CW / 2 + gap / 2;
+  return { x, y: CH / 2 - h / 2 + 30, w, h };
+}
+
+function drawWyr() {
+  // keep the world frozen behind the modal
+  if (currentCave === null) { background(90, 150, 80); for (const t of trees) t.draw(); drawOverworldCaves(); }
+  else { drawCaveInterior(); }
+  drawPlayer();
+  drawDemon();
+  drawHUD();
+  // dim
+  noStroke();
+  fill(0, 0, 0, 170);
+  rect(0, 0, CW, CH);
+  fill(255, 230, 120);
+  textAlign(CENTER, CENTER);
+  textSize(40);
+  text("WOULD YOU RATHER…", CW / 2, CH / 2 - 110);
+  for (const which of ["a", "b"]) {
+    const opt = currentWyr[which];
+    const b = wyrOptionRect(which);
+    fill(60, 90, 150);
+    rect(b.x, b.y, b.w, b.h, 12);
+    fill(255);
+    textSize(18);
+    textAlign(CENTER, CENTER);
+    text(opt.label, b.x + b.w / 2, b.y + b.h / 2, b.w - 30, b.h - 30);
+  }
+}
+
 function mousePressed() {
   if (gameState === "menu") {
     if (mouseX > CW / 2 - 100 && mouseX < CW / 2 + 100 &&
@@ -478,6 +544,15 @@ function mousePressed() {
       const b = craftRowRect(i);
       if (mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h) {
         craft(RECIPES[i].key);
+      }
+    }
+  } else if (gameState === "wyr") {
+    for (const which of ["a", "b"]) {
+      const b = wyrOptionRect(which);
+      if (mouseX > b.x && mouseX < b.x + b.w && mouseY > b.y && mouseY < b.y + b.h) {
+        currentWyr[which].apply();
+        currentWyr = null;
+        gameState = "play";
       }
     }
   } else if (gameState === "win" || gameState === "gameover") {
