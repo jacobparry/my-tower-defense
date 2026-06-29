@@ -6,6 +6,9 @@ let gameState = "menu"; // "menu" | "play" | "craft" | "wyr" | "gameover" | "win
 let player; // set in startGame()
 const keys = {}; // keyCode -> bool
 
+let demon;
+const GAZE_COS = 0.64; // cone half-angle ≈ 50°
+
 let inventory;
 let pickaxeTier; // 0 none, 1 wood, 2 stone, 3 iron, 4 ruby
 const PICK_NAMES = ["Bare hands", "Wood Pickaxe", "Stone Pickaxe", "Iron Pickaxe", "Ruby Pickaxe"];
@@ -122,6 +125,50 @@ function resetPlayer() {
   };
 }
 
+function resetDemon() {
+  demon = { x: 60, y: 60, r: 18, speed: 1.7, frozen: false };
+}
+
+function isDemonInGaze() {
+  const vx = demon.x - player.x, vy = demon.y - player.y;
+  const len = Math.hypot(vx, vy) || 1;
+  const nx = vx / len, ny = vy / len;
+  const fx = player.facing.x, fy = player.facing.y;
+  const flen = Math.hypot(fx, fy) || 1;
+  const dot = (nx * fx + ny * fy) / flen;
+  return dot >= GAZE_COS;
+}
+
+function updateDemon() {
+  demon.frozen = isDemonInGaze();
+  if (!demon.frozen) {
+    const vx = player.x - demon.x, vy = player.y - demon.y;
+    const len = Math.hypot(vx, vy) || 1;
+    demon.x += (vx / len) * demon.speed;
+    demon.y += (vy / len) * demon.speed;
+  }
+  if (dist(demon.x, demon.y, player.x, player.y) < demon.r + player.r - 4) {
+    gameState = "gameover";
+  }
+}
+
+function drawDemon() {
+  push();
+  noStroke();
+  // shadow body
+  fill(demon.frozen ? color(90, 60, 120) : color(20, 10, 20));
+  ellipse(demon.x, demon.y, demon.r * 2);
+  // horns
+  fill(demon.frozen ? color(140, 110, 160) : color(40, 20, 30));
+  triangle(demon.x - 12, demon.y - 10, demon.x - 6, demon.y - 22, demon.x - 2, demon.y - 12);
+  triangle(demon.x + 12, demon.y - 10, demon.x + 6, demon.y - 22, demon.x + 2, demon.y - 12);
+  // glowing eyes
+  fill(255, demon.frozen ? 220 : 60, 60);
+  ellipse(demon.x - 6, demon.y - 2, 6);
+  ellipse(demon.x + 6, demon.y - 2, 6);
+  pop();
+}
+
 function updateCaveTimer() {
   if (gameTime() - lastCaveSpawnMs >= 15000) {
     lastCaveSpawnMs = gameTime();
@@ -204,6 +251,7 @@ function startGame() {
   currentCave = null;
   gameStartMs = millis();
   lastCaveSpawnMs = 0;
+  resetDemon();
   gameState = "play";
 }
 
@@ -300,12 +348,16 @@ function draw() {
       for (const t of trees) t.draw();
       drawOverworldCaves();
       updatePlayer();
+      updateDemon();
       drawPlayer();
+      drawDemon();
       checkCaveEntry();
     } else {
       drawCaveInterior();
       updatePlayer();
+      updateDemon();
       drawPlayer();
+      drawDemon();
       checkCaveExit();
     }
     drawHUD();
@@ -319,6 +371,8 @@ function draw() {
     drawFlash();
   } else if (gameState === "win") {
     drawWin();
+  } else if (gameState === "gameover") {
+    drawGameOver();
   }
 }
 
@@ -339,6 +393,19 @@ function drawMenu() {
   textSize(24);
   text("START", CW / 2, CH / 2 + 60);
   rectMode(CORNER);
+}
+
+function drawGameOver() {
+  background(30, 10, 15);
+  fill(220, 60, 60);
+  textAlign(CENTER, CENTER);
+  textSize(54);
+  text("☠ THE DEMON GOT YOU", CW / 2, CH / 2 - 50);
+  fill(255);
+  textSize(20);
+  text("Never look away next time.", CW / 2, CH / 2 + 6);
+  textSize(16);
+  text("Click to return to menu", CW / 2, CH / 2 + 50);
 }
 
 function drawWin() {
