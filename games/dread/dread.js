@@ -25,6 +25,12 @@ let lastCaveSpawnMs = 0;
 let lastWyrMs = 0;
 let currentWyr = null;
 
+const NIGHT_MS = 210000; // ~3.5 min
+let isNight = false;
+let monsters = [];
+let playerHp, playerMaxHp;
+let lastMonsterSpawnMs = 0;
+
 const WYR_POOL = [
   { a: { label: "Move faster (+speed), BUT the demon speeds up too",
          apply: () => { player.speed += 0.8; demon.speed += 0.5; } },
@@ -107,6 +113,35 @@ class Tree {
       fill(255, 255, 255, 40);
       ellipse(this.x, this.y - 4, this.r * 2);
     }
+  }
+}
+
+class Monster {
+  constructor(x, y) {
+    this.x = x; this.y = y;
+    this.r = 15;
+    this.speed = 1.3;
+    this.hp = 2;
+    this.hitCooldown = 0; // ms timestamp until which it can't hit again
+  }
+  update() {
+    const vx = player.x - this.x, vy = player.y - this.y;
+    const len = Math.hypot(vx, vy) || 1;
+    this.x += (vx / len) * this.speed;
+    this.y += (vy / len) * this.speed;
+    if (dist(this.x, this.y, player.x, player.y) < this.r + player.r && millis() > this.hitCooldown) {
+      playerHp -= 1;
+      this.hitCooldown = millis() + 1000;
+      if (playerHp <= 0) gameState = "gameover";
+    }
+  }
+  draw() {
+    noStroke();
+    fill(80, 30, 90);
+    ellipse(this.x, this.y, this.r * 2);
+    fill(255, 80, 80);
+    ellipse(this.x - 4, this.y - 2, 5);
+    ellipse(this.x + 4, this.y - 2, 5);
   }
 }
 
@@ -207,6 +242,55 @@ function maybeTriggerWyr() {
   }
 }
 
+function updateDayNight() {
+  isNight = gameTime() >= NIGHT_MS;
+  if (isNight && currentCave === null && gameTime() - lastMonsterSpawnMs >= 4000 && monsters.length < 8) {
+    lastMonsterSpawnMs = gameTime();
+    spawnMonster();
+  }
+}
+
+function spawnMonster() {
+  // spawn at a random edge
+  const edge = floor(random(4));
+  let x, y;
+  if (edge === 0) { x = 0; y = random(CH); }
+  else if (edge === 1) { x = CW; y = random(CH); }
+  else if (edge === 2) { x = random(CW); y = 0; }
+  else { x = random(CW); y = CH; }
+  monsters.push(new Monster(x, y));
+}
+
+function updateMonsters() {
+  for (let i = monsters.length - 1; i >= 0; i--) {
+    monsters[i].update();
+    if (monsters[i].hp <= 0) monsters.splice(i, 1);
+  }
+}
+
+function drawMonsters() {
+  for (const m of monsters) m.draw();
+}
+
+function trySwing() {
+  let hitAny = false;
+  for (const m of monsters) {
+    if (dist(player.x, player.y, m.x, m.y) < 48) {
+      m.hp -= 1;
+      hitAny = true;
+    }
+  }
+  return hitAny;
+}
+
+function drawNightOverlay() {
+  if (isNight && currentCave === null) {
+    noStroke();
+    fill(10, 10, 40, 150);
+    rect(0, 0, CW, CH);
+  }
+}
+
 function enterCave(cave) {
   currentCave = cave;
   player.x = CW / 2;
@@ -281,6 +365,11 @@ function startGame() {
   lastWyrMs = 0;
   currentWyr = null;
   resetDemon();
+  playerMaxHp = 3;
+  playerHp = 3;
+  isNight = false;
+  monsters = [];
+  lastMonsterSpawnMs = 0;
   gameState = "play";
 }
 
@@ -372,15 +461,19 @@ function draw() {
     drawMenu();
   } else if (gameState === "play") {
     maybeTriggerWyr();
+    updateDayNight();
     if (currentCave === null) {
       background(90, 150, 80);
       updateCaveTimer();
       for (const t of trees) t.draw();
       drawOverworldCaves();
       updatePlayer();
+      updateMonsters();
       updateDemon();
       drawPlayer();
+      drawMonsters();
       drawDemon();
+      drawNightOverlay();
       checkCaveEntry();
     } else {
       drawCaveInterior();
@@ -465,6 +558,11 @@ function drawHUD() {
   text(`🌳${inv.wood}  🪵${inv.sticks}  🪨${inv.stone}  ⛓️${inv.iron}  🔴${inv.ruby}  💎${inv.diamond}`, 12, 17);
   textAlign(RIGHT, CENTER);
   text(PICK_NAMES[pickaxeTier], CW - 12, 17);
+  // hearts
+  textAlign(LEFT, CENTER);
+  let hearts = "";
+  for (let i = 0; i < playerMaxHp; i++) hearts += i < playerHp ? "❤️" : "🖤";
+  text(hearts, CW / 2 - textWidth(hearts) / 2, 17);
 }
 
 function craftRowRect(i) {
@@ -563,7 +661,10 @@ function mousePressed() {
 function keyPressed() {
   keys[keyCode] = true;
   if (gameState === "play" && key === " ") {
-    if (currentCave === null) tryPunch(); else tryMine();
+    const swung = trySwing();
+    if (!swung) {
+      if (currentCave === null) tryPunch(); else tryMine();
+    }
   }
   if (gameState === "play" && (key === "c" || key === "C")) gameState = "craft";
   else if (gameState === "craft" && (key === "c" || key === "C")) gameState = "play";
