@@ -298,6 +298,9 @@ function enterCave(cave) {
 }
 
 function exitCave() {
+  if (currentCave.ores.length === 0) {
+    caves.splice(caves.indexOf(currentCave), 1);
+  }
   currentCave = null;
   player.x = CW / 2;
   player.y = CH / 2;
@@ -372,6 +375,7 @@ function startGame() {
   lastMonsterSpawnMs = 0;
   flashMsg = "";
   flashUntil = 0;
+  GAZE_COS = 0.64;
   gameState = "play";
 }
 
