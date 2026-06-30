@@ -50,6 +50,13 @@ Your 10 adorable kittens got lost in famous national park forests! Search Yellow
 - Travel between forests anytime
 - Designed for young kids (ages 5-7)
 
+### 💎 Diamond Dread
+Top-down survival mining. Chop trees, craft pickaxes (wood → stone → iron → ruby),
+and dive into caves that appear every 15 seconds to mine ore. Mining your first
+diamond wins the game. A would-you-rather choice strikes every minute, monsters
+spawn at night, and a demon chases you that only freezes while you look at it —
+and kills you in one hit.
+
 ## Tech Stack
 
 - **p5.js** — rendering, animation, and input handling
